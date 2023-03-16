@@ -66,6 +66,7 @@ private:
     unsigned long long nreads = 0;
 };
 
-*/
 
-#endif /* CramReader_hpp */
+
+#endif CramReader_hpp 
+*/

@@ -180,10 +180,10 @@ public:
     const std::vector<float> &depths;
     const std::unordered_set<std::string> &genes;
     const int nthreads;
-    
+  
 private:
     uint totalkmers, totalgroups;
-    std::atomic_uint restfileindex = 0;
+    std::atomic_uint restfileindex{0};    
     std::mutex Threads_lock;
     
     KmerCounter<ksize> Counter;
@@ -226,7 +226,7 @@ template <int ksize>
 void Processor<ksize>::Onethread()
 {
     
-    Genotyper genotyper(totalkmers, totalgroups, Counter, priordata_manager);
+    Genotyper<ksize> genotyper(totalkmers, totalgroups, Counter, priordata_manager);
     
     
     while (restfileindex < inputfiles.size() )
