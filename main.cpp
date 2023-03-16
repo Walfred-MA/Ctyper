@@ -1,52 +1,35 @@
 //
 //  main.cpp
-//  kmer_haplotyping
+//  CTyper
 //
-//  Created by Wangfei MA on 10/13/21.
-//  Copyright © 2021 USC_MarkLab. All rights reserved.
+//  Created by Wangfei MA on 2/13/23.
 //
 
 #include <iostream>
 #include <string>
+#include <unordered_set>
 
-#include "KmerCounter.hpp"
+
+#include "Processor.hpp"
+
+
 //#include "CramReader.hpp"
-
-template <int dictsize>
-void run(std::vector<std::string> inputfiles, std::vector<std::string> outputfiles, std::vector<std::string> prefixes, std::string targetfile, std::string matrixfile, std::vector<char *> regions, std::vector<float> depths, const int nthreads)
-{
-    
-    const int kmer_size = 31;
-    
-    kmer_counter<dictsize> counter(kmer_size);
-    
-    if (targetfile.size())
-    {
-        counter.read_target(targetfile.c_str(), matrixfile.c_str());
-    }
-    
-    counter.read_files(inputfiles, outputfiles, prefixes, depths, nthreads);
-    
-}
 
 
 int main(int argc, const char * argv[]) {
     
     
     std::vector<std::string> inputfiles;
-    
-    std::vector<std::string> prefixes;
-    
-    std::vector<std::string> targetfiles;
-    
+        
     std::vector<std::string> outputfiles;
+    
+    std::vector<float> depths;
+    
+    std::unordered_set<std::string> genes;
     
     std::vector<char *> regions;
     
-    std::vector<float> depths;
-        
-    std::string matrixfile="";
-    std::string targetfile="";
+    std::string kmatrixfile="";
     
     const char* Argument;
     int nthreads = 1;
@@ -79,29 +62,10 @@ int main(int argc, const char * argv[]) {
             }
         }
         
-        else if (strcmp(Argument, "-t")==0 or strcmp(Argument, "--target")==0)
+        else if (strcmp(Argument, "-m")==0 or strcmp(Argument, "--matrix")==0)
         {
-            targetfile = string(argv[i]);
+            kmatrixfile = string(argv[i]);
         }
-        
-        /*
-        else if (strcmp(Argument, "-T")==0 or strcmp(Argument, "--Targets")==0)
-        {
-            
-            
-            std::ifstream pathfile(argv[i]);
-            std::string line;
-            if(!pathfile)
-            {
-                std::cout<<"Error opening target file"<<std::endl;
-                return -1;
-            }
-            while (std::getline(pathfile, line))
-            {
-                targetfiles.push_back(line);
-            }
-        }
-        */
         
         else if (strcmp(Argument, "-o")==0 or strcmp(Argument, "--output")==0)
         {
@@ -121,26 +85,6 @@ int main(int argc, const char * argv[]) {
             while (std::getline(pathfile, line))
             {
                 outputfiles.push_back(line);
-            }
-        }
-        
-        else if (strcmp(Argument, "-p")==0 or strcmp(Argument, "--pref")==0)
-        {
-            prefixes.push_back(argv[i]);
-        }
-        
-        else if (strcmp(Argument, "-P")==0 or strcmp(Argument, "--Prefs")==0)
-        {
-            std::ifstream pathfile(argv[i]);
-            std::string line;
-            if(!pathfile)
-            {
-                std::cout<<"Error opening target file"<<std::endl;
-                return -1;
-            }
-            while (std::getline(pathfile, line))
-            {
-                prefixes.push_back(line);
             }
         }
 
@@ -168,29 +112,25 @@ int main(int argc, const char * argv[]) {
             }
         }
         
-        else if (strcmp(Argument, "-d")==0 or strcmp(Argument, "--depth")==0)
+        else if (strcmp(Argument, "-g")==0 or strcmp(Argument, "--gene")==0)
         {
-            depths.push_back((float)atof(argv[i]));
+            genes.insert(argv[i]);
         }
-        
-        else if (strcmp(Argument, "-D")==0 or strcmp(Argument, "--depths")==0)
+
+        else if (strcmp(Argument, "-G")==0 or strcmp(Argument, "--Genes")==0)
         {
             std::ifstream pathfile(argv[i]);
-            std::string line;
+
             if(!pathfile)
             {
-                std::cout<<"Error opening target file"<<std::endl;
+                std::cout<<"Error opening output file"<<std::endl;
                 return -1;
             }
+            std::string line;
             while (std::getline(pathfile, line))
             {
-                depths.push_back((float)atof(line.c_str()));
+                genes.insert(line);
             }
-        }
-        
-        else if (strcmp(Argument, "-m")==0 or strcmp(Argument, "--depth")==0)
-        {
-            matrixfile = string(argv[i]);
         }
         
         else if (strcmp(Argument, "-n")==0 or strcmp(Argument, "--nthreads")==0)
@@ -203,18 +143,10 @@ int main(int argc, const char * argv[]) {
     if (!inputfiles.size()) return 1;
     
 
-    run<32>(inputfiles, outputfiles, prefixes, targetfile, matrixfile, regions, depths, nthreads);
-    /*
-    if (kmer_size<=32)
-    {
-        run<32>(inputfiles, targetfiles, outputfiles, regions, kmer_size);
-    }
+    Processor<32> processor(inputfiles, outputfiles, depths, kmatrixfile, genes, regions,  nthreads);
     
-    else if (kmer_size<=64)
-    {
-        run<64>(inputfiles, targetfiles, outputfiles, regions, kmer_size);
-    }
-    */
+    processor.Run();
+    
     
     return 0;
 }

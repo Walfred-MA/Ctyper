@@ -1,9 +1,8 @@
 //
 //  KmerCounter.hpp
-//  kmer_haplotyping
+//  CTyper
 //
-//  Created by Wangfei MA on 2/2/23.
-//  Copyright © 2023 USC_Mark. All rights reserved.
+//  Created by Wangfei MA on 2/13/23.
 //
 
 #ifndef KmerCounter_hpp
@@ -19,7 +18,6 @@
 #include <cstring>
 #include <unordered_set>
 #include <algorithm>
-#include <thread>
 #include <atomic>
 #include <mutex>
 #include <thread>
@@ -27,25 +25,15 @@
 #include <unordered_map>
 #include <tuple>
 
-#include "fasta.hpp"
-#include "fastq.hpp"
+#include "FastaReader.hpp"
+#include "FastqReader.hpp"
 //#include "CramReader.hpp"
-#include "ktable.hpp"
-#include "Kmatrix.hpp"
+#include "KtableReader.hpp"
 
 using namespace std;
 
-typedef unsigned int uint;
-typedef unsigned __int128 u128;
-typedef unsigned long long ull;
-typedef unsigned short  uint16;
-typedef unsigned char  uint8;
-
-#define large_prime 2147483647
-
 struct hash_128
 {
-    
     size_t operator()(const u128& num128) const
     {
         auto hash1 = hash<ull>{}((ull)(num128%large_prime));
@@ -53,7 +41,19 @@ struct hash_128
     }
 };
 
-static bool base_to_int(char base, int &converted)
+template <typename T1>
+string int_to_kmer(T1 value, int size = 31)
+{
+    string kmer (31,' ');
+    for (int i = 0; i<31 ; ++i)
+    {
+        kmer[30-i] = "ACGT"[value % 4];
+        value /= 4;
+    }
+    return kmer;
+}
+
+static inline bool base_to_int(const char base, int &converted)
 {
 
     switch (base)
@@ -61,14 +61,14 @@ static bool base_to_int(char base, int &converted)
         case 'A' : case 'a':
             converted=0b00;
             break;
-        case 'T' : case 't':
-            converted=0b11;
-            break;
         case 'C' : case 'c':
             converted=0b01;
             break;
         case 'G' : case 'g':
             converted=0b10;
+            break;
+        case 'T' : case 't':
+            converted=0b11;
             break;
         default:
             return 0;
@@ -85,67 +85,56 @@ using kmer32_dict = std::unordered_map<ull, uint > ;
 using kmer64_dict_nt = std::unordered_map<u128, uint8, hash_128> ;
 using kmer32_dict_nt = std::unordered_map<ull, uint8>;
 
+using kmer64_dict_mul = std::unordered_map<u128, uint*, hash_128> ;
+using kmer32_dict_mul = std::unordered_map<ull, uint* > ;
+
 template <int dictsize>
-class kmer_counter
+class KmerCounter
 {
     using kmer_int = typename std::conditional<(dictsize>32), u128, ull>::type;
-    using kmer_dict_type = typename std::conditional<(dictsize>32), kmer64_dict, kmer32_dict>::type;
-    using kmer_dict_type_nt = typename std::conditional<(dictsize>32), kmer64_dict_nt, kmer32_dict_nt>::type;
-    
-    kmer_dict_type target_hash;
-    
-    ull totalkmers = 0;
-
-    
-    int klen = 31 , knum = 0;
-    bool iftarget = 0;
-    uint targetindex = 0;
-    std::atomic_uint restfileindex ;
-    std::mutex Threads_lock;
-    
-    std::vector<std::thread*> threads;
-    std::vector<std::string> inputfiles;
-    std::vector<std::string> outputfiles;
-    std::vector<std::string> prefixes;
-    std::vector<float> depths;
-    
-    const char* mfile = "";
+    using kmer_hash_type = typename std::conditional<(dictsize>32), kmer64_dict, kmer32_dict>::type;
+    using kmer_hash_type_mul = typename std::conditional<(dictsize>32), kmer64_dict_mul, kmer32_dict_mul>::type;
+ 
 public:
     
-    kmer_counter (int kmersize): klen(31)
-    {
-    };
-    ~kmer_counter()
-    {
-    };
+    KmerCounter ()
+    {};
+    ~KmerCounter()
+    {};
     
-    void read_counttarget(ktable &fastafile);
+    ull read_target(KtableReader &fastafile);
     
-    void read_counttarget(fasta &fastafile);
+    ull read_target(FastaReader &fastafile);
     
-    void read_target(const char* infile, const char* mfile);
+    ull read_target(const char* infile);
         
     template <class typefile>
     ull count_kmer(typefile &fastafile, uint16* samplevecs);
     
+    ull count_kmer(const char* infile, uint16* samplevecs);
+    
     void read_files(std::vector<std::string>& inputfiles, std::vector<std::string>& outputfiles, std::vector<std::string>& prefixes,std::vector<float>& deps,int numthread);
     
     void read_file();
-            
-    void write(const char * outputfile, const char* input, Kmatrix* matrix);
+    
+    kmer_hash_type kmer_hash;
+    kmer_hash_type_mul kmer_multi_hash;
+    
+    uint totalkmers = 0;
+
+    const int klen = 31;
 
 };
 
 template <typename T1, typename T2>
-static bool initiate_counter(T2 &target_hash, T1 &larger_kmer, ull &kindex)
+static bool initiate_counter(T2 &kmer_hash, T1 &larger_kmer, uint &kindex)
 {
     
-    typename T2::iterator map_find = target_hash.find(larger_kmer);
+    typename T2::iterator map_find = kmer_hash.find(larger_kmer);
 
-    if (map_find == target_hash.end())
+    if (map_find == kmer_hash.end())
     {
-    
-        target_hash[larger_kmer] = (int) kindex++;
+        kmer_hash[larger_kmer] = (int) kindex++;
         
         return false;
     }
@@ -153,25 +142,98 @@ static bool initiate_counter(T2 &target_hash, T1 &larger_kmer, ull &kindex)
     return true;
 }
 
-
-template <typename T1, typename T2>
-static void update_counter(T2 &target_hash, T1 &larger_kmer, uint16* vec)
+template <typename T1, typename T2, typename T3>
+static bool initiate_counter_mul(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_kmer, uint &kindex)
 {
-    
-    typename T2::iterator map_find = target_hash.find(larger_kmer);
+    cout<<"kmer:"<<int_to_kmer(larger_kmer)<<endl;
+    typename T2::iterator map_find = kmer_hash.find(larger_kmer);
 
-    if (map_find != target_hash.end())
+    if (map_find == kmer_hash.end())
     {
+        kmer_hash[larger_kmer] = (int) kindex++;
+        
+        return false;
+    }
+    
+    else if (map_find->second == MAX_UINT16 )
+    {
+        uint* &data = kmer_multi_hash.find(larger_kmer)->second;
+        if (data[0]%5 == 2)
+        {
+            data = (uint*) realloc(data, sizeof(uint)*(data[0]+1 + 5));
+        }
+            
+        data[0]++;
+        data[data[0]] = kindex++;
+        
+        return false;
+    }
+    
+    else
+    {
+        kmer_hash[larger_kmer] = MAX_UINT16;
+        
+        uint* newarray = (uint*) malloc(sizeof(uint)*(3));
+        newarray[0] = 2;
+        newarray[1] = map_find->second;
+        newarray[2] = kindex++;
+        
+        kmer_multi_hash[larger_kmer] = newarray;
+        
+        return true;
+    }
+    
+    return true;
+}
+
+
+template <typename T1, typename T2, typename T3>
+static void update_counter(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_kmer, uint16* vec)
+{
+    typename T2::iterator map_find = kmer_hash.find(larger_kmer);
+
+    if (map_find != kmer_hash.end())
+    {
+        
         uint index = map_find->second;
         
-        if ( vec[index] < 65535) vec[index] ++;
+        if (index)
+        {
+            if ( vec[index] < MAX_UINT16 - 1) vec[index] ++;
+        }
+        else
+        {
+            uint* &data = kmer_multi_hash.find(larger_kmer)->second;
+            
+            uint num_num = data[0];
+            
+            for (uint i = 1 ; i < num_num + 1; ++i)
+            {
+                if ( vec[data[i]] < MAX_UINT16 - 1 )  vec[data[i] ] ++;
+            }
+        }
     }
+}
 
+
+
+
+
+template <typename T>
+static void kmer_deconpress(const char * kmer_compress, T &larger_kmer)
+{
+    larger_kmer = 0;
+    for (int pos = 0; pos < 30; ++pos)
+    {
+        if (kmer_compress[pos] == '\t') break;
+        larger_kmer <<= 6;
+        larger_kmer += kmer_compress[pos] - '0';
+    }
 }
 
 
 template <typename T>
-static void kmer_read_c(char base, int klen, std::size_t &current_size, T &current_kmer, T &reverse_kmer)
+static void kmer_read_c(char base, const int klen, std::size_t &current_size, T &current_kmer, T &reverse_kmer)
 {
     int converted = 0;
     T reverse_converted;
@@ -190,7 +252,6 @@ static void kmer_read_c(char base, int klen, std::size_t &current_size, T &curre
         reverse_converted <<= (2*klen-2);
         reverse_kmer += reverse_converted;
         
-        
     }
     
     else
@@ -202,7 +263,7 @@ static void kmer_read_c(char base, int klen, std::size_t &current_size, T &curre
 }
 
 template <int dictsize>
-void kmer_counter<dictsize>::read_counttarget(fasta &fastafile)
+ull KmerCounter<dictsize>::read_target(FastaReader &fastafile)
 {
     
     std::size_t current_size = 0;
@@ -211,6 +272,7 @@ void kmer_counter<dictsize>::read_counttarget(fasta &fastafile)
     kmer_int reverse_kmer = 0;
         
     std::string StrLine;
+    StrLine.resize(MAX_LINE);
     
     while (fastafile.nextLine(StrLine))
     {
@@ -236,89 +298,75 @@ void kmer_counter<dictsize>::read_counttarget(fasta &fastafile)
             if (++current_size < klen || base >= 'a') continue;
                                 
             auto larger_kmer = (current_kmer >= reverse_kmer) ? current_kmer : reverse_kmer;
-            if (initiate_counter(target_hash, larger_kmer, totalkmers)) continue;
+            if (initiate_counter(kmer_hash, larger_kmer, totalkmers)) continue;
                 
         }
     }
     
     
     fastafile.Close();
+    
+    return totalkmers;
 
 };
 
 template <int dictsize>
-void kmer_counter<dictsize>::read_counttarget(ktable &fastafile)
+ull KmerCounter<dictsize>::read_target(KtableReader &ktablefile)
 {
-        
-    std::size_t current_size = 0;
-    
+    cout<<"checkxx"<<endl;
     kmer_int current_kmer = 0;
-    kmer_int reverse_kmer = 0;
-    
-    iftarget = 1;
-    
+        
     std::string StrLine;
+    StrLine.resize(MAX_LINE);
+    
     char base;
     int pos;
-    while (fastafile.nextLine(StrLine))
+    while (ktablefile.nextLine_kmer(StrLine))
     {
-        switch (StrLine[0])
-        {
-            case '#':
-                //matrix.LoadHeader(StrLine, StrLine.c_str(), StrLine.length());
-                continue;
-            case ' ': case '\n': case '\t':
-                continue;
-            default:
-                break;
-        }
-        
         for (pos = 0; pos < klen; ++pos)
         {
             base = StrLine[pos];
-            if (base == '\0' || base == '\n' || base == ' ' || base == '\t') continue;
-            kmer_read_c(base, klen, current_size, current_kmer, reverse_kmer);
+            if (base == '\t') break;
         }
+        ++pos;
         
-        if (pos < klen) continue;
+        kmer_deconpress(&StrLine.c_str()[pos], current_kmer);
         
-        auto larger_kmer = (current_kmer >= reverse_kmer) ? current_kmer : reverse_kmer;
-        
-        initiate_counter(target_hash, larger_kmer, totalkmers);
-        
-        pos++;
-        //matrix.LoadRow(StrLine.c_str() + pos , StrLine.length() - pos );
+        initiate_counter_mul(kmer_hash, kmer_multi_hash, current_kmer, totalkmers);
         
     }
     
-    fastafile.Close();
+    ktablefile.Close();
+    
+    return totalkmers;
         
 };
  
 template <int dictsize>
-void kmer_counter<dictsize>::read_target(const char* inputfile, const char* matrixfile)
+ull KmerCounter<dictsize>::read_target(const char* inputfile)
 {
     int pathlen = (int)strlen(inputfile);
     
     if ( (pathlen > 2 && strcmp(inputfile+(pathlen-3),".fa")==0) || (pathlen > 6 && strcmp(inputfile+(pathlen-6),".fasta") == 0 ))
     {
-        fasta readsfile(inputfile);
-        read_counttarget(readsfile);
+        FastaReader readsfile(inputfile);
+        read_target(readsfile);
     }
     else
     {
-        ktable readsfile(inputfile);
-        read_counttarget(readsfile);
+        cout<< inputfile<<endl;
+        KtableReader readsfile(inputfile);
+        read_target(readsfile);
     }
-    mfile = matrixfile;
     
+    return totalkmers;
 }
 
 
 
 template <int dictsize>
 template <class typefile>
-ull kmer_counter<dictsize>::count_kmer(typefile &fastafile, uint16* samplevecs)
+ull KmerCounter<dictsize>::count_kmer(typefile &fastafile, uint16* samplevecs)
 {
     ull totalsamplekmers = 0;
     std::size_t current_size = 0;
@@ -358,7 +406,7 @@ ull kmer_counter<dictsize>::count_kmer(typefile &fastafile, uint16* samplevecs)
             
             auto larger_kmer = (current_kmer >= reverse_kmer) ? current_kmer:reverse_kmer;
             
-            update_counter(target_hash, larger_kmer, samplevecs);
+            update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs);
 
         }
     }
@@ -367,150 +415,35 @@ ull kmer_counter<dictsize>::count_kmer(typefile &fastafile, uint16* samplevecs)
     return totalsamplekmers;
 };
 
-template <int dictsize>
-void kmer_counter<dictsize>::read_files(std::vector<std::string>& inputs, std::vector<std::string>& outputs, std::vector<std::string>& prefs, std::vector<float>& deps, int nthreads)
-{
-    
-    inputfiles = inputs;
-    outputfiles = outputs;
-    prefixes = prefs;
-    restfileindex = 0;
-    depths = deps;
-    
-    std::vector<std::thread*> threads;
-    
-    for(int i=0; i< nthreads; ++i)
-    {
-        std::thread *newthread_ = new std::thread(&kmer_counter<dictsize>::read_file, this);
-        threads.push_back(newthread_);
-    }
-    
-    
-    for(int i=0; i< nthreads; ++i)
-    {
-        threads[i]->join();
-    }
-    
-}
-
 
 template <int dictsize>
-void kmer_counter<dictsize>::read_file()
+ull KmerCounter<dictsize>::count_kmer(const char* inputfile, uint16* samplevecs)
 {
     
-    while (restfileindex < inputfiles.size())
+    cout<<"check:"<<inputfile<<endl;
+    int pathlen = (int)strlen(inputfile);
+    
+    ull totalsamplekmers = 0;
+    if ( pathlen > 2 && strcmp(inputfile+(pathlen-3),".gz") == 0 )
     {
-        
-        Threads_lock.lock();
-        
-        int inputindex = restfileindex++ ;
-        
-        Threads_lock.unlock();
-        
-        if (inputindex >= inputfiles.size()) break;
-        
-        float depth;
-        if (inputindex <= depths.size())
-        {
-            depth= depths[inputindex];
-        }
-        else
-        {
-            depth = 14.0;
-        }
-        
-        Kmatrix* matrix = new Kmatrix(mfile, depth, totalkmers);
-        uint16* samplevecs = matrix->kmervec;
-                
-        const char* inputfile = inputfiles[inputindex ].c_str();
-        const char* outputfile = outputfiles[inputindex ].c_str();
-        string prefix;
-        if (prefixes.size()>inputindex)
-        {
-            prefix = string(prefixes[inputindex]);
-        }
-        else
-        {
-            prefix = string(inputfile);
-        }
-        
-        int pathlen = (int)strlen(inputfile);
-        
-        if ( pathlen > 2 && strcmp(inputfile+(pathlen-3),".gz") == 0 )
-        {
-            fastq readsfile(inputfile);
-            count_kmer(readsfile, samplevecs);
-        }
-            
-        else if ( (pathlen > 2 && strcmp(inputfile+(pathlen-3),".fa")==0) || (pathlen > 6 && strcmp(inputfile+(pathlen-6),".fasta") == 0 ))
-        {
-            fasta readsfile(inputfile);
-            count_kmer(readsfile, samplevecs);
-        }
-        else if (pathlen > 5 && ( strcmp(inputfile+(pathlen-3),".cram") == 0 ))
-        {
-            //CramReader readsfile(inputfile);
-            //count_kmer(readsfile, samplevecs);
-        }
-        
-        matrix->Process();
-        
-        matrix->write(outputfile, prefix.c_str());
-        
-        delete matrix;
-        
+        FastqReader readsfile(inputfile);
+        totalsamplekmers = count_kmer(readsfile, samplevecs);
     }
         
-}
-
-
-
-/*
-template <int dictsize>
-void kmer_counter<dictsize>::write(const char * outputfile, const char* input, Kmatrix* matrix)
-{
-    
-    FILE *fwrite=fopen(outputfile, "w");
-    
-    
-    if (fwrite==NULL)
+    else if ( (pathlen > 2 && strcmp(inputfile+(pathlen-3),".fa")==0) || (pathlen > 6 && strcmp(inputfile+(pathlen-6),".fasta") == 0 ))
     {
-        std::cerr << "ERROR: Cannot write file: " << outputfile << endl;
-        
-        std::_Exit(EXIT_FAILURE);
+        FastaReader readsfile(inputfile);
+        totalsamplekmers = count_kmer(readsfile, samplevecs);
     }
-        
-    fprintf(fwrite,"@%s\n", input);
-    for (int i = 1; i < (matrix->matrixinfo).size(); ++i)
+    else if (pathlen > 5 && ( strcmp(inputfile+(pathlen-3),".cram") == 0 ))
     {
-        string name = get<0>(matrix->matrixinfo[i]);
-        auto totalkmer = matrix->totalkmers[i];
-        uint genenum = (uint)get<3>(matrix->matrixinfo[i]);
-        double* kernal = matrix->kernals[i];
-        double* weightnorm = matrix->weightnorms[i];
-        
-        
-        fprintf(fwrite,">%s\t%.4lf\n", name.c_str(), totalkmer);
-        
-        for (int j = 0; j < genenum ; j++)
-        {
-            fprintf(fwrite,"%.4lf,", kernal[j]);
-        }
-        
-        for (int j = 0; j < genenum * genenum ; j++)
-        {
-            if (j % genenum == 0) fprintf(fwrite,"\n");
-            fprintf(fwrite,"%.4lf,", weightnorm[j]);
-        }
-        fprintf(fwrite,"\n");
-        
+        //CramReader readsfile(inputfile);
+        //totalsamplekmers = count_kmer(readsfile, samplevecs);
     }
     
-    fclose(fwrite);
-    
-    return ;
-}
-*/
+    return totalsamplekmers;
+};
+
 
 
 #endif /* KmerCounter_hpp */
