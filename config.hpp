@@ -20,6 +20,8 @@ typedef unsigned char  uint8;
 #define MAX_UINT16 65535
 #define MAX_LINE 1000000
 #define Comb2( size ) (size + 1) * size / 2
+#define MIN( A , B ) ( A <= B ) ? A : B
+#define MAX( A , B ) ( A >= B ) ? A : B
 #define spair std::pair<std::string,std::string>
 
 #endif /* config_hpp */

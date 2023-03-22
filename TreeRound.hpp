@@ -46,14 +46,10 @@ class TreeRound
 {
 public:
     TreeRound()
-    {
-        
-    };
+    {};
     ~TreeRound()
-    {
-        
-    };
-    void Run(node** nodes, double* ori_coefs, size_t size, int * round_coefs);
+    {};
+    void Run(node* nodes, float* ori_coefs, size_t size, int * round_coefs);
     
    
     

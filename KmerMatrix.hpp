@@ -16,10 +16,8 @@
 
 using namespace std;
 
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 
 #include "config.hpp"
-#include "PriorData.hpp"
 
 class KmerMatrix
 {
@@ -27,45 +25,18 @@ class KmerMatrix
 public:
     
     KmerMatrix()
-    {
-        weightnorm = (double*) realloc(weightnorm,sizeof(double*) * (genenum * genenum + 1));
-        
-        kernal_vec = (double*) realloc(kernal_vec,sizeof(double*) * (genenum+1) );
-        
-        norm_offsites = (double*) realloc(norm_offsites, sizeof (double) * (genenum+1) );
-    };
+    {};
     ~KmerMatrix()
-    {
-        free(weightnorm);
+    {};
+    
+    void getNorm(const uint16* kmervec, const uint16* kmermatrix, const float depth, const uint16 gnum, const uint knum, float* norm_vec, float* norm_matrix, float &total_lambda);
+    
+private:
         
-        free(kernal_vec);
-        
-        free(norm_offsites);
-    };
+    unique_ptr<float> row_offsites = unique_ptr<float>( new float[MAX_UINT16] ) ;
+    unique_ptr<float> diag_offsites = unique_ptr<float>( new float[MAX_UINT16] ) ;
     
-    void InitiateMatrix();
-    void FinishMatrix(const double * prior);
-        
-    void getNormEachRow(const int count, const uint16 *row, const uint16 rowsize, const uint16 sign);
-    void getNorm(const PriorChunk* Data, const uint16* allkmervec, const float depth);
     
-    float depth = 14.0;
-    
-    double* weightnorm = NULL;
-    double* kernal_vec = NULL;
-    
-    double* norm_offsites = NULL ;
-    double norm_offsite = 0;
-    
-    double vec_offsite = 0;
-    double kmer_counts = 0;
-        
-    uint16 genenum = 0;
-    size_t kmernum = 0;
-    
-    const uint16* kmervec;
-    
-    size_t alloc_size;
     
 };
 

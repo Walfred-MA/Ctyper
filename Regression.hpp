@@ -9,25 +9,28 @@
 #define Regression_hpp
 
 #include <stdio.h>
+#include <chrono>
 #include <Python.h>
 #include <string>
 #include <iostream>
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#include <cstdlib>
 #include "numpy/arrayobject.h"
+#include "nnls/nnls.h"
 #include "config.hpp"
 
 using namespace std;
 
+/*
 class NumpyMatrix
 {
     
 public:
-    NumpyMatrix(double* C_Array, uint size)
+    NumpyMatrix(float* C_Array, uint size)
     {
         npy_intp dims[2]{size, size};
-        data = reinterpret_cast<PyArrayObject*>(PyArray_SimpleNewFromData(2, dims, NPY_DOUBLE, reinterpret_cast<void*>(C_Array)));
+        data = reinterpret_cast<PyArrayObject*>(PyArray_SimpleNewFromData(2, dims, NPY_FLOAT, reinterpret_cast<void*>(C_Array)));
     }
-
+    
     PyArrayObject* data;
     
 };
@@ -36,27 +39,45 @@ class NumpyVector
 {
     
 public:
-    NumpyVector(double* C_Array, uint size)
+    NumpyVector(float* C_Array, uint size)
     {
         npy_intp dims[1]{size};
-        data = reinterpret_cast<PyArrayObject*>(PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, reinterpret_cast<void*>(C_Array)));
+        data = reinterpret_cast<PyArrayObject*>(PyArray_SimpleNewFromData(1, dims, NPY_FLOAT, reinterpret_cast<void*>(C_Array)));
     }
-
+    
     PyArrayObject* data;
     
 };
+ 
+ */
 
 class Regression
 {
 public:
-    Regression(){};
-    ~Regression(){};
+    Regression()
+    {
+        //Py_Initialize();
+    };
+    ~Regression()
+    {
+        //Py_Finalize();
+    };
     
-    double Regess(double *kernal_vec, double *weightnorm, uint size, double * &coefs);
-    pair<double, double*> Call(double *kernal_vec, double *weightnorm, ull kmer_counts, double *unweightnorm, uint size);
+    int lawson_hanson_nnls(const float *kernal_vec, const float *weightnorm, uint16 size, float *coefs, float *residuel);
+    //int Regess3(float *kernal_vec, float *weightnorm, uint size, float * &coefs, float &residuel);
+    //int Regess2(float *kernal_vec, float *weightnorm, uint size, float * &coefs, float &residuel);
+    //int Regess(float *kernal_vec, float *weightnorm, uint size, float * &coefs, float &residuel);
+    void Call(uint size , float *kernal_vec, float *weightnorm, float total_lambda, float *unweightnorm, float * coefs, float * residuel);
+    //int test();
     
-    //double * coefs = NULL;
-    //double residuel = 0.0;
+    vector<bool> active_or_passive = vector<bool> (MAX_UINT16);
+        
+    vector<uint16> passive_set = vector<uint16> (MAX_UINT16);
+    
+    vector<uint16> passive_set_old = vector<uint16> (MAX_UINT16);
+        
+    vector<float> x_trial_vec = vector<float> (MAX_UINT16);
+
 };
 
 

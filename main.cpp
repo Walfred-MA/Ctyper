@@ -142,7 +142,6 @@ int main(int argc, const char * argv[]) {
     
     if (!inputfiles.size()) return 1;
     
-
     Processor<32> processor(inputfiles, outputfiles, depths, kmatrixfile, genes, regions,  nthreads);
     
     processor.Run();

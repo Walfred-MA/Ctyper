@@ -7,357 +7,164 @@
 
 #include "KmerMatrix.hpp"
 
-void KmerMatrix::getNormEachRow(const int count, const uint16 *row, const uint16 rowsize, const uint16 sign)
+inline void getEachRowValue(const float depth, const int count, const char sign, const uint16 rowsize, float &total_lambda, float &norm_value, float &weight_correct)
 {
     if (count <= 3) return;
     
-    double ori_weight = 1.0;
+    float ori_weight = 1.0;
     if (sign==1 && rowsize == 1)
     {
         ori_weight = 0.05 ;
     }
     
-    double count_f = count/depth;
-    float count_i = (int(count_f+ 0.5) > 1.0) ? int(count_f+ 0.5) : 1.0;
+    float count_f = count/depth;           //float copy number value
+    float count_i = (int(count_f+ 0.5) > 1.0) ? int(count_f+ 0.5) : 1.0;   //estimate number of copy and at least one copy
+    float new_weight = 1.00/(count_i*count_i);
     
-    double weight_change = (1.00/(count_i*count_i)-ori_weight);
-    kmer_counts += count_f;
+    weight_correct += (0.00 - ori_weight);
+    //weight_correct += (new_weight - ori_weight);  //weight is reversely proportion to estimated copy number, we calculate offsite to the original weight
+    norm_value += 1.00/count_i;             //norm vector value of this kmer = count_i * weight = 1.00/count_i
     
-    
-    double value = weight_change;
-    double vec_value = 1.00/count_i;
-    
-    if (sign == 0)
-    {
-        vec_offsite += vec_value;
-        for (int i = 0; i < rowsize; ++i)
-        {
-            kernal_vec[row[i]] -= vec_value;
-        }
+    total_lambda += count_f;
+}
 
-    }
-    else
+//A function to change values of norm vec and norm matrix for a list of kmers found in exactly the same list of samples
+//This version is for binaray major kmers (frequencies > 50% and no sample has more than 1)
+//We reverse calculate values for samples that missing this kmer
+inline void getEachRowNorm_major(const uint16 rowsize, const uint16 *row, const uint16 gnum, float* &norm_vec, float* &norm_matrix,float &vec_offsite, float &matrix_offsite, float* row_offsites, const float norm_value, const float weight_correct)
+{
+    
+    vec_offsite += norm_value;            //major kmer, default is add this weight change to whole norm vector
+    for (int i = 0; i < rowsize; ++i)
     {
-        for (int i = 0; i < rowsize; ++i)
+        norm_vec[row[i]] -= norm_value;
+    }
+    
+    if (weight_correct == 0)
+    {
+        return;
+    }
+    
+    matrix_offsite += weight_correct;            //major kmer, default is add this weight change to whole matrix
+    
+    for (int i = 0; i < rowsize; ++i)            //sample missing, ignored its row/col from the weight change
+    {
+        norm_matrix[row[i]*gnum+row[i]] -= weight_correct/2;   //we will double diagonal elements after
+        row_offsites[row[i]] -= weight_correct;               //row[i] sample is missing this kmer, should not be affected, use offsite to correct back
+        
+        for (int j = i+1; j < rowsize; ++j)
         {
-            kernal_vec[row[i]] += vec_value;
+            norm_matrix[row[i]*gnum+row[j]] += weight_correct;           //we use add to replace matrix multiplication because most kmers only found once in a locus, when row[i] == row[j], it should be doubled, so we will double diagonal elements after
         }
     }
     
-    if (weight_change == 0)
+}
+
+//This version is for minor or non-binaray major kmers
+inline void getEachRowNorm_minor(const uint16 rowsize, const uint16 *row, const uint16 gnum, float* &norm_vec, float* &norm_matrix, const float norm_value, const float weight_correct)
+{
+    for (int i = 0; i < rowsize; ++i)
+    {
+        norm_vec[row[i]] += norm_value;
+    }
+    
+    if (weight_correct == 0)
     {
         return;
     }
 
-        
-    if (sign == 0)               //this kmer is a common kmer and only sample missing this kmer included
+    for (int i = 0; i < rowsize; ++i)
     {
-        norm_offsite += value;            //common kmer, default is add this weight change to all samples
+        norm_matrix[row[i]*gnum+row[i]] += weight_correct/2;
         
-        for (int i = 0; i < rowsize; ++i)            //sample missing, ignored from the chance weight
+        for (int j = i+1; j < rowsize; ++j)
         {
-            weightnorm[row[i]*genenum+row[i]] -= value/2;   //will be multiple 2 later
-            norm_offsites[row[i]] -= value;
-            
-            for (int j = i+1; j < rowsize; ++j)
-            {
-                weightnorm[row[i]*genenum+row[j]] += value;           //correct for dounle counted index
-            }
+            norm_matrix[row[i]*gnum+row[j]] += weight_correct;
         }
     }
-    
-    else
-    {
-        for (int i = 0; i < rowsize; ++i)
-        {
-            weightnorm[row[i]*genenum+row[i]] += value/2;
-            
-            for (int j = i+1; j < rowsize; ++j)
-            {
-                weightnorm[row[i]*genenum+row[j]] += value;
-            }
-        }
-    }
+
 }
 
-void KmerMatrix::InitiateMatrix()
-{
-    
-    if (genenum > alloc_size || 2 * genenum < alloc_size)
-    {
-        weightnorm = (double*) realloc(weightnorm,sizeof(double*) * (genenum * genenum + 1));
-        
-        kernal_vec = (double*) realloc(kernal_vec,sizeof(double*) * (genenum+1) );
-        
-        norm_offsites = (double*) realloc(norm_offsites, sizeof (double) * (genenum+1) );
-        
-        alloc_size = genenum;
-    }
-    
-    memset(weightnorm, 0, sizeof (double) *  (genenum * genenum + 1) );
-    
-    memset(kernal_vec, 0, sizeof (double) * (genenum+1) );
-    
-    memset(norm_offsites, 0, sizeof (double) * (genenum+1) );
-    
-    norm_offsite = 0;
-    
-    vec_offsite = 0;
-    
-    kmer_counts = 0 ;
-    
-}
 
-void KmerMatrix::FinishMatrix(const double * prior)
+//Add offsites back to norm vector and norm matrix
+inline void AddOffsites(float *norm_vec, float *norm_matrix, const float vec_offsite, const float matrix_offsite, const float *diag_offsites, const float *row_offsites, uint16 gnum)
 {
     
-    for (int i = 0; i < genenum; ++i)
+    for (int i = 0; i < gnum; ++i)
     {
-        kernal_vec[i] += vec_offsite;
+        norm_vec[i] += vec_offsite;                     //offsite for norm vector
         
-        weightnorm[i*genenum+i] = prior[i*genenum+i];
-        weightnorm[i*genenum+i] *= 2;
-        weightnorm[i*genenum+i] += norm_offsite;
+        norm_matrix[i*gnum+i] -= diag_offsites[i];       //we only want to double offsites, but prior values also doubled, should be changed back
+        norm_matrix[i*gnum+i] *= 2;                     //this is doubling diagonal mentioned above
+        norm_matrix[i*gnum+i] += diag_offsites[i];       //we only want to double offsites, but prior values also doubled, should be changed back
+        norm_matrix[i*gnum+i] += matrix_offsite;         //offsite for every cell
         
-        for (int j = i + 1; j < genenum; ++j)
+        for (int j = i + 1; j < gnum; ++j)
         {
-            weightnorm[i*genenum+j] = prior[i*genenum+j];
             
-            weightnorm[i*genenum+j] += norm_offsites[i];
-            weightnorm[i*genenum+j] += norm_offsites[j];
-            weightnorm[i*genenum+j] += norm_offsite;
+            norm_matrix[i*gnum+j] += row_offsites[i];     //offsite for ith sample
+            //norm_matrix[i*gnum+j] += row_offsites[j];      //offsite for jth sample
+            norm_matrix[i*gnum+j] += matrix_offsite;        //offsite for every cell
             
-            weightnorm[j*genenum + i] = weightnorm[i*genenum+j];
+            norm_matrix[j*gnum + i] = norm_matrix[i*gnum+j];       //square matrix is symmetric
         }
     }
     
     
 }
 
-void KmerMatrix::getNorm(const PriorChunk* Data, const uint16* allkmervec, const float dep)
+
+void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const float depth, const uint16 gnum, const uint knum, float* norm_vec, float* norm_matrix, float &total_lambda)
 {
     
-    genenum = (uint16) Data-> genenum;
-    kmernum =  Data -> kmernum;
-    kmervec = &allkmervec[Data ->kmervec_start];
-    depth = dep;
+    cout<<"weight"<<endl;
     
-    InitiateMatrix();
+    memset(row_offsites.get(), 0, sizeof(float) * MAX_UINT16);
     
-    const uint16* rowdata = Data -> kmer_matrix;
-    for (size_t i = 0; i < kmernum; ++i)
+    for (size_t i = 0; i < gnum; ++i)
     {
-        const uint16 rowsize = rowdata[0] ;
-        
-        getNormEachRow(kmervec[i], &rowdata[2], rowsize - 1, rowdata[1]);
-        
-        rowdata = &rowdata[rowsize];
+        diag_offsites.get()[i] = norm_matrix[i * gnum + i];
     }
     
-    FinishMatrix(Data -> prior_norm);
+    float matrix_offsite = 0, vec_offsite = 0;
     
-}
-
-
-
-
-
-/*
-void KmerMatrix::RegressMatrix()
-{
-    Regression regress;
+    float norm_value = 0.0, weight_correct = 0.0;
     
-    regress.Call(weightnorm, kernal, genenum);
-    RawResults = regress.coefs;
-    residuel = regress.residuel;
-    
-}
-
-
-void KmerMatrix::Round()
-{
-    treefile->nextLine(Phylotree);
-    TreeRound rounder;
-    
-    rounder.Run(Phylotree,RawResults);
-}
-
-void KmerMatrix::ProcessEachMatrix()
-{
-    RegressMatrix();
-    Round();
-    write();
-}
-
-
-void KmerMatrix::ProcessMatrix()
-{
-
-    int linenum = 0;
-    
-    while (tablefile->nextLine(StrLine))
+    uint16* rowdata = (uint16*) kmermatrix;
+    for (size_t i = 0; i < knum; ++i)
     {
-        if (StrLine[0] == '#')
+        switch (rowdata[0])
         {
-            linenum = LoadHeader(StrLine.c_str(), (int)StrLine.length());
-            InitiateMatrix();
-            
-            auto end = kmerindex + linenum;
-                        
-            for (; kmerindex < end; ++kmerindex)
-            {
-                if (!tablefile->nextLine(StrLine))
-                {
-                    std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
-                    std::_Exit(EXIT_FAILURE);
-                    break;
-                }
+            case '_':
+                getEachRowValue(depth, kmervec[i], 0, rowdata[1], total_lambda, norm_value, weight_correct);
+                break;
+            case '=':
+                getEachRowValue(depth, kmervec[i], 1, rowdata[1], total_lambda, norm_value, weight_correct);
+                break;
+            case '-':
+                getEachRowValue(depth, kmervec[i], 0, rowdata[1], total_lambda, norm_value, weight_correct);
                 
-                LoadRow(StrLine.c_str(), (int) StrLine.size());
+                getEachRowNorm_major(rowdata[1], &rowdata[2], gnum, norm_vec,  norm_matrix, vec_offsite, matrix_offsite, row_offsites.get(), norm_value, weight_correct);
+                norm_value = 0.0;
+                weight_correct = 0.0;
+                break;
+            case '+':
+                getEachRowValue(depth, kmervec[i], 1, rowdata[1], total_lambda, norm_value, weight_correct);
                 
-                eachRowNorm (kmervec[kmerindex]);
-            }
-                        
-            FinishMatrix();
-            ProcessEachMatrix();
+                getEachRowNorm_minor(rowdata[1], &rowdata[2], gnum, norm_vec,  norm_matrix, norm_value, weight_correct);
+                
+                norm_value = 0.0;
+                weight_correct = 0.0;
+                break;
+            default:
+                
+                break;
         }
+        
+        rowdata = &rowdata[rowdata[1] + 2];
+        
     }
     
-};
-
-
-
-void KmerMatrix::Process()
-{
+    AddOffsites(norm_vec, norm_matrix, vec_offsite, matrix_offsite, row_offsites.get(), diag_offsites.get(), gnum);
     
-    ProcessMatrix();
 }
-
-
-
-
-int KmerMatrix::LoadHeader(const char* line, int linesize)
-{
-    
-    matrixinfo.emplace_back();
-    curr_info = &matrixinfo.back();
-    
-    string& prefix = get<0>(*curr_info);
-    auto& kmerstart = get<1>(*curr_info);
-    auto& numkmers = get<2>(*curr_info);
-    auto& numgenes = get<3>(*curr_info);
-    
-    kmerstart = kmerindex;
-    
-    numgenes = 0;
-    numkmers = 0;
-    int startpos = 0;
-    char c;
-    for (; startpos < linesize; ++startpos)
-    {
-        if (line[startpos] == '\t') break;
-    }
-    
-    prefix = std::string(line, line + startpos);
-    
-    for (startpos = startpos + 1; startpos < linesize; ++startpos)
-    {
-        c = line[startpos];
-        if (c == '\t') break;
-        
-        numkmers *= 10;
-        numkmers += c - '0';
-    }
-    
-    for (startpos = startpos + 1; startpos < linesize; ++startpos)
-    {
-        c = line[startpos];
-        if (c == '\t' || c=='\0' || c =='\n') break;
-        
-        numgenes *= 10;
-        numgenes += c - '0';
-    }
-    
-    
-    genenum = numgenes;
-    
-    return (int)numkmers;
-}
-
-
-void KmerMatrix::LoadRow(const char* line, int linesize)
-{
-    rowsize = 0;
-    
-    int startpos = 0;
-    int currnum = 0;
-    for (; startpos < linesize; ++startpos)
-    {
-        if (line[startpos] == '\t') break;
-        if (line[startpos] == ',')
-        {
-            row[rowsize++]=currnum;
-            currnum = 0;
-        }
-        
-        if (line[startpos] >= '0' && line[startpos] <= '9')
-        {
-            currnum *= 10;
-            currnum += line[startpos] - '0';
-        }
-    }
-    
-    if (line[startpos+1] == '0')
-    {
-        sign = -1;
-    }
-    else
-    {
-        sign = 1;
-    }
-
-}
-
-
-void KmerMatrix::write()
-{
-    FILE *fwrite=fopen(outputfile, "w");
-    
-    if (fwrite==NULL)
-    {
-        std::cerr << "ERROR: Cannot write file: " << outputfile << endl;
-        
-        std::_Exit(EXIT_FAILURE);
-    }
-    
-    for (int i = 0; i < matrixinfo.size(); ++i)
-    {
-        string name = get<0>(matrixinfo[i]);
-        auto totalkmer = totalkmers[i];
-        uint genenum = (uint)get<3>(matrixinfo[i]);
-        double* kernal = kernals[i];
-        double* weightnorm = weightnorms[i];
-        
-        
-        fprintf(fwrite,">%s\t%.4lf\n", prefix.c_str(), totalkmer);
-        
-        for (int j = 0; j < genenum ; j++)
-        {
-            fprintf(fwrite,"%.4lf,", kernal[j]);
-        }
-        
-        for (int j = 0; j < genenum * genenum ; j++)
-        {
-            if (j % genenum == 0) fprintf(fwrite,"\n");
-            fprintf(fwrite,"%.4lf,", weightnorm[j]);
-        }
-        fprintf(fwrite,"\n");
-        
-    }
-    
-    fclose(fwrite);
-    
-    return ;
-}
-
-*/

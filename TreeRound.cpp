@@ -39,7 +39,7 @@ node* node::add(node * child)
 void node::build(string & newick,vector<node*>& allnodes)
 {
     node* current_node = this;
-    double current_num = 0.0;
+    float current_num = 0.0;
     int current_index = 0;
     float ifdeci = 0;
     
@@ -133,28 +133,28 @@ void node::rootto_leave()
     }
 }
 
-void TreeRound::Run(node** nodes, double* unround_coefs, size_t size, int * round_coefs)
+void TreeRound::Run(node* nodes, float* unround_coefs, size_t size, int * round_coefs)
 {
     
     
     int leaveindex =0;
     for (int i=0; i< size; ++i)
     {
-        node * node = nodes[i];
-        if (!node->numchildren) node->coef = unround_coefs[leaveindex++];
+        node node = nodes[i];
+        if (!node.numchildren) node.coef = unround_coefs[leaveindex++];
     }
     
-    node * root = nodes[0];
+    node root = nodes[0];
     
-    root->leaveto_root();
+    root.leaveto_root();
     
-    root->rootto_leave();
+    root.rootto_leave();
     
     leaveindex = 0;
     for (int i=0; i< size; ++i)
     {
-        node * node = nodes[i];
-        if (!node->numchildren) round_coefs[leaveindex++] = node->coef;
+        node node = nodes[i];
+        if (!node.numchildren) round_coefs[leaveindex++] = node.coef;
     }
     
 }

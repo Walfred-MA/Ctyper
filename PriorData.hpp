@@ -33,21 +33,20 @@ struct PriorChunk
         free(phylo_tree);
     }
     
+    string prefix = "";
     
-    double* prior_norm= NULL;
-    size_t prior_norm_size = 0;
+    size_t genenum = 0;
+    
+    float* prior_norm= NULL;
+    size_t prior_norm_allocsize = 0;
     
     uint16* kmer_matrix = NULL;
     size_t kmer_matrix_allocsize = 0;
-    size_t kmer_matrix_indexsize = 0;
     
-    node** phylo_tree = NULL;
-    size_t phylo_tree_size = 0;
+    node* phylo_tree = NULL;
+    size_t phylo_tree_allocsize = 0;
     
-    size_t genenum = 0 , kmernum = 0;
-    
-    string prefix = "";
-    size_t kmervec_start;
+    size_t kmervec_start= 0, kmervec_size = 0;
 
 };
 
@@ -61,9 +60,7 @@ public:
     PriorData(const string &path): datapath(path), file(path.c_str())
     {};
     ~PriorData()
-    {
-        
-    }
+    {}
     
     size_t LoadIndex(const unordered_set<string>& geneset);
     size_t LoadIndex();
@@ -71,15 +68,18 @@ public:
     void LoadFile();
     void CloseFile();
 
-    
-    void LoadHeader(PriorChunk &Chunk);
-    void LoadMatrix(PriorChunk &Chunk);
-    void LoadNorm(PriorChunk &Chunk);
-    void LoadTree(PriorChunk &Chunk);
-    size_t LoadRow(uint16* matrix, size_t index);
-    
     PriorChunk* getChunkData(const size_t Chunkindex);
     PriorChunk* getNextChunk(const vector<bool>& finished);
+    
+
+private:
+    
+    void LoadHeader(PriorChunk &Chunk);
+    void LoadMatrix(PriorChunk &Chunk, size_t index_size);
+    void LoadNorm(PriorChunk &Chunk);
+    void LoadTree(PriorChunk &Chunk);
+    
+    
     void FinishChunk(PriorChunk* Chunk_prt);
     
     vector<string> prefixes;
@@ -93,8 +93,8 @@ public:
     
     size_t buff_index = 0, total_buff;
     const string datapath;
-
-private:
+    
+    size_t LoadRow(uint16* matrix, size_t index, string &StrLine);
     KtableReader file;
     std::mutex IO_lock;
     

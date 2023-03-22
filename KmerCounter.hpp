@@ -109,19 +109,19 @@ public:
     ull read_target(const char* infile);
         
     template <class typefile>
-    ull count_kmer(typefile &fastafile, uint16* samplevecs);
+    void count_kmer(typefile &file, uint16* samplevecs);
     
-    ull count_kmer(const char* infile, uint16* samplevecs);
+    void count_kmer_(char* infile, uint16* samplevecs);
     
     void read_files(std::vector<std::string>& inputfiles, std::vector<std::string>& outputfiles, std::vector<std::string>& prefixes,std::vector<float>& deps,int numthread);
     
-    void read_file();
+    void Call(const char* infile, uint16* samplevecs, const int nthreads);
     
     kmer_hash_type kmer_hash;
     kmer_hash_type_mul kmer_multi_hash;
     
     uint totalkmers = 0;
-
+    
     const int klen = 31;
 
 };
@@ -145,7 +145,6 @@ static bool initiate_counter(T2 &kmer_hash, T1 &larger_kmer, uint &kindex)
 template <typename T1, typename T2, typename T3>
 static bool initiate_counter_mul(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_kmer, uint &kindex)
 {
-    cout<<"kmer:"<<int_to_kmer(larger_kmer)<<endl;
     typename T2::iterator map_find = kmer_hash.find(larger_kmer);
 
     if (map_find == kmer_hash.end())
@@ -197,7 +196,7 @@ static void update_counter(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_kmer, 
         
         uint index = map_find->second;
         
-        if (index)
+        if (index < MAX_UINT16 )
         {
             if ( vec[index] < MAX_UINT16 - 1) vec[index] ++;
         }
@@ -366,7 +365,7 @@ ull KmerCounter<dictsize>::read_target(const char* inputfile)
 
 template <int dictsize>
 template <class typefile>
-ull KmerCounter<dictsize>::count_kmer(typefile &fastafile, uint16* samplevecs)
+void KmerCounter<dictsize>::count_kmer(typefile &file, uint16* samplevecs)
 {
     ull totalsamplekmers = 0;
     std::size_t current_size = 0;
@@ -379,7 +378,7 @@ ull KmerCounter<dictsize>::count_kmer(typefile &fastafile, uint16* samplevecs)
     std::string StrLine;
     std::string Header;
     
-    while (fastafile.nextLine(StrLine))
+    while (file.nextLine(StrLine))
     {
         switch (StrLine[0])
         {
@@ -407,33 +406,33 @@ ull KmerCounter<dictsize>::count_kmer(typefile &fastafile, uint16* samplevecs)
             auto larger_kmer = (current_kmer >= reverse_kmer) ? current_kmer:reverse_kmer;
             
             update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs);
-
+            
         }
     }
         
-    fastafile.Close();
-    return totalsamplekmers;
+    file.Close();
+    return ;
 };
 
 
 template <int dictsize>
-ull KmerCounter<dictsize>::count_kmer(const char* inputfile, uint16* samplevecs)
+void KmerCounter<dictsize>::count_kmer_(char* inputfile, uint16* samplevecs)
 {
     
     cout<<"check:"<<inputfile<<endl;
     int pathlen = (int)strlen(inputfile);
     
-    ull totalsamplekmers = 0;
     if ( pathlen > 2 && strcmp(inputfile+(pathlen-3),".gz") == 0 )
     {
         FastqReader readsfile(inputfile);
-        totalsamplekmers = count_kmer(readsfile, samplevecs);
+        count_kmer(readsfile, samplevecs);
     }
         
     else if ( (pathlen > 2 && strcmp(inputfile+(pathlen-3),".fa")==0) || (pathlen > 6 && strcmp(inputfile+(pathlen-6),".fasta") == 0 ))
     {
         FastaReader readsfile(inputfile);
-        totalsamplekmers = count_kmer(readsfile, samplevecs);
+        
+        count_kmer(readsfile, samplevecs);
     }
     else if (pathlen > 5 && ( strcmp(inputfile+(pathlen-3),".cram") == 0 ))
     {
@@ -441,9 +440,26 @@ ull KmerCounter<dictsize>::count_kmer(const char* inputfile, uint16* samplevecs)
         //totalsamplekmers = count_kmer(readsfile, samplevecs);
     }
     
-    return totalsamplekmers;
 };
 
+template <int dictsize>
+void KmerCounter<dictsize>::Call(const char* infile, uint16* samplevecs, const int nthreads)
+{
+    std::vector<std::thread> threads;
+        
+    for(int i=0; i< nthreads; ++i)
+    {
+        threads.push_back(std::thread( std::bind( &KmerCounter<dictsize>::count_kmer_, this, (char*)infile, samplevecs ) ));
+    }
+    
+    
+    for(int i=0; i< nthreads; ++i)
+    {
+        threads[i].join();
+    }
+    
+    
+}
 
 
 #endif /* KmerCounter_hpp */
