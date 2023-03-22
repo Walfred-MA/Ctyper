@@ -6,7 +6,7 @@
 //  Copyright © 2023 USC_Mark. All rights reserved.
 //
 
-/*
+
 #include "CramReader.hpp"
 #include <string>
 
@@ -45,8 +45,9 @@ void CramReader::Load(std::vector<char *>& bedregions)
  
 bool CramReader::nextLine(std::string &StrLine)
 {
-    
-    if (ifindex)
+  if (sam_itr_multi_next(samfile , iter, SRread)<0) return false;    
+/*
+if (ifindex)
     {
         if (sam_itr_multi_next(samfile , iter, SRread)<0) return false;
     }
@@ -55,6 +56,7 @@ bool CramReader::nextLine(std::string &StrLine)
         if (cram_get_seq(samfile)<0) return false;
 
     }
+   */
     
     if (sam_format1(header, SRread, kstring)<0) return false;
         
@@ -89,16 +91,15 @@ bool CramReader::nextLine(std::string &StrLine)
     
     return false;
 }
-*/
 
-/*
+
+
 void CramReader::TotalReads()
 {
     Load();
     
     nreads = 0;
-    
-    while(cram_get_seq(samfile))
+    while (sam_itr_multi_next(samfile , iter, SRread)<0) 
     {
         nreads++;
     }
@@ -106,4 +107,4 @@ void CramReader::TotalReads()
     Close();
     
 }
- */
+

@@ -6,24 +6,24 @@
 //  Copyright © 2023 USC_Mark. All rights reserved.
 //
 
-/*
+
 #ifndef CramReader_hpp
 #define CramReader_hpp
 
-#include "readsfile.hpp"
-#include "include/samtools/htslib-1.16/htslib/sam.h"
-#include "include/samtools/htslib-1.16/cram/cram_encode.h"
+#include "FileReader.hpp"
+#include "htslib/sam.h"
+//#include "1.16/cram/cram_encode.h"
 #include <zlib.h>
 #include <vector>
 #include <string>
 
+#include <string.h>
 
-class CramReader: public readsfile
-{
-    
+class CramReader: public FileReader {
+   
 public:
     
-    CramReader(const char* inputfile):readsfile(inputfile)
+    CramReader(const char* inputfile): FileReader(inputfile)
     {
         kstring = new kstring_t();        
         SRread = bam_init1();
@@ -41,10 +41,10 @@ public:
     
     void Load(){};
     void Load(std::vector<char *>& regions);
-    //void TotalReads();
+    void TotalReads();
     
     void Close(){ sam_close(samfile); };
-       
+
 private:
     
     htsFile *samfile;
@@ -61,12 +61,12 @@ private:
     
     std::vector<char*>* workregions;
     
-    bool ifindex = 0;
+
+  bool ifindex = 0;
          
     unsigned long long nreads = 0;
 };
 
 
 
-#endif CramReader_hpp 
-*/
+#endif

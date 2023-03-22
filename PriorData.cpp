@@ -6,7 +6,7 @@
 //
 
 #include "PriorData.hpp"
-
+#include <functional>
 
 
 void strsplit(string& str, vector<string>& eles, char deli)

@@ -6,6 +6,7 @@
 //
 
 #include "KmerMatrix.hpp"
+#include <string.h>
 
 inline void getEachRowValue(const float depth, const int count, const char sign, const uint16 rowsize, float &total_lambda, float &norm_value, float &weight_correct)
 {
@@ -123,7 +124,7 @@ void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const 
     
     for (size_t i = 0; i < gnum; ++i)
     {
-        diag_offsites.get()[i] = norm_matrix[i * gnum + i];
+        this->diag_offsites.get()[i] = norm_matrix[i * gnum + i];
     }
     
     float matrix_offsite = 0, vec_offsite = 0;

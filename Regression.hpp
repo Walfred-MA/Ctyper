@@ -14,8 +14,7 @@
 #include <string>
 #include <iostream>
 #include <cstdlib>
-#include "numpy/arrayobject.h"
-#include "nnls/nnls.h"
+#include <vector>
 #include "config.hpp"
 
 using namespace std;
