@@ -11,8 +11,8 @@
 #define CramReader_hpp
 
 #include "FileReader.hpp"
+
 #include "htslib/sam.h"
-//#include "1.16/cram/cram_encode.h"
 #include <zlib.h>
 #include <vector>
 #include <string>
