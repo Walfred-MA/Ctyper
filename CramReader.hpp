@@ -10,7 +10,7 @@
 #ifndef CramReader_hpp
 #define CramReader_hpp
 
-#include "readsfile.hpp"
+#include "FileReader.hpp"
 #include "include/samtools/htslib-1.16/htslib/sam.h"
 #include "include/samtools/htslib-1.16/cram/cram_encode.h"
 #include <zlib.h>
