@@ -62,7 +62,10 @@ bool KtableReader::nextLine_norm(std::string &StrLine)
 
 void KtableReader::Close()
 {
+  if (file != NULL) {
     fclose(file);
+  }
+  file=NULL;    
 }
 
 void KtableReader::Seek(const size_t pos)
