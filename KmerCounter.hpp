@@ -24,7 +24,6 @@
 #include <atomic>
 #include <unordered_map>
 #include <tuple>
-#include <functional>
 
 #include "FastaReader.hpp"
 #include "FastqReader.hpp"

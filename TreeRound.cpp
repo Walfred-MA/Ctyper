@@ -133,7 +133,7 @@ void node::rootto_leave()
     }
 }
 
-void TreeRound::Run(node* nodes, float* unround_coefs, size_t size, int * round_coefs)
+void TreeRound::Run(node* nodes, FLOAT_T* unround_coefs, size_t size, int * round_coefs)
 {
     
     

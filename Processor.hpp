@@ -27,7 +27,7 @@
 #include "Regression.hpp"
 #include "PriorData.hpp"
 
-#define DefaultSize 3000
+#define DefaultSize 4000
 
 using namespace std;
 
@@ -41,8 +41,8 @@ class Genotyper
 public:
     
     unique_ptr<int> results;
-    unique_ptr<float> coefs;
-    unique_ptr<float> residuels;
+    unique_ptr<FLOAT_T> coefs;
+    unique_ptr<FLOAT_T> residuels;
     const size_t knum, pnum;
     
     Genotyper(size_t k, size_t p, KmerCounter<ksize> &c, PriorData &priordata):
@@ -51,11 +51,14 @@ public:
     counter(c),
     priordata_manager(priordata),
     kmer_counts(new uint16[k+1]),
-    norm_vec(new float[DefaultSize]),
-    norm_matrix(new float[DefaultSize*DefaultSize]),
+    
+    norm_vec(new FLOAT_T[DefaultSize]),
+    norm_matrix(new FLOAT_T[DefaultSize*DefaultSize]),
+    
+    coefs(new FLOAT_T[MAX_UINT16]),
+    residuels(new FLOAT_T[MAX_UINT16]),
+    
     results(new int[MAX_UINT16]),
-    coefs(new float[MAX_UINT16]),
-    residuels(new float[MAX_UINT16]),
     finished_group(p)
     {};
     
@@ -109,12 +112,12 @@ public:
         
         cout<<"check10"<<endl;
         
-        write(outputfile, inputfile, priorData->prefix ,coefs.get(), results.get());
+        write(outputfile, inputfile, priorData->prefix );
         
         cout<<"check11"<<endl;
     };
     
-    void write(const std::string& outputfile, const string &sample, const string &genename, const float* coefs, const int* results)
+    void write(const std::string& outputfile, const string &sample, const string &genename)
     {
         FILE *fwrite=fopen(outputfile.c_str(), "w");
         
@@ -131,13 +134,13 @@ public:
         const float cutoff = 1.0 / (gnum + 1);
         for (int i = 0; i < gnum; ++i)
         {
-            if (coefs[i] > cutoff) fprintf(fwrite,"%d:%.4lf,", i,coefs[i]);
+            if (coefs.get()[i] > cutoff) fprintf(fwrite,"%d:%.4lf,", i,coefs.get()[i]);
         }
         fprintf(fwrite,"\n");
         
         for (int i = 0; i < gnum; ++i)
         {
-            if (results[i] > 0) fprintf(fwrite,"%d:%d,", i,results[i]);
+            if (results.get()[i] > 0) fprintf(fwrite,"%d:%d,", i,results.get()[i]);
         }
         
         fprintf(fwrite,"\n");
@@ -168,16 +171,18 @@ public:
              )
           )
         {
-            norm_vec.reset(new float[newalloc_size]),
-            norm_matrix.reset(new float[newalloc_size*newalloc_size]),
+            norm_vec.reset(new FLOAT_T[newalloc_size]),
+            
+            norm_matrix.reset(new FLOAT_T[newalloc_size*newalloc_size]),
+            
             results.reset(new int[newalloc_size]),
             
             alloc_size = newalloc_size;
         }
         
-        memcpy(norm_matrix.get(), priorData->prior_norm, sizeof (float) *  gnum * gnum);
+        memcpy(norm_matrix.get(), priorData->prior_norm, sizeof (FLOAT_T) *  gnum * gnum);
                         
-        memset(norm_vec.get(), 0, sizeof (float) * gnum );
+        memset(norm_vec.get(), 0, sizeof (FLOAT_T) * gnum );
         
         memset(results.get(), 0, sizeof(int) * gnum);
         
@@ -215,10 +220,10 @@ public:
 private:
     
     unique_ptr<uint16> kmer_counts;
-    unique_ptr<float> norm_vec;
-    unique_ptr<float> norm_matrix;
+    unique_ptr<FLOAT_T> norm_vec;
+    unique_ptr<FLOAT_T> norm_matrix;
     
-    float total_lambda;
+    double total_lambda;
     
     PriorData &priordata_manager;
     KmerCounter<ksize> &counter;
@@ -273,7 +278,7 @@ public:
     
 private:
     uint totalkmers, totalgroups;
-    std::atomic_uint restfileindex = {0};
+    std::atomic_uint restfileindex = 0;
     std::mutex Threads_lock;
     
     KmerCounter<ksize> Counter;
@@ -318,7 +323,7 @@ template <int ksize>
 void Processor<ksize>::Onethread()
 {
     
-    Genotyper<ksize> genotyper(totalkmers, totalgroups, Counter,  priordata_manager);
+    Genotyper genotyper(totalkmers, totalgroups, Counter,  priordata_manager);
     
     
     while (restfileindex < inputfiles.size() )
