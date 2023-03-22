@@ -9,62 +9,115 @@
 #include <limits>
 #include <algorithm>
 #include "Regression.hpp"
+#include <iomanip>
 
-#define max_repetitions 100
+#define max_repetitions 5
 
 
-void trial_solution(vector<uint16>& passive_set, int passive_num, const Eigen::VectorXf &y, const Eigen::MatrixXf &A, int size, Eigen::VectorXf &s)
+void trial_solution(vector<uint16>& passive_set, const uint16 passive_num, const Vector_T &y, const Matrix_T &A, const uint16 size, Vector_T &s)
 {
     assert( passive_num <= size );
     
     s.head(size).setZero();
     
+    
     if (passive_num == 1)
     {
-        s(passive_set[0]) = y(passive_set[0]) / A(passive_set[0], passive_set[0]);
+        s(passive_set[0]) = (double)y(passive_set[0]) / (double)A(passive_set[0], passive_set[0]);
+        cout<<"divide:"<<std::setprecision(15)<< (double)y(passive_set[0])<<"," << (double)A(passive_set[0], passive_set[0])<<endl;
         return ;
     }
+     
     
-    Eigen::MatrixXf sub_matrix = Eigen::MatrixXf(passive_num, passive_num);
-    Eigen::VectorXf sub_vector = Eigen::VectorXf(passive_num);
+    Matrix_T sub_matrix = Matrix_T(passive_num, passive_num);
+    Vector_T sub_vector = Vector_T(passive_num);
     
-    for (size_t i = 0; i < passive_num; ++i)
+    for (uint16 i = 0; i < passive_num; ++i)
     {
         sub_vector(i) = y(passive_set[i]);
-        for (size_t j = 0; j < passive_num; ++j)
+        
+        for (uint16 j = 0; j < passive_num; ++j)
         {
             sub_matrix(i, j) = A(passive_set[i], passive_set[j]);
         }
     }
     
-    Eigen::VectorXf s_ = sub_matrix.colPivHouseholderQr().solve(sub_vector);
+    Vector_T s_ = sub_matrix.colPivHouseholderQr().solve(sub_vector);
     
-    int check;
+    //Vector_T s_ = A.inverse() * sub_vector;
+    
     for (size_t i = 0; i < passive_num; ++i)
     {
-        check = passive_set[i];
         s(passive_set[i]) = s_(i);
     }
+    
+    /*
+    cout <<"A: "<<",";
+    for (uint16 i = 0; i < passive_num; ++i)
+    {
+        for (size_t j = 0; j < passive_num; ++j)
+        {
+            cout<<A(passive_set[i],passive_set[j] )<<",";
+        }
+        cout << endl;
+    }
+    
+    cout <<"y: "<<",";
+    for (uint16 i = 0; i < passive_num; ++i)
+    {
+        cout <<  y(passive_set[i]) <<",";
+    }
+    cout<<endl;
+    
+    cout <<"s: "<<",";
+    for (uint16 i = 0; i < passive_num; ++i)
+    {
+        cout <<  s(passive_set[i]) <<",";
+    }
+    cout<<endl;
+    
+    */
 }
 
-int Regression::lawson_hanson_nnls(const float *kernal_vec, const float *weightnorm, uint16 size, float *coefs, float *residuel)
+int Regression::lawson_hanson_nnls(const FLOAT_T *kernal_vec, const FLOAT_T *weightnorm, uint16 size, FLOAT_T *coefs, FLOAT_T *residuel)
 {
     int max_iterations = MIN(size, 1000);
     
-    const float tol = size * numeric_limits<float>::epsilon();
+    const FLOAT_T tol = size*numeric_limits<FLOAT_T>::epsilon();
     
-    const Eigen::VectorXf y = Eigen::Map<Eigen::VectorXf> ((float*) kernal_vec, (int) size);
+    const Vector_T y = Eigen::Map<Vector_T> ((FLOAT_T*) kernal_vec, size);
     
-    const Eigen::MatrixXf A = Eigen::Map<Eigen::MatrixXf> ((float*) weightnorm, size, size);
+    const Matrix_T A = Eigen::Map<Matrix_T> ((FLOAT_T*) weightnorm, size, size);
         
-    memset(coefs, 0, sizeof(float) * size);
-    Eigen::VectorXf x = Eigen::Map<Eigen::VectorXf>(coefs, size);
+    memset(coefs, 0, sizeof(FLOAT_T) * size);
+    Vector_T x = Eigen::Map<Vector_T>(coefs, size);
     
-    memset(x_trial_vec.data(), 0, sizeof(float) * size);
-    Eigen::VectorXf x_trial = Eigen::Map<Eigen::VectorXf>(x_trial_vec.data(), size);
+    memset(x_trial_vec.data(), 0, sizeof(FLOAT_T) * size);
+    Vector_T x_trial = Eigen::Map<Vector_T>(x_trial_vec.data(), size);
 
-    memset(residuel, 0, sizeof(float) * size);
-    Eigen::VectorXf r = Eigen::Map<Eigen::VectorXf>(residuel, size);
+    memset(residuel, 0, sizeof(FLOAT_T) * size);
+    Vector_T r = Eigen::Map<Vector_T>(residuel, size);
+    
+    cout<<"y matrix"<<endl;
+    for (uint16 i = 0; i < size; ++i)
+    {
+        cout << y(i) <<",";
+    }
+    cout<<endl;
+    
+    cout<<"A matrix"<<endl;
+    for (uint16 i = 0; i < size; ++i)
+    {
+        for (uint16 j = 0; j < size; ++j)
+        {
+            cout << A(i, j) <<",";
+        }
+        cout<<endl;
+    }
+    
+    
+    
+    
     
     uint16 no_update = 0;
     
@@ -74,30 +127,34 @@ int Regression::lawson_hanson_nnls(const float *kernal_vec, const float *weightn
     
     r = y - A * x;
     
+    
     while (passive_num < size)
     {
         // Find the max residual max_r in active set and its index;
         
-        int max_r_index = -1;
-        float max_r = -1;
+        int max_r_index = 0;
+        FLOAT_T max_r = std::numeric_limits<FLOAT_T>::min();
 
         for (uint16 i = 0; i < size; ++i)
         {
-            if (active_or_passive[i]) continue; //in active, ignore
+            if (active_or_passive[i]) continue; //in passive, ignore
             
-            if (r[i] > max_r && r[i] > tol)
+            if (r[i] > max_r)
             {
                 max_r = r[i];
                 max_r_index = i;
             }
         }
-
+        
+        cout<<"max: "<<max_r<<endl;
+        
         if (max_r <= tol)  break; //non-negative achieved
 
         //make a copy for passive_set for late comparison
+        passive_num_old = passive_num;
         passive_set_old.assign(passive_set.begin(), passive_set.begin() + passive_num_old);
         
-        // Move the variable j from the active set to the passive set.
+        // Move the variable j from the passive set to active set .
         passive_set[passive_num++] = max_r_index;
         active_or_passive[max_r_index] = 1;
         
@@ -108,31 +165,39 @@ int Regression::lawson_hanson_nnls(const float *kernal_vec, const float *weightn
         {
 
             // Find the index i in the passive set P that has the smallest alpha value.
-            double alpha = std::numeric_limits<double>::max();
+            FLOAT_T alpha = std::numeric_limits<FLOAT_T>::max();
             int alpha_index = -1;
             for (size_t i = 0; i < passive_num; ++i)
             {
                 int idx = passive_set[i];
-                if (x_trial[idx] <= tol)
+                FLOAT_T alpha_i = x_trial[idx] ;
+                if (alpha_i < alpha)
                 {
-                    double alpha_i = x[idx] / (x[idx] - x_trial[i]);
-                    if (alpha_i < alpha)
-                    {
-                        alpha = alpha_i;
-                        alpha_index = idx;
-                    }
+                    alpha = alpha_i;
+                    alpha_index = idx;
                 }
             }
             
-            if (alpha > tol) break;
+            cout<<"min: ";
+            for (int i = 0; i < passive_num; ++i)
+            {
+                cout<<passive_set[i]<<",";
+            }
             
+            cout<<alpha<<endl;
+            
+            if (alpha > tol)
+            {
+                break;
+            }
+                        
             int passive_shrink_index = 0;
             for (size_t i = 0; i < passive_num; ++i)
             {
                 int idx = passive_set[i];
                 if (x_trial[idx] > tol)
                 {
-                    passive_set[passive_shrink_index++];
+                    passive_set[passive_shrink_index++] = passive_set[i];
                 }
                 else
                 {
@@ -147,14 +212,19 @@ int Regression::lawson_hanson_nnls(const float *kernal_vec, const float *weightn
             
             trial_solution(passive_set, passive_num, y, A, size, x_trial);
             
-            break;
+            cout<<"passive_set: ";
+            for (int i = 0; i < passive_num; ++i)
+            {
+                cout<<passive_set[i]<<",";
+            }
+            cout<<endl;
         }
 
         x = x_trial.eval();
         // Update the residual.
         r = y - A * x;
         
-        if( equal(passive_set_old.begin(), passive_set_old.begin() + passive_num_old, passive_set.begin() ) )
+        if(passive_num == passive_num_old  && equal(passive_set_old.begin(), passive_set_old.begin() + passive_num, passive_set.begin() ) )
         {
             no_update ++;
         }
@@ -163,13 +233,15 @@ int Regression::lawson_hanson_nnls(const float *kernal_vec, const float *weightn
             no_update = 0;
         }
         
+        
+        
         if (no_update > max_repetitions) break;
         
     }
     
     for (int i = 0; i < size; ++i)
     {
-        cout<<x[i]<<",";
+        cout<<x(i)<<",";
     }
     cout<<endl;
 
@@ -182,13 +254,13 @@ int Regression::lawson_hanson_nnls(const float *kernal_vec, const float *weightn
  
 /*
 // Solve the least squares subproblem for the variables in the passive set P.
-Eigen::MatrixXf A_P(size, passive_num);
+Matrix_T A_P(size, passive_num);
 for (size_t i = 0; i < passive_num; ++i)
 {
     A_P.col(i) = A.col(passive_set[i]);
 }
-Eigen::VectorXf x_P_new = A_P.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(y);
-Eigen::VectorXf x_P_old = x;
+Vector_T x_P_new = A_P.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(y);
+Vector_T x_P_old = x;
 
 for (size_t i = 0; i < passive_num; ++i)
 {
@@ -319,7 +391,7 @@ int Regression::Regess( float *kernal_vec, float *weightnorm, uint size, float *
  
  */
 
-void Regression::Call(uint size,  float *kernal_vec, float *weightnorm, float total_lambda, float *unweightnorm, float * coefs, float * residuels)
+void Regression::Call(uint size,  FLOAT_T *kernal_vec, FLOAT_T *weightnorm, float total_lambda, FLOAT_T *unweightnorm, FLOAT_T * coefs, FLOAT_T * residuels)
 {
     
     float *v1 = new float[size];

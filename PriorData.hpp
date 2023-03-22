@@ -37,7 +37,7 @@ struct PriorChunk
     
     size_t genenum = 0;
     
-    float* prior_norm= NULL;
+    FLOAT_T* prior_norm= NULL;
     size_t prior_norm_allocsize = 0;
     
     uint16* kmer_matrix = NULL;

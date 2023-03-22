@@ -6,7 +6,7 @@
 //
 
 #include "PriorData.hpp"
-#include <functional>
+
 
 
 void strsplit(string& str, vector<string>& eles, char deli)
@@ -165,12 +165,12 @@ void PriorData::LoadNorm(PriorChunk &Chunk)
     const size_t len = strlen(StrLine.c_str());
     
     size_t& curr_genenum = Chunk.genenum;
-    float*& prior_norm = Chunk.prior_norm;
+    FLOAT_T*& prior_norm = Chunk.prior_norm;
     size_t& prior_norm_allocsize = Chunk.prior_norm_allocsize;
     
     if (curr_genenum *curr_genenum > prior_norm_allocsize || 2 * curr_genenum *curr_genenum  < prior_norm_allocsize)
     {
-        prior_norm = (float *) realloc(prior_norm, sizeof(float) * curr_genenum *curr_genenum  );
+        prior_norm = (FLOAT_T *) realloc(prior_norm, sizeof(FLOAT_T) * curr_genenum *curr_genenum  );
         
         prior_norm_allocsize = curr_genenum * curr_genenum  ;
     }

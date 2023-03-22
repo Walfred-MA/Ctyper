@@ -9,6 +9,7 @@
 #define config_hpp
 
 #include <stdio.h>
+#include <Eigen/Dense>
 
 typedef unsigned int uint;
 typedef unsigned __int128 u128;
@@ -23,5 +24,9 @@ typedef unsigned char  uint8;
 #define MIN( A , B ) ( A <= B ) ? A : B
 #define MAX( A , B ) ( A >= B ) ? A : B
 #define spair std::pair<std::string,std::string>
+typedef double FLOAT_T;
+typedef Eigen::MatrixXd Matrix_T ;
+typedef Eigen::VectorXd Vector_T ;
+
 
 #endif /* config_hpp */

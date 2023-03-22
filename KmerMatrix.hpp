@@ -14,9 +14,6 @@
 #include <iostream>
 #include <tuple>
 #include <mutex>
-#include <cstdlib>
-#include <memory>
-#include <string.h>
 
 using namespace std;
 
@@ -29,21 +26,19 @@ class KmerMatrix
 public:
     
     KmerMatrix()
-    {
-      //      row_offsites = unique_ptr<float>( new float[MAX_UINT16] ) ;
-      //      diag_offsets = unique_ptr<float>( new float[MAX_UINT16] ) ;      
-    };
+    {};
     ~KmerMatrix()
     {};
     
-  void getNorm(const uint16* kmervec, const uint16* kmermatrix, const float depth, const uint16 gnum, const uint knum, float* norm_vec, float* norm_matrix, float &total_lambda);
-
+    void getNorm(const uint16* kmervec, const uint16* kmermatrix, const float depth, const uint16 gnum, const uint knum, FLOAT_T* norm_vec, FLOAT_T* norm_matrix, double &total_lambda);
     
 private:
-  //  float* row_offsites;
-  unique_ptr<float> row_offsites = unique_ptr<float>( new float[MAX_UINT16] ) ;
-  unique_ptr<float> diag_offsites= unique_ptr<float>( new float[MAX_UINT16] ) ;
+        
+    unique_ptr<double > row_offsites = unique_ptr<double >( new double [MAX_UINT16] ) ;
+    unique_ptr<double > diag_offsites = unique_ptr<double >( new double [MAX_UINT16] ) ;
+    
+    
+    
 };
 
-#endif
-
+#endif /* KmerMatrix_hpp */
