@@ -27,7 +27,7 @@ public:
     
     int lawson_hanson_nnls(const FLOAT_T *kernal_vec, const FLOAT_T *weightnorm, uint16 size, FLOAT_T *coefs, FLOAT_T *residuel);
 
-    void Call(uint size , FLOAT_T *kernal_vec, FLOAT_T *weightnorm, float total_lambda, uint *kmercounts, FLOAT_T * coefs, FLOAT_T * residuel);
+    void Call(uint size , FLOAT_T *kernal_vec, FLOAT_T *weightnorm, float total_lambda, const uint *kmercounts, FLOAT_T * coefs, FLOAT_T * residuel);
 
 private:
     

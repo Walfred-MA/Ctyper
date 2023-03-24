@@ -179,7 +179,7 @@ int Regression::lawson_hanson_nnls(const FLOAT_T *kernal_vec, const FLOAT_T *wei
 }
 
 
-void Regression::Call(uint size,  FLOAT_T *kernal_vec, FLOAT_T *weightnorm, float total_lambda, uint *kmercounts, FLOAT_T * coefs, FLOAT_T * residuels)
+void Regression::Call(uint size,  FLOAT_T *kernal_vec, FLOAT_T *weightnorm, float total_lambda, const uint *kmercounts, FLOAT_T * coefs, FLOAT_T * residuels)
 {
     
     lawson_hanson_nnls(kernal_vec, weightnorm, size, coefs, residuels);

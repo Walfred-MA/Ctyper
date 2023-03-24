@@ -466,16 +466,25 @@ void PriorData::LoadTree(PriorChunk &Chunk)
         }
     }
     
+    int leaveindex = 1;
+    int nonleaveindex = -1;
+    for (size_t index =0; index < count; ++index)
+    {
+        if (phylo_tree[index].numchildren == 0)
+        {
+            phylo_tree[index].index = leaveindex ++ ;
+        }
+        else
+        {
+            phylo_tree[index].index = nonleaveindex --;
+        }
+    }
+    
 
 }
 
-
-PriorChunk* PriorData::getChunkData(size_t Chunkindex)
+PriorChunk* PriorData::getFreeBuffer(size_t Chunkindex)
 {
-    auto chunk_region = file_pos[Chunkindex];
-    size_t chunk_start = chunk_region.first;
-    
-    file.Seek(chunk_start);
     
     size_t i = 0;
     for (; i < buffer_size; ++i)
@@ -484,9 +493,25 @@ PriorChunk* PriorData::getChunkData(size_t Chunkindex)
     }
     
     Buffer_working_counts[i]++;
-    PriorChunk &Chunk = Buffers[i];
+    Buffer_indexes[i] = Chunkindex + 1;
+    
+    return &Buffers[i];
+}
+
+
+PriorChunk* PriorData::getChunkData(size_t Chunkindex)
+{
         
-    auto &kmervec_range = kmervec_pos[Buffer_indexes[i]];
+    PriorChunk &Chunk = *getFreeBuffer(Chunkindex);
+    Chunk.index = Chunkindex;
+    
+    auto chunk_region = file_pos[Chunkindex];
+    size_t chunk_start = chunk_region.first;
+    file.Seek(chunk_start);
+    
+
+    
+    auto &kmervec_range = kmervec_pos[Chunkindex];
     Chunk.kmervec_start = kmervec_range.first;
     Chunk.kmervec_size = kmervec_range.second;
         
@@ -500,7 +525,7 @@ PriorChunk* PriorData::getChunkData(size_t Chunkindex)
     
     LoadNorm(Chunk);
     
-    LoadMatrix(Chunk, indexed_matrix_sizes[Buffer_indexes[i]] + 10);
+    LoadMatrix(Chunk, indexed_matrix_sizes[Chunkindex] + 10);
     
     return &Chunk;
     
@@ -515,6 +540,7 @@ void PriorData::FinishChunk(PriorChunk* Chunk_prt)
         if (&Buffers[i] == Chunk_prt )
         {
             Buffer_working_counts[i]--;
+            Buffer_indexes[i] = 0;
             break;
         }
     }
@@ -523,6 +549,8 @@ void PriorData::FinishChunk(PriorChunk* Chunk_prt)
 PriorChunk* PriorData::getNextChunk(const vector<bool>& finished)
 {
     lock_guard<mutex> IO(IO_lock);
+    
+    return getChunkData(0);
         
     for (size_t i = 0 ; i < Buffer_indexes.size(); ++i)
     {
@@ -530,6 +558,7 @@ PriorChunk* PriorData::getNextChunk(const vector<bool>& finished)
                 
         if (buffer_index && finished[buffer_index -1] == 0)
         {
+            Buffer_working_counts[i] ++;
             return &Buffers[i];
         }
     }

@@ -33,6 +33,8 @@ struct PriorChunk
         free(phylo_tree);
     }
     
+    size_t index = 0;
+    
     string prefix = "";
     size_t genenum = 0;
     
@@ -74,7 +76,7 @@ public:
 
     PriorChunk* getChunkData(const size_t Chunkindex);
     PriorChunk* getNextChunk(const vector<bool>& finished);
-    
+    void FinishChunk(PriorChunk* Chunk_prt);
 
 private:
     
@@ -85,8 +87,7 @@ private:
     void LoadNorm(PriorChunk &Chunk);
     void LoadTree(PriorChunk &Chunk);
     
-    
-    void FinishChunk(PriorChunk* Chunk_prt);
+    PriorChunk* getFreeBuffer(size_t Chunkindex);
     
     vector<string> prefixes;
     vector<pair<size_t,size_t>> kmervec_pos;

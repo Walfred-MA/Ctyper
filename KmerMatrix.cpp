@@ -128,11 +128,12 @@ inline void AddOffsites(FLOAT_T *norm_vec, FLOAT_T *norm_matrix, const double  v
 void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const float depth, const uint16 gnum, const uint knum, FLOAT_T* norm_vec, FLOAT_T* norm_matrix, double  &total_lambda)
 {
         
-    memset(row_offsites.get(), 0, sizeof(double) * MAX_UINT16);
+    memset(row_offsites.get(), 0, sizeof(double) * gnum);
     
     for (size_t i = 0; i < gnum; ++i)
     {
-        diag_offsites.get()[i] = norm_matrix[i * gnum + i];
+        row_offsites.get()[i] = 0;
+        //diag_offsites.get()[i] = norm_matrix[i * gnum + i];
     }
     
     double matrix_offsite = 0, vec_offsite = 0;

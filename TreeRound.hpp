@@ -21,23 +21,21 @@ using namespace std;
 class node
 {
 public:
-    node(node* p=NULL, int n=0, float d =0.0, float c = 0.0):index(n), dist(d), coef(c), parent(p)
+    node(node* p=NULL, int n=0, float d =0.0):index(n), dist(d), parent(p)
     {};
     
-    node* push(int current_index);
-    void build(string &newick,vector<node*>& allnodes);
-    float leaveto_root();
-    void rootto_leave();
+    FLOAT_T *coef(FLOAT_T* unround_coefs, FLOAT_T* unround_coefs_2);
+    int *round(int* round_coefs, int* round_coefs_2);
+    
+    float leaveto_root(FLOAT_T* unround_coefs, int * round_coefs, FLOAT_T *non_leaves_unrounds, int *non_leaves_rounds);
+    void rootto_leave(FLOAT_T* unround_coefs, int * round_coefs, FLOAT_T *non_leaves_unrounds, int *non_leaves_rounds);
+    
     void clear();
-    void setzero();
     node* add(node * child);
   
     int index = 0;
     float dist = 0.0;
-    float coef = 0.0;
-    float total_coef = 0.0;
-    float round = 0.0;
-    float total_round = 0.0;
+    
     node* parent;
     node* children[2];
     int8_t numchildren = 0;
@@ -50,9 +48,13 @@ public:
     {};
     ~TreeRound()
     {};
-    void Run(node* nodes, FLOAT_T* ori_coefs, size_t size, int * round_coefs);
+    void Run(const node* nodes, FLOAT_T* ori_coefs, size_t size, int * round_coefs);
     
-   
+private:
+    
+    unique_ptr<FLOAT_T > leaves_unrounds = unique_ptr<FLOAT_T >( new FLOAT_T [MAX_UINT16] ) ;
+    unique_ptr<FLOAT_T > non_leaves_unrounds = unique_ptr<FLOAT_T >( new FLOAT_T [MAX_UINT16] ) ;
+    unique_ptr<int > non_leaves_rounds = unique_ptr<int >( new int [MAX_UINT16] ) ;
     
 };
 
