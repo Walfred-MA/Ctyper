@@ -64,60 +64,29 @@ public:
     
     void counting(const std::string& inputfile)
     {
-        cout<<"check2:"<<inputfile<<endl;
         counter.Call(inputfile.c_str(), kmer_counts.get(), 1);
         finishcounting = 1;
+        
+        
     };
     
     void runOneGroup(const PriorChunk* priorData, const std::string& inputfile, const std::string& outputfile, const float depth)
     {
-        /*
-        cout<<priorData->prefix<<endl;
-        for (int i = 0; i < 100; ++i)
-        {
-            cout<<kmer_counts.get()[priorData ->kmervec_start+i]<<",";
-        }
-        cout<<endl;
-        
-        for (int i = 0; i < priorData->genenum * priorData->genenum; ++i)
-        {
-            cout<<norm_matrix.get()[i]<<",";
-            if (i%priorData->genenum == 0) cout<<endl;
-        }
-        cout<<endl;
-        */
         
         matrix.getNorm(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size,
                        norm_vec.get(), norm_matrix.get(), total_lambda);
         
-        
-        for (int i = 0; i < priorData->genenum; ++i)
-        {
-            cout<<norm_vec.get()[i]<<",";
-        }
-        cout<<endl;
-        
-        for (int i = 0; i < priorData->genenum * priorData->genenum; ++i)
-        {
-            if (i%priorData->genenum == 0) cout<<endl;
-            cout<<norm_matrix.get()[i]<<",";
-        }
-        cout<<endl;
                 
-        regresser.Call(priorData->genenum, norm_vec.get(), norm_matrix.get(),  total_lambda, priorData->prior_norm, coefs.get(), residuels.get());
+        regresser.Call(priorData->genenum, norm_vec.get(), norm_matrix.get(),  total_lambda, priorData->gene_kmercounts, coefs.get(), residuels.get());
         
-        cout<<"check9"<<endl;
         
         tree.Run(priorData->phylo_tree, coefs.get(), gnum, results.get());
         
-        cout<<"check10"<<endl;
+        write(outputfile, inputfile, priorData->prefix, priorData->genenames );
         
-        write(outputfile, inputfile, priorData->prefix );
-        
-        cout<<"check11"<<endl;
     };
     
-    void write(const std::string& outputfile, const string &sample, const string &genename)
+    void write(const std::string& outputfile, const string &sample, const string &prefix, const vector<string>&genenames)
     {
         FILE *fwrite=fopen(outputfile.c_str(), "w");
         
@@ -128,19 +97,19 @@ public:
             std::_Exit(EXIT_FAILURE);
         }
         
-        fprintf(fwrite,">%s\t%s\n", genename.c_str(), sample.c_str());
+        fprintf(fwrite,">%s\t%s\n", prefix.c_str(), sample.c_str());
         //fprintf(fwrite,"rsdl: %.4lf\n", regress.first);
         
-        const float cutoff = 1.0 / (gnum + 1);
+        const float cutoff = 0.5 / (gnum + 1);
         for (int i = 0; i < gnum; ++i)
         {
-            if (coefs.get()[i] > cutoff) fprintf(fwrite,"%d:%.4lf,", i,coefs.get()[i]);
+            if (coefs.get()[i] > cutoff) fprintf(fwrite,"%s:%.4lf,", genenames[i].c_str(),coefs.get()[i]);
         }
         fprintf(fwrite,"\n");
         
         for (int i = 0; i < gnum; ++i)
         {
-            if (results.get()[i] > 0) fprintf(fwrite,"%d:%d,", i,results.get()[i]);
+            if (results.get()[i] > 0) fprintf(fwrite,"%s:%d,", genenames[i].c_str(),results.get()[i]);
         }
         
         fprintf(fwrite,"\n");
@@ -175,14 +144,24 @@ public:
             
             norm_matrix.reset(new FLOAT_T[newalloc_size*newalloc_size]),
             
+            coefs.reset(new FLOAT_T[newalloc_size]),
+            
+            residuels.reset(new FLOAT_T[newalloc_size]),
+            
             results.reset(new int[newalloc_size]),
             
             alloc_size = newalloc_size;
         }
         
-        memcpy(norm_matrix.get(), priorData->prior_norm, sizeof (FLOAT_T) *  gnum * gnum);
+        memset(norm_matrix.get(), 0, sizeof (FLOAT_T) *  gnum * gnum);
+        
+        //memcpy(norm_matrix.get(), priorData->prior_norm, sizeof (FLOAT_T) *  gnum * gnum);
                         
         memset(norm_vec.get(), 0, sizeof (FLOAT_T) * gnum );
+        
+        memset(coefs.get(), 0, sizeof(FLOAT_T) * gnum);
+        
+        memset(residuels.get(), 0, sizeof(FLOAT_T) * gnum);
         
         memset(results.get(), 0, sizeof(int) * gnum);
         
@@ -205,10 +184,6 @@ public:
             gnum = priorData->genenum;
             
             newgroup(priorData);
-            
-            cout<<"checkx:"<<gnum<<endl;
-            
-            cout<<"check7"<<endl;
             
             runOneGroup (priorData, inputfile, outputfile, depth);
         }
@@ -302,7 +277,6 @@ void Processor<ksize>::Run()
     
     totalkmers = Counter.read_target(matrixfile.c_str());
     
-    cout<<"check3:"<<Counter.kmer_hash.size()<<endl;
     std::vector<std::thread*> threads;
     
     for(int i=0; i< nthreads; ++i)
@@ -328,8 +302,6 @@ void Processor<ksize>::Onethread()
     
     while (restfileindex < inputfiles.size() )
     {
-        cout<<"check4"<<endl;
-                
         Threads_lock.lock();
         
         int inputindex = restfileindex++ ;
@@ -343,17 +315,11 @@ void Processor<ksize>::Onethread()
         {
             depth= depths[inputindex];
         }
-        else if (depths.size())
-        {
-            depth = depths[depths.size() - 1];
-        }
         else
         {
-            depth = 14.0;
+            depth = 13.0;
         }
-        
-        cout<<"check0:"<<inputindex<<endl;
-        
+                
         genotyper.run(inputfiles[inputindex], outputfiles[inputindex], depth);
     }
     

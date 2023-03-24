@@ -150,6 +150,84 @@ void PriorData::LoadHeader(PriorChunk &Chunk)
     
 }
 
+void PriorData::LoadCounts(PriorChunk &Chunk)
+{
+    string StrLine;
+    StrLine.resize(MAX_LINE);
+    
+    if (!file.nextLine(StrLine))
+    {
+        std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
+        std::_Exit(EXIT_FAILURE);
+        return;
+    }
+    
+    uint* &gene_kmercounts = Chunk.gene_kmercounts;
+    auto &curr_genenum = Chunk.genenum;
+    auto &allocsize = Chunk.gene_kmercounts_allocsize;
+    
+    if (curr_genenum > allocsize || 2 * curr_genenum < allocsize)
+    {
+        gene_kmercounts = (uint *) realloc(gene_kmercounts, sizeof(uint) * curr_genenum  );
+        
+        allocsize = curr_genenum  ;
+    }
+    
+    const size_t len = strlen(StrLine.c_str());
+    
+    int index =0;
+    int ele = 0;
+    char c;
+    for (int startpos = 1; startpos < len; ++startpos)
+    {
+        c = StrLine[startpos];
+        switch (c)
+        {
+            case ' ': case '\n':
+                gene_kmercounts[index++] = ele;
+                ele = 0;
+                break;
+            default:
+                ele *= 10;
+                ele += c - '0';
+        }
+    }
+    
+    if (ele) gene_kmercounts[index++] = ele;
+        
+}
+
+
+void PriorData::LoadAlleles(PriorChunk &Chunk)
+{
+    
+    const size_t& curr_genenum = Chunk.genenum;
+    vector<string>& genenames = Chunk.genenames;
+    
+    if (curr_genenum > genenames.size() || 2 * curr_genenum  < genenames.size())
+    {
+        genenames.resize(curr_genenum);
+    }
+    
+    string StrLine;
+    StrLine.resize(MAX_LINE);
+    
+    int index = 0;
+    for (int i =0 ; i<  curr_genenum ; ++i)
+    {
+        if (!file.nextLine_genename(StrLine))
+        {
+            std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
+            std::_Exit(EXIT_FAILURE);
+            return;
+        }
+        
+        genenames[index++] =  StrLine.substr(1,StrLine.find('\t', 0)-1);
+    }
+
+    
+}
+
 void PriorData::LoadNorm(PriorChunk &Chunk)
 {
     string StrLine;
@@ -218,9 +296,6 @@ void PriorData::LoadNorm(PriorChunk &Chunk)
         }
     }
     
-    cout<<"norm count: "<< norm_c<<endl;
-    cout<<"norm count: "<< curr_genenum * (curr_genenum + 1)/2<<endl;
-    cout<<"norm count: "<< prior_norm[curr_genenum * curr_genenum -1 ] <<endl;
 }
 
 size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine)
@@ -240,7 +315,7 @@ size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine)
     uint16 rownum = 2;
     uint16 element = 0;
     char c;
-    
+        
     size_t startpos = 3;
     for (; startpos < len ; ++startpos)
     {
@@ -263,6 +338,7 @@ size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine)
         }
     }
 
+    
     matrix[1] = rownum - 2;
     
     return rownum;
@@ -298,7 +374,6 @@ void PriorData::LoadMatrix(PriorChunk &Chunk, size_t new_kmer_matrix_allocsize)
         total2 += kmer_matrix[total2 + 1] + 2;
     }
     
-    cout<<"size:"<<total2<<endl;
     
 
 }
@@ -345,6 +420,7 @@ void PriorData::LoadTree(PriorChunk &Chunk)
     
     int notuselast = (StrLine[len-2] == ';') ;
     
+    float sign = 1;
     char c;
     for (int pos=1; pos < len - notuselast; ++pos)
     {
@@ -357,13 +433,17 @@ void PriorData::LoadTree(PriorChunk &Chunk)
                 current_node = current_node->add(&phylo_tree[current_index++]);
                 break;
             case ')': case ';':
-                current_node->dist = current_num;
+                current_node->dist = sign * current_num;
                 ifdeci = 0;
+                current_num = 0;
+                sign = 1;
                 current_node = current_node->parent;
                 break;
             case ',':
                 current_node->dist = current_num;
                 ifdeci = 0;
+                current_num = 0;
+                sign = 1;
                 current_node = current_node->parent->add(&phylo_tree[current_index++]);
                 break;
             case ':':
@@ -371,6 +451,10 @@ void PriorData::LoadTree(PriorChunk &Chunk)
                 break;
             case '.':
                 ifdeci *= 0.1;
+                break;
+            case '-':
+                if (ifdeci==1) sign *= -1;
+                break;
             default:
                 if (ifdeci>0)
                 {
@@ -381,6 +465,8 @@ void PriorData::LoadTree(PriorChunk &Chunk)
                 break;
         }
     }
+    
+
 }
 
 
@@ -406,7 +492,11 @@ PriorChunk* PriorData::getChunkData(size_t Chunkindex)
         
     LoadHeader(Chunk);
     
+    LoadCounts(Chunk);
+    
     LoadTree(Chunk);
+    
+    LoadAlleles(Chunk);
     
     LoadNorm(Chunk);
     

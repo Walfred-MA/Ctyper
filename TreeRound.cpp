@@ -19,12 +19,21 @@ void node::clear()
 {
     index = 0;
     dist = 0.0;
+    parent = NULL;
+    numchildren = 0;
+    
     coef = 0.0;
     total_coef = 0.0;
     round = 0.0;
     total_round = 0.0;
-    parent = NULL;
-    numchildren = 0;
+}
+
+void node::setzero()
+{
+    coef = 0.0;
+    total_coef = 0.0;
+    round = 0.0;
+    total_round = 0.0;
 }
 
 node* node::add(node * child)
@@ -86,25 +95,28 @@ void node::build(string & newick,vector<node*>& allnodes)
     }
 }
 
-void node::leaveto_root()
+float node::leaveto_root()
 {
     
     if (numchildren)
     {
         float total_dist = (1-(children[0]->dist+children[1]->dist));
         
-        coef += total_dist * (children[0]->coef + children[1]->coef);
+        coef += total_dist * (children[0]->leaveto_root() + children[1]->leaveto_root());
         
         //total_coef +=  children[0]->total_coef + children[1]->total_coef;
         
         //total_round += children[0]->total_round + children[1]->total_round;
     }
+
     
     round = int(coef + 0.5);
     
     //total_round += round;
-    
+        
     coef -= round;
+    
+    return coef;
 }
 
 void node::rootto_leave()
@@ -136,12 +148,17 @@ void node::rootto_leave()
 void TreeRound::Run(node* nodes, FLOAT_T* unround_coefs, size_t size, int * round_coefs)
 {
     
+    for (int i =0 ; i < 2*size -1; ++i )
+    {
+        nodes[i].setzero();
+    }
     
     int leaveindex =0;
-    for (int i=0; i< size; ++i)
+    for (int i=0; i< 2*size -1 ; ++i)
     {
-        node node = nodes[i];
-        if (!node.numchildren) node.coef = unround_coefs[leaveindex++];
+        node &node = nodes[i];
+        if (!node.numchildren) node.coef = (float) unround_coefs[leaveindex++];
+        
     }
     
     node root = nodes[0];
@@ -151,10 +168,10 @@ void TreeRound::Run(node* nodes, FLOAT_T* unround_coefs, size_t size, int * roun
     root.rootto_leave();
     
     leaveindex = 0;
-    for (int i=0; i< size; ++i)
+    for (int i=0; i< 2*size - 1; ++i)
     {
-        node node = nodes[i];
-        if (!node.numchildren) round_coefs[leaveindex++] = node.coef;
+        node &node = nodes[i];
+        if (!node.numchildren) round_coefs[leaveindex++] = node.round;
     }
     
 }

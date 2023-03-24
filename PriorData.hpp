@@ -27,16 +27,17 @@ struct PriorChunk
     
     ~PriorChunk()
     {
-        
+        free(gene_kmercounts);
         free(kmer_matrix);
         free(prior_norm);
         free(phylo_tree);
     }
     
     string prefix = "";
-    
     size_t genenum = 0;
     
+    vector<string> genenames;
+
     FLOAT_T* prior_norm= NULL;
     size_t prior_norm_allocsize = 0;
     
@@ -45,6 +46,9 @@ struct PriorChunk
     
     node* phylo_tree = NULL;
     size_t phylo_tree_allocsize = 0;
+    
+    uint* gene_kmercounts = NULL;
+    size_t gene_kmercounts_allocsize = 0;
     
     size_t kmervec_start= 0, kmervec_size = 0;
 
@@ -75,6 +79,8 @@ public:
 private:
     
     void LoadHeader(PriorChunk &Chunk);
+    void LoadAlleles(PriorChunk &Chunk);
+    void LoadCounts(PriorChunk &Chunk);
     void LoadMatrix(PriorChunk &Chunk, size_t index_size);
     void LoadNorm(PriorChunk &Chunk);
     void LoadTree(PriorChunk &Chunk);

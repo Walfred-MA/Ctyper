@@ -312,7 +312,7 @@ ull KmerCounter<dictsize>::read_target(FastaReader &fastafile)
 template <int dictsize>
 ull KmerCounter<dictsize>::read_target(KtableReader &ktablefile)
 {
-    cout<<"checkxx"<<endl;
+    
     kmer_int current_kmer = 0;
         
     std::string StrLine;
@@ -353,7 +353,7 @@ ull KmerCounter<dictsize>::read_target(const char* inputfile)
     }
     else
     {
-        cout<< inputfile<<endl;
+        
         KtableReader readsfile(inputfile);
         read_target(readsfile);
     }
@@ -419,7 +419,6 @@ template <int dictsize>
 void KmerCounter<dictsize>::count_kmer_(char* inputfile, uint16* samplevecs)
 {
     
-    cout<<"check:"<<inputfile<<endl;
     int pathlen = (int)strlen(inputfile);
     
     if ( pathlen > 2 && strcmp(inputfile+(pathlen-3),".gz") == 0 )

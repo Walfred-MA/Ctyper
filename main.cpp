@@ -138,6 +138,27 @@ int main(int argc, const char * argv[]) {
             nthreads=(int)atoi(argv[i]);
         }
         
+        else if (strcmp(Argument, "-d")==0 or strcmp(Argument, "--depth")==0)
+        {
+            depths.push_back(atof(argv[i]));
+        }
+
+        else if (strcmp(Argument, "-D")==0 or strcmp(Argument, "--Depth")==0)
+        {
+            std::ifstream pathfile(argv[i]);
+
+            if(!pathfile)
+            {
+                std::cout<<"Error opening output file"<<std::endl;
+                return -1;
+            }
+            std::string line;
+            while (std::getline(pathfile, line))
+            {
+                depths.push_back(atof(line.c_str()));
+            }
+        }
+        
     }
     
     if (!inputfiles.size()) return 1;

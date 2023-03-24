@@ -26,9 +26,10 @@ public:
     
     node* push(int current_index);
     void build(string &newick,vector<node*>& allnodes);
-    void leaveto_root();
+    float leaveto_root();
     void rootto_leave();
     void clear();
+    void setzero();
     node* add(node * child);
   
     int index = 0;

@@ -36,6 +36,8 @@ public:
     
     bool nextLine_norm(std::string &StrLine);
     
+    bool nextLine_genename(std::string &StrLine);
+    
     void Load();
     
     void Close();
