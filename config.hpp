@@ -28,5 +28,6 @@ typedef double FLOAT_T;
 typedef Eigen::MatrixXd Matrix_T ;
 typedef Eigen::VectorXd Vector_T ;
 
+#define FLOAT_T double
 
 #endif /* config_hpp */

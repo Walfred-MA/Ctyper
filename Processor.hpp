@@ -279,7 +279,7 @@ public:
     
 private:
     uint totalkmers, totalgroups;
-    std::atomic_uint restfileindex = 0;
+    std::atomic_uint restfileindex = {0};
     std::mutex Threads_lock;
     std::mutex Threads_lock2;
     
