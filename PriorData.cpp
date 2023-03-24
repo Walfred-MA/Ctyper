@@ -549,8 +549,6 @@ void PriorData::FinishChunk(PriorChunk* Chunk_prt)
 PriorChunk* PriorData::getNextChunk(const vector<bool>& finished)
 {
     lock_guard<mutex> IO(IO_lock);
-    
-    return getChunkData(0);
         
     for (size_t i = 0 ; i < Buffer_indexes.size(); ++i)
     {
