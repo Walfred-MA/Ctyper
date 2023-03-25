@@ -173,9 +173,9 @@ public:
             alloc_size = newalloc_size;
         }
         
-        memset(norm_matrix.get(), 0, sizeof (FLOAT_T) *  gnum * gnum);
+        //memset(norm_matrix.get(), 0, sizeof (FLOAT_T) *  gnum * gnum);
         
-        //memcpy(norm_matrix.get(), priorData->prior_norm, sizeof (FLOAT_T) *  gnum * gnum);
+        memcpy(norm_matrix.get(), priorData->prior_norm, sizeof (FLOAT_T) *  gnum * gnum);
                         
         memset(norm_vec.get(), 0, sizeof (FLOAT_T) * gnum );
         
