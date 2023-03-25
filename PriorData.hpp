@@ -18,8 +18,6 @@
 #include "TreeRound.hpp"
 #include "KtableReader.hpp"
 
-#define buffer_size 100
-
 using namespace std;
 
 struct PriorChunk
@@ -63,7 +61,7 @@ class PriorData
     
 public:
     
-    PriorData(const string &path): datapath(path), file(path.c_str())
+    PriorData(const string &path, const int n): datapath(path), file(path.c_str()), buffer_size(n * 2)
     {};
     ~PriorData()
     {}
@@ -100,6 +98,7 @@ private:
     
     size_t buff_index = 0, total_buff;
     const string datapath;
+    const int buffer_size;
     
     size_t LoadRow(uint16* matrix, size_t index, string &StrLine);
     KtableReader file;
