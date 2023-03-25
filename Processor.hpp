@@ -258,7 +258,7 @@ public:
     depths(d),
     genes(g),
     matrixfile(mfile),
-    priordata_manager(mfile),
+    priordata_manager(mfile, n),
     regions(r),
     nthreads(n)
     {};
