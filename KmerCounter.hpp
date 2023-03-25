@@ -154,7 +154,7 @@ static bool initiate_counter_mul(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_
         return false;
     }
     
-    else if (map_find->second == MAX_UINT16 )
+    else if (map_find->second == INT_MAX )
     {
         uint* &data = kmer_multi_hash.find(larger_kmer)->second;
         if (data[0]%5 == 2)
@@ -170,7 +170,7 @@ static bool initiate_counter_mul(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_
     
     else
     {
-        kmer_hash[larger_kmer] = MAX_UINT16;
+        kmer_hash[larger_kmer] = INT_MAX;
         
         uint* newarray = (uint*) malloc(sizeof(uint)*(3));
         newarray[0] = 2;
@@ -196,7 +196,7 @@ static void update_counter(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_kmer, 
         
         uint index = map_find->second;
         
-        if (index < MAX_UINT16 )
+        if (index < INT_MAX )
         {
             if ( vec[index] < MAX_UINT16 - 1) vec[index] ++;
         }
