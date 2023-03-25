@@ -24,10 +24,10 @@ typedef unsigned char  uint8;
 #define MIN( A , B ) ( A <= B ) ? A : B
 #define MAX( A , B ) ( A >= B ) ? A : B
 #define spair std::pair<std::string,std::string>
-typedef double FLOAT_T;
-typedef Eigen::MatrixXd Matrix_T ;
-typedef Eigen::VectorXd Vector_T ;
+typedef float FLOAT_T;
+typedef Eigen::MatrixXf Matrix_T ;
+typedef Eigen::VectorXf Vector_T ;
 
-#define FLOAT_T double
+#define FLOAT_T float
 
 #endif /* config_hpp */
