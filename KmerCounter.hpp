@@ -169,15 +169,15 @@ static bool initiate_counter_mul(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_
     }
     
     else
-    {
-        kmer_hash[larger_kmer] = INT_MAX;
-        
+    {        
         uint* newarray = (uint*) malloc(sizeof(uint)*(3));
         newarray[0] = 2;
         newarray[1] = map_find->second;
         newarray[2] = kindex++;
         
         kmer_multi_hash[larger_kmer] = newarray;
+        
+        kmer_hash[larger_kmer] = INT_MAX;
         
         return true;
     }
