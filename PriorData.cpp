@@ -93,7 +93,7 @@ size_t PriorData::LoadIndex()
         
         indexed_matrix_sizes.push_back(stoi(eles[4]));
         
-        total_kmers += stoi(eles[3]);
+        total_kmers += stol(eles[3]);
         
     }
     
