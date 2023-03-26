@@ -301,7 +301,7 @@ void Processor<ksize>::Run()
         totalgroups = priordata_manager.LoadIndex();
     }
     
-    totalkmers = Counter.read_target(matrixfile.c_str());
+    totalkmers = Counter.read_target(matrixfile.c_str(), priordata_manager.totalkmers);
     
     
     std::vector<std::unique_ptr<std::thread>> threads;
