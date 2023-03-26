@@ -49,9 +49,9 @@ size_t PriorData::LoadIndex(const unordered_set<string>& geneset)
             
             prefixes.push_back(eles[0]);
 
-            file_pos.push_back(make_pair(stol(eles[1]), stol(eles[2])));
+            file_pos.push_back(make_pair(stoi(eles[1]), stoi(eles[2])));
             
-            kmervec_pos.push_back(make_pair(total_kmers , total_kmers  + stol(eles[3])));
+            kmervec_pos.push_back(make_pair(total_kmers , total_kmers  + stoi(eles[3])));
             
             indexed_matrix_sizes.push_back(stol(eles[4]));
             
@@ -87,13 +87,13 @@ size_t PriorData::LoadIndex()
         
         prefixes.push_back(eles[0]);
 
-        file_pos.push_back(make_pair(stol(eles[1]), stol(eles[2])));
+        file_pos.push_back(make_pair(stoi(eles[1]), stoi(eles[2])));
         
-        kmervec_pos.push_back(make_pair(total_kmers , total_kmers  + stol(eles[3])));
+        kmervec_pos.push_back(make_pair(total_kmers , total_kmers  + stoi(eles[3])));
         
-        indexed_matrix_sizes.push_back(stol(eles[4]));
+        indexed_matrix_sizes.push_back(stoi(eles[4]));
         
-        total_kmers += stol(eles[3]);
+        total_kmers += stoi(eles[3]);
         
     }
     
@@ -383,6 +383,8 @@ void PriorData::LoadTree(PriorChunk &Chunk)
     string StrLine;
     StrLine.resize(MAX_LINE);
     
+    static float pow10[7] = {1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001};
+    
     if (!file.nextLine(StrLine))
     {
         std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
@@ -421,6 +423,8 @@ void PriorData::LoadTree(PriorChunk &Chunk)
     int notuselast = (StrLine[len-2] == ';') ;
     
     float sign = 1;
+    bool ifsci_e = 0;
+    float sci_e = 0.0;
     char c;
     for (int pos=1; pos < len - notuselast; ++pos)
     {
@@ -433,17 +437,27 @@ void PriorData::LoadTree(PriorChunk &Chunk)
                 current_node = current_node->add(&phylo_tree[current_index++]);
                 break;
             case ')': case ';':
-                current_node->dist = sign * current_num;
+                if (sci_e == 0) sci_e = 1;
+                else if (sci_e>5) sci_e = 0;
+                else if (sci_e > 0) sci_e = pow10[int(sci_e)];
+                current_node->dist = sign * current_num * sci_e ;
                 ifdeci = 0;
                 current_num = 0;
                 sign = 1;
+                sci_e = 0;
+                ifsci_e = 0;
                 current_node = current_node->parent;
                 break;
             case ',':
-                current_node->dist = current_num;
+                if (sci_e == 0) sci_e = 1;
+                else if (sci_e>5) sci_e = 0;
+                else if (sci_e > 0) sci_e = pow10[int(sci_e)];
+                current_node->dist = sign *  current_num * sci_e;
                 ifdeci = 0;
                 current_num = 0;
                 sign = 1;
+                sci_e = 0;
+                ifsci_e = 0;
                 current_node = current_node->parent->add(&phylo_tree[current_index++]);
                 break;
             case ':':
@@ -453,7 +467,12 @@ void PriorData::LoadTree(PriorChunk &Chunk)
                 ifdeci *= 0.1;
                 break;
             case '-':
-                if (ifdeci==1) sign *= -1;
+                if (ifdeci==1) sign = -1;
+                break;
+            case 'e':
+                ifdeci = 0;
+                ifsci_e = 1;
+                sci_e = 0.0;
                 break;
             default:
                 if (ifdeci>0)
@@ -462,9 +481,16 @@ void PriorData::LoadTree(PriorChunk &Chunk)
                     current_num += ifdeci * (c - '0');
                     if (ifdeci<1) ifdeci *= 0.1;
                 }
+                else if (ifsci_e)
+                {
+                    sci_e *=10;
+                    sci_e += (c - '0');
+                }
+                
                 break;
         }
     }
+
     
     int leaveindex = 1;
     int nonleaveindex = -1;
@@ -473,13 +499,14 @@ void PriorData::LoadTree(PriorChunk &Chunk)
         if (phylo_tree[index].numchildren == 0)
         {
             phylo_tree[index].index = leaveindex ++ ;
-        }
+                    }
         else
         {
             phylo_tree[index].index = nonleaveindex --;
         }
+        
+        
     }
-    
 
 }
 
@@ -549,7 +576,7 @@ void PriorData::FinishChunk(PriorChunk* Chunk_prt)
 PriorChunk* PriorData::getNextChunk(const vector<bool>& finished)
 {
     lock_guard<mutex> IO(IO_lock);
-        
+            
     for (size_t i = 0 ; i < Buffer_indexes.size(); ++i)
     {
         auto buffer_index = Buffer_indexes[i];

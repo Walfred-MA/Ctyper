@@ -89,16 +89,21 @@ void node::rootto_leave(FLOAT_T* unround_coefs, int * round_coefs, FLOAT_T *non_
     if (round && numchildren)
     {
         node *prefer_leave;
+            
+        
         if (round > 0)
         {
-            prefer_leave = (*children[1]->coef(unround_coefs, non_leaves_unrounds) - *children[1]->round(round_coefs, non_leaves_rounds) > *children[0]->coef(unround_coefs, non_leaves_unrounds) - *children[0]->round(round_coefs, non_leaves_rounds)) ?  children[1]: children[0];
+            prefer_leave = ( *children[1]->coef(unround_coefs, non_leaves_unrounds) > *children[0]->coef(unround_coefs, non_leaves_unrounds)  ) ?  children[1]: children[0];
         }
         else
         {
-            prefer_leave = (*children[1]->coef(unround_coefs, non_leaves_unrounds) - *children[1]->round(round_coefs,non_leaves_rounds) < *children[0]->coef(unround_coefs, non_leaves_unrounds) - *children[0]->round(round_coefs,non_leaves_rounds)) ?  children[1]: children[0];
+            prefer_leave = ( *children[1]->coef(unround_coefs, non_leaves_unrounds) < *children[0]->coef(unround_coefs, non_leaves_unrounds) ) ?  children[1]: children[0];
         }
-        
+                
         *prefer_leave->round(round_coefs, non_leaves_rounds) += round;
+       
+        round = 0;
+        
         //prefer_leave->total_round += round;
     }
     
