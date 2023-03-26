@@ -106,7 +106,7 @@ public:
     
     ull read_target(FastaReader &fastafile);
     
-    ull read_target(const char* infile);
+    ull read_target(const char* infile, size_t reserve = 1000000);
         
     template <class typefile>
     void count_kmer(typefile &file, uint16* samplevecs);
@@ -342,8 +342,11 @@ ull KmerCounter<dictsize>::read_target(KtableReader &ktablefile)
 };
  
 template <int dictsize>
-ull KmerCounter<dictsize>::read_target(const char* inputfile)
+ull KmerCounter<dictsize>::read_target(const char* inputfile, size_t reserve)
 {
+    
+    kmer_hash.rehash(reserve);
+    
     int pathlen = (int)strlen(inputfile);
     
     if ( (pathlen > 2 && strcmp(inputfile+(pathlen-3),".fa")==0) || (pathlen > 6 && strcmp(inputfile+(pathlen-6),".fasta") == 0 ))
