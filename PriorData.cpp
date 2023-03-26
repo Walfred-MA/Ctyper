@@ -462,6 +462,8 @@ void PriorData::LoadTree(PriorChunk &Chunk)
                 break;
             case ':':
                 ifdeci = 1;
+                ifsci_e = 0;
+                sci_e = 0.0;
                 break;
             case '.':
                 ifdeci *= 0.1;
