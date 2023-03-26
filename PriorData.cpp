@@ -424,7 +424,7 @@ void PriorData::LoadTree(PriorChunk &Chunk)
     
     float sign = 1;
     bool ifsci_e = 0;
-    float sci_e = 0.0;
+    int sci_e = 0;
     char c;
     for (int pos=1; pos < len - notuselast; ++pos)
     {
@@ -439,8 +439,8 @@ void PriorData::LoadTree(PriorChunk &Chunk)
             case ')': case ';':
                 if (sci_e == 0) sci_e = 1;
                 else if (sci_e>5) sci_e = 0;
-                else if (sci_e > 0) sci_e = pow10[int(sci_e)];
-                current_node->dist = sign * current_num * sci_e ;
+                else if (sci_e > 0) current_num *= pow10[sci_e];
+                current_node->dist = sign * current_num  ;
                 ifdeci = 0;
                 current_num = 0;
                 sign = 1;
@@ -451,8 +451,8 @@ void PriorData::LoadTree(PriorChunk &Chunk)
             case ',':
                 if (sci_e == 0) sci_e = 1;
                 else if (sci_e>5) sci_e = 0;
-                else if (sci_e > 0) sci_e = pow10[int(sci_e)];
-                current_node->dist = sign *  current_num * sci_e;
+                else if (sci_e > 0) current_num *= pow10[sci_e];
+                current_node->dist = sign *  current_num ;
                 ifdeci = 0;
                 current_num = 0;
                 sign = 1;
@@ -461,9 +461,9 @@ void PriorData::LoadTree(PriorChunk &Chunk)
                 current_node = current_node->parent->add(&phylo_tree[current_index++]);
                 break;
             case ':':
-                ifdeci = 1;
+                ifdeci = 0;
                 ifsci_e = 0;
-                sci_e = 0.0;
+                sci_e = 0;
                 break;
             case '.':
                 ifdeci *= 0.1;
@@ -474,7 +474,7 @@ void PriorData::LoadTree(PriorChunk &Chunk)
             case 'e':
                 ifdeci = 0;
                 ifsci_e = 1;
-                sci_e = 0.0;
+                sci_e = 0;
                 break;
             default:
                 if (ifdeci>0)
