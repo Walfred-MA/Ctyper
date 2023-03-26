@@ -75,6 +75,8 @@ public:
     PriorChunk* getChunkData(const size_t Chunkindex);
     PriorChunk* getNextChunk(const vector<bool>& finished);
     void FinishChunk(PriorChunk* Chunk_prt);
+    
+    size_t totalkmers = 0;
 
 private:
     
