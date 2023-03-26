@@ -34,7 +34,7 @@ size_t PriorData::LoadIndex(const unordered_set<string>& geneset)
     }
     std::string line;
     
-    size_t total_kmers = 0 ;
+    totalkmers = 0 ;
     while (std::getline(pathfile, line))
     {
         string::size_type pos = line.find('\t');
@@ -51,11 +51,11 @@ size_t PriorData::LoadIndex(const unordered_set<string>& geneset)
 
             file_pos.push_back(make_pair(stoi(eles[1]), stoi(eles[2])));
             
-            kmervec_pos.push_back(make_pair(total_kmers , total_kmers  + stoi(eles[3])));
+            kmervec_pos.push_back(make_pair(totalkmers , totalkmers  + stoi(eles[3])));
             
             indexed_matrix_sizes.push_back(stol(eles[4]));
             
-            total_kmers += stol(eles[3]);
+            totalkmers += stol(eles[3]);
         }
     }
     
@@ -74,7 +74,7 @@ size_t PriorData::LoadIndex()
     }
     std::string line;
     
-    size_t total_kmers = 0 ;
+    totalkmers = 0 ;
     while ( std::getline(pathfile, line) )
     {
         string::size_type pos = line.find('\t');
@@ -89,11 +89,11 @@ size_t PriorData::LoadIndex()
 
         file_pos.push_back(make_pair(stoi(eles[1]), stoi(eles[2])));
         
-        kmervec_pos.push_back(make_pair(total_kmers , total_kmers  + stoi(eles[3])));
+        kmervec_pos.push_back(make_pair(totalkmers , totalkmers  + stoi(eles[3])));
         
         indexed_matrix_sizes.push_back(stoi(eles[4]));
         
-        total_kmers += stoi(eles[3]);
+        totalkmers += stoi(eles[3]);
         
     }
     
