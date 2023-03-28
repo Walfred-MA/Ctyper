@@ -86,7 +86,7 @@ size_t PriorData::LoadIndex()
         strsplit(line, eles, '\t');
         
         prefixes.push_back(eles[0]);
-
+	assert(eles.size() > 1);
         file_pos.push_back(make_pair(stoi(eles[1]), stoi(eles[2])));
         
         kmervec_pos.push_back(make_pair(totalkmers , totalkmers  + stoi(eles[3])));
