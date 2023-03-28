@@ -49,9 +49,9 @@ size_t PriorData::LoadIndex(const unordered_set<string>& geneset)
             
             prefixes.push_back(eles[0]);
 
-            file_pos.push_back(make_pair(stoi(eles[1]), stoi(eles[2])));
+            file_pos.push_back(make_pair(stol(eles[1]), stol(eles[2])));
             
-            kmervec_pos.push_back(make_pair(totalkmers , totalkmers  + stoi(eles[3])));
+            kmervec_pos.push_back(make_pair(totalkmers , totalkmers  + stol(eles[3])));
             
             indexed_matrix_sizes.push_back(stol(eles[4]));
             
@@ -87,13 +87,13 @@ size_t PriorData::LoadIndex()
         
         prefixes.push_back(eles[0]);
 	assert(eles.size() > 1);
-        file_pos.push_back(make_pair(stoi(eles[1]), stoi(eles[2])));
+        file_pos.push_back(make_pair(stol(eles[1]), stol(eles[2])));
         
-        kmervec_pos.push_back(make_pair(totalkmers , totalkmers  + stoi(eles[3])));
+        kmervec_pos.push_back(make_pair(totalkmers , totalkmers  + stol(eles[3])));
         
-        indexed_matrix_sizes.push_back(stoi(eles[4]));
+        indexed_matrix_sizes.push_back(stol(eles[4]));
         
-        totalkmers += stoi(eles[3]);
+        totalkmers += stol(eles[3]);
         
     }
     
