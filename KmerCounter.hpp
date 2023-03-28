@@ -27,7 +27,7 @@
 
 #include "FastaReader.hpp"
 #include "FastqReader.hpp"
-//#include "CramReader.hpp"
+#include "CramReader.hpp"
 #include "KtableReader.hpp"
 
 using namespace std;
@@ -438,8 +438,8 @@ void KmerCounter<dictsize>::count_kmer_(char* inputfile, uint16* samplevecs)
     }
     else if (pathlen > 5 && ( strcmp(inputfile+(pathlen-3),".cram") == 0 ))
     {
-        //CramReader readsfile(inputfile);
-        //totalsamplekmers = count_kmer(readsfile, samplevecs);
+        CramReader readsfile(inputfile);
+        count_kmer(readsfile, samplevecs);
     }
     
 };
