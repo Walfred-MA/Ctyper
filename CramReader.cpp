@@ -10,7 +10,7 @@
 #include <string>
 
 using namespace std;
-void CramReader::Load(std::vector<char *>& bedregions)
+void CramReader::LoadRegion(std::vector<char *>& bedregions)
 {
         
     workregions = &bedregions;
