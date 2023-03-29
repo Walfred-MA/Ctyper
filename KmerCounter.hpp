@@ -107,6 +107,8 @@ public:
     ull read_target(FastaReader &fastafile);
     
     ull read_target(const char* infile, size_t reserve = 1000000);
+	
+    void LoadRegion(std::vector<char *> &r);
         
     template <class typefile>
     void count_kmer(typefile &file, uint16* samplevecs);
@@ -121,6 +123,7 @@ public:
     kmer_hash_type_mul kmer_multi_hash;
     
     uint totalkmers = 0;
+    std::vector<char *> &regions;
     
     const int klen = 31;
 
@@ -261,6 +264,12 @@ static void kmer_read_c(char base, const int klen, std::size_t &current_size, T 
         current_kmer = 0;
         reverse_kmer = 0;
     }
+}
+
+template <int dictsize>
+void KmerCounter<dictsize>::LoadRegion(std::vector<char *> &r)
+{
+    this->regions = r;
 }
 
 template <int dictsize>
