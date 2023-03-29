@@ -70,7 +70,7 @@ bool CramReader::nextLine(std::string &StrLine)
     uint8_t *q = bam_get_seq(SRread);
 
     for (int i=0; i < readLength; i++) {StrLine[i]=seq_nt16_str[bam_seqi(q,i)];	}
-
+    StrLine[readLength] = '\0';
     return true;
 }
 
