@@ -27,7 +27,7 @@
 
 #include "FastaReader.hpp"
 #include "FastqReader.hpp"
-#include "CramReader.hpp"
+//#include "CramReader.hpp"
 #include "KtableReader.hpp"
 
 using namespace std;
@@ -169,15 +169,15 @@ static bool initiate_counter_mul(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_
     }
     
     else
-    {        
+    {
         uint* newarray = (uint*) malloc(sizeof(uint)*(3));
         newarray[0] = 2;
         newarray[1] = map_find->second;
         newarray[2] = kindex++;
         
         kmer_multi_hash[larger_kmer] = newarray;
-        
-        kmer_hash[larger_kmer] = INT_MAX;
+
+		kmer_hash[larger_kmer] = INT_MAX ;
         
         return true;
     }
@@ -201,15 +201,17 @@ static void update_counter(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_kmer, 
             if ( vec[index] < MAX_UINT16 - 1) vec[index] ++;
         }
         else
-        {
+        
+		{
+
             uint* &data = kmer_multi_hash.find(larger_kmer)->second;
-            
             uint num_num = data[0];
             
             for (uint i = 1 ; i < num_num + 1; ++i)
             {
                 if ( vec[data[i]] < MAX_UINT16 - 1 )  vec[data[i] ] ++;
             }
+
         }
     }
 }
@@ -344,9 +346,8 @@ ull KmerCounter<dictsize>::read_target(KtableReader &ktablefile)
 template <int dictsize>
 ull KmerCounter<dictsize>::read_target(const char* inputfile, size_t reserve)
 {
-    
-    kmer_hash.rehash(reserve);
-    
+	kmer_hash.rehash(reserve);
+
     int pathlen = (int)strlen(inputfile);
     
     if ( (pathlen > 2 && strcmp(inputfile+(pathlen-3),".fa")==0) || (pathlen > 6 && strcmp(inputfile+(pathlen-6),".fasta") == 0 ))
@@ -438,8 +439,8 @@ void KmerCounter<dictsize>::count_kmer_(char* inputfile, uint16* samplevecs)
     }
     else if (pathlen > 5 && ( strcmp(inputfile+(pathlen-3),".cram") == 0 ))
     {
-        CramReader readsfile(inputfile);
-        count_kmer(readsfile, samplevecs);
+        //CramReader readsfile(inputfile);
+        //totalsamplekmers = count_kmer(readsfile, samplevecs);
     }
     
 };

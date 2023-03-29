@@ -64,8 +64,12 @@ public:
     
     void counting(const std::string& inputfile)
     {
+
+		cout << "counting kmers for sample: " << inputfile<<endl;
+		
         counter.Call(inputfile.c_str(), kmer_counts.get(), 1);
         finishcounting = 1;
+
     };
     
     void runOneGroup(const PriorChunk* priorData, const std::string& inputfile, const std::string& outputfile, const float depth, std::mutex& Threads_lock)
@@ -76,10 +80,17 @@ public:
                        norm_vec.get(), norm_matrix.get(), total_lambda);
         
                         
+		cout << "generating kmer matrix for sample: " << inputfile<<endl;
+
+
         regresser.Call(priorData->genenum, norm_vec.get(), norm_matrix.get(),  total_lambda, priorData->gene_kmercounts, coefs.get(), residuels.get());
         
-                    
+		cout << "regressing to references for sample: " << inputfile<<endl;                    
+
+
         tree.Run(priorData->phylo_tree, coefs.get(), gnum, results.get());
+
+		cout << "rounding for sample: " << inputfile<<endl;
         
         write(outputfile, inputfile, priorData->prefix, priorData->genenames, Threads_lock);
         
@@ -173,9 +184,9 @@ public:
             alloc_size = newalloc_size;
         }
         
-        //memset(norm_matrix.get(), 0, sizeof (FLOAT_T) *  gnum * gnum);
+        memset(norm_matrix.get(), 0, sizeof (FLOAT_T) *  gnum * gnum);
         
-        memcpy(norm_matrix.get(), priorData->prior_norm, sizeof (FLOAT_T) *  gnum * gnum);
+        //memcpy(norm_matrix.get(), priorData->prior_norm, sizeof (FLOAT_T) *  gnum * gnum);
                         
         memset(norm_vec.get(), 0, sizeof (FLOAT_T) * gnum );
         
@@ -192,6 +203,8 @@ public:
     
     void run(const std::string& inputfile, const std::string& outputfile, const float depth, std::mutex& Threads_lock)
     {
+		cout<<"running for sample: "<<inputfile << endl;
+
         newsample();
         
         counting(inputfile);
@@ -201,6 +214,9 @@ public:
                         
             PriorChunk* priorData = priordata_manager.getNextChunk(finished_group);
             
+			cout << "running gene " << priorData->prefix << " for sample " << inputfile << endl ;
+
+
             gnum = priorData->genenum;
             
             newgroup(priorData);
@@ -258,7 +274,7 @@ public:
     depths(d),
     genes(g),
     matrixfile(mfile),
-    priordata_manager(mfile, n),
+    priordata_manager(mfile),
     regions(r),
     nthreads(n)
     {};
@@ -300,10 +316,14 @@ void Processor<ksize>::Run()
     {
         totalgroups = priordata_manager.LoadIndex();
     }
+   
+	cout<<"reading all kmer targets"<<endl;
+ 
+    totalkmers = Counter.read_target(matrixfile.c_str(), 2 * priordata_manager.totalkmers);
     
-    totalkmers = Counter.read_target(matrixfile.c_str(), priordata_manager.totalkmers);
     
-    
+	cout<<"finishing reading targets, start genotyping"<<endl;
+
     std::vector<std::unique_ptr<std::thread>> threads;
     
     for(int i=0; i< nthreads; ++i)

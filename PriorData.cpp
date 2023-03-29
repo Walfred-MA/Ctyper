@@ -49,7 +49,7 @@ size_t PriorData::LoadIndex(const unordered_set<string>& geneset)
             
             prefixes.push_back(eles[0]);
 
-            file_pos.push_back(make_pair(stol(eles[1]), stol(eles[2])));
+            file_pos.push_back(make_pair(stoi(eles[1]), stol(eles[2])));
             
             kmervec_pos.push_back(make_pair(totalkmers , totalkmers  + stol(eles[3])));
             
@@ -86,7 +86,7 @@ size_t PriorData::LoadIndex()
         strsplit(line, eles, '\t');
         
         prefixes.push_back(eles[0]);
-	assert(eles.size() > 1);
+
         file_pos.push_back(make_pair(stol(eles[1]), stol(eles[2])));
         
         kmervec_pos.push_back(make_pair(totalkmers , totalkmers  + stol(eles[3])));
@@ -380,10 +380,9 @@ void PriorData::LoadMatrix(PriorChunk &Chunk, size_t new_kmer_matrix_allocsize)
 
 void PriorData::LoadTree(PriorChunk &Chunk)
 {
+
     string StrLine;
     StrLine.resize(MAX_LINE);
-    
-    static float pow10[7] = {1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001};
     
     if (!file.nextLine(StrLine))
     {
@@ -395,6 +394,8 @@ void PriorData::LoadTree(PriorChunk &Chunk)
     size_t len = strlen(StrLine.c_str());
     
     if (len==0) return ;
+
+	static float pow10[7] = {1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001};
     
     size_t count = std::count_if( StrLine.begin(), StrLine.begin()+len, []( char c ){return c ==':';}) + 1;
     
@@ -422,7 +423,7 @@ void PriorData::LoadTree(PriorChunk &Chunk)
     
     int notuselast = (StrLine[len-2] == ';') ;
     
-    float sign = 1;
+	float sign = 1;
     bool ifsci_e = 0;
     int sci_e = 0;
     char c;
@@ -489,9 +490,11 @@ void PriorData::LoadTree(PriorChunk &Chunk)
                 
                 break;
         }
-    }
+    }   
 
-    
+
+
+ 
     int leaveindex = 1;
     int nonleaveindex = -1;
     for (size_t index =0; index < count; ++index)
@@ -499,14 +502,13 @@ void PriorData::LoadTree(PriorChunk &Chunk)
         if (phylo_tree[index].numchildren == 0)
         {
             phylo_tree[index].index = leaveindex ++ ;
-                    }
+        }
         else
         {
             phylo_tree[index].index = nonleaveindex --;
         }
-        
-        
     }
+    
 
 }
 
@@ -576,7 +578,7 @@ void PriorData::FinishChunk(PriorChunk* Chunk_prt)
 PriorChunk* PriorData::getNextChunk(const vector<bool>& finished)
 {
     lock_guard<mutex> IO(IO_lock);
-            
+        
     for (size_t i = 0 ; i < Buffer_indexes.size(); ++i)
     {
         auto buffer_index = Buffer_indexes[i];
