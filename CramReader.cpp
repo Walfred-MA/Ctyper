@@ -47,7 +47,7 @@ void CramReader::Load(std::vector<char *>& bedregions)
  
 bool CramReader::nextLine(std::string &StrLine)
 {
-  if (sam_itr_multi_next(samfile , iter, SRread)<0) return false;    
+  //if (sam_itr_multi_next(samfile , iter, SRread)<0) return false;    
 
 if (ifindex)
     {
@@ -94,7 +94,7 @@ if (ifindex)
 }
 
 
-
+/*
 void CramReader::TotalReads()
 {
     Load();
@@ -108,4 +108,4 @@ void CramReader::TotalReads()
     Close();
     
 }
-
+*/
