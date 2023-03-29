@@ -15,6 +15,7 @@ using namespace std;
 
 #include <zlib.h>
 #include <vector>
+#include <iostream>
 
 class KtableReader: public FileReader
 {
