@@ -7,7 +7,7 @@
 
 #include "PriorData.hpp"
 
-
+using namespace std;
 
 void strsplit(string& str, vector<string>& eles, char deli)
 {
