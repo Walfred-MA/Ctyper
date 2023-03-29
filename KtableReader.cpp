@@ -25,13 +25,13 @@ void KtableReader::Load()
 
 bool KtableReader::nextLine(std::string &StrLine)
 {
-  return (bool)(fgets((char*)StrLine.c_str(), MAX_LINE, file));
+    return (bool)(fgets((char*)StrLine.c_str(), MAX_LINE, file));
 }
 
 bool KtableReader::nextLine_genename(std::string &StrLine)
 {
     bool ifget = 0;
-    assert(file);
+    
     while (fgets((char*)StrLine.c_str(), MAX_LINE, file) !=NULL )
     {
         if (StrLine[0] == '>')
@@ -47,10 +47,10 @@ bool KtableReader::nextLine_genename(std::string &StrLine)
 bool KtableReader::nextLine_kmer(std::string &StrLine)
 {
     bool ifget = 0;
-    assert(file);
+    
     while (fgets((char*)StrLine.c_str(), MAX_LINE, file) !=NULL )
-    {      
-      if (strlen(StrLine.c_str()) > 0 && StrLine[0] == '&')
+    {
+        if (StrLine[0] == '&')
         {
             ifget = 1;
             break;

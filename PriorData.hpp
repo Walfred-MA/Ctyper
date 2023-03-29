@@ -18,7 +18,7 @@
 #include "TreeRound.hpp"
 #include "KtableReader.hpp"
 
-//#define buffer_size 100
+#define buffer_size 100
 
 using namespace std;
 
@@ -63,23 +63,8 @@ class PriorData
     
 public:
     
-
-  PriorData(const string &path, const int n) {
-    datapath = path;
-    file.Init(path.c_str());
-    file.Load();
-    buffer_size=n*2;
-    Buffers.resize(buffer_size);
-    Buffer_indexes.resize(buffer_size);
-    Buffer_working_counts.resize(buffer_size);
-  }
-    //    file.open(path.c_str()), buffer_size(n * 2)
-    //    {};
-  /*
     PriorData(const string &path): datapath(path), file(path.c_str())
     {};
-  */
-
     ~PriorData()
     {}
     
@@ -108,16 +93,14 @@ private:
     
     vector<string> prefixes;
     vector<pair<size_t,size_t>> kmervec_pos;
-    vector<pair<long,long>> file_pos;
-    vector<long> indexed_matrix_sizes;
+    vector<pair<size_t,size_t>> file_pos;
+    vector<size_t> indexed_matrix_sizes;
     
-  vector<PriorChunk> Buffers;// = vector<PriorChunk>( buffer_size );
-  vector<size_t> Buffer_indexes;// = vector<size_t>( buffer_size );
-  vector<size_t> Buffer_working_counts;// = vector<size_t>( buffer_size ) ;
+    vector<PriorChunk> Buffers = vector<PriorChunk>( buffer_size );
+    vector<size_t> Buffer_indexes = vector<size_t>( buffer_size );
+    vector<size_t> Buffer_working_counts = vector<size_t>( buffer_size ) ;
     
     size_t buff_index = 0, total_buff;
-
-    int buffer_size;
     const string datapath;
     
     size_t LoadRow(uint16* matrix, size_t index, string &StrLine);

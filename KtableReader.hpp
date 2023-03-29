@@ -20,20 +20,16 @@ class KtableReader: public FileReader
 {
     
 public:
-  
+    
     KtableReader(const char* inputfile):FileReader(inputfile)
     {
-      Load();
+        Load();
     };
     ~KtableReader()
     {
         Close();
     }
-
-    KtableReader() {};
-  void Init(const char *inputfile) {
-    FileReader::Init(inputfile);
-  }
+    
     bool nextLine(std::string &StrLine);
     
     bool nextLine_kmer(std::string &StrLine);
