@@ -10,7 +10,7 @@ ctyper: main.cpp CramReader.o FastaReader.o FastqReader.o KmerCounter.o KmerMatr
 	g++ $(SAN) -std=c++17 -g -c $^ -I$(CONDA_PREFIX)/include/  -I $(EIGEN_ROOT)/include/eigen3
 
 clean:
-	rm *.o ctyper *.gch
+	-rm *.o ctyper *.gch
 
 
 

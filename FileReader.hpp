@@ -30,8 +30,11 @@ public:
     int num_seq = 0;
     
     std::vector<spair> seqs;
-    
+    FileReader() { };    
     FileReader(const char* inputfile, int index = -1):filepath(inputfile) {};
+    void Init(const char* inputfile, int index=-1) {
+      filepath=inputfile;
+    }
     
     virtual bool nextLine(std::string &StrLine)=0;
     
