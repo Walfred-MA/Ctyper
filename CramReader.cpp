@@ -11,9 +11,7 @@
 #include <string>
 
 void CramReader::Load(std::vector<char *>& bedregions)
-{
-    ifindex = 1;
-        
+{    
     workregions = &bedregions;
     
     if (strlen(filepath)<2) return;
@@ -34,7 +32,11 @@ void CramReader::Load(std::vector<char *>& bedregions)
     
     header = sam_hdr_read(samfile);
     
-    iter = sam_itr_regarray(indexdata, header , workregions->data(), (int)workregions->size());
+    if (workregions->size()) 
+    {
+        ifindex = 1;
+        iter = sam_itr_regarray(indexdata, header , workregions->data(), (int)workregions->size());
+    }
         
     //strcpy(  regions[0], "chr1:1209512-1409512");
     
@@ -46,7 +48,7 @@ void CramReader::Load(std::vector<char *>& bedregions)
 bool CramReader::nextLine(std::string &StrLine)
 {
   if (sam_itr_multi_next(samfile , iter, SRread)<0) return false;    
-/*
+
 if (ifindex)
     {
         if (sam_itr_multi_next(samfile , iter, SRread)<0) return false;
@@ -56,7 +58,6 @@ if (ifindex)
         if (cram_get_seq(samfile)<0) return false;
 
     }
-   */
     
     if (sam_format1(header, SRread, kstring)<0) return false;
         
