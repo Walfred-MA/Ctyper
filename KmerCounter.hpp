@@ -27,7 +27,7 @@
 
 #include "FastaReader.hpp"
 #include "FastqReader.hpp"
-//#include "CramReader.hpp"
+#include "CramReader.hpp"
 #include "KtableReader.hpp"
 
 using namespace std;
