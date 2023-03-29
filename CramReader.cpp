@@ -65,39 +65,13 @@ bool CramReader::nextLine(std::string &StrLine)
 
 
     }
-   
-    if (sam_format1(header, SRread, kstring)<0) return false;
-        
-    int string_count = 0;
-    int col_counter = 0 ;
+    int readLength= SRread->core.l_qseq;
+    StrLine.resize(readLength+1);
+    uint8_t *q = bam_get_seq(SRread);
 
+    for (int i=0; i < readLength; i++) {StrLine[i]=seq_nt16_str[bam_seqi(q,i)];	}
 
-    for (char StrLine_c:std::string(ks_str(kstring)))
-    {
-        if (StrLine_c =='\t' )
-        {
-            col_counter++;
-            continue;
-        }
-        //std::cout<<StrLine_c<<":"<<col_counter <<",";
-        switch (col_counter)
-        {
-            case 9:
-                StrLine[string_count++] = StrLine_c;
-                break;
-            case 10:
-                StrLine[string_count++] = '\0';
-                goto exit_loop;
-            default:
-                break;
-        }
-        
-    }
-    exit_loop: ;
-        
-    if (col_counter == 10)  return true;
-    
-    return false;
+    return true;
 }
 
 

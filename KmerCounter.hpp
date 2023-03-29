@@ -446,7 +446,7 @@ void KmerCounter<dictsize>::count_kmer_(char* inputfile, uint16* samplevecs)
         
         count_kmer(readsfile, samplevecs);
     }
-    else if (pathlen > 5 && ( strcmp(inputfile+(pathlen-3),".cram") == 0 ))
+    else if (pathlen > 5 && ( strcmp(inputfile+(pathlen-5),".cram") == 0 ))
     {
         CramReader readsfile(inputfile);
 	readsfile.LoadRegion(regions);

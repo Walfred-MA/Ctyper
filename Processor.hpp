@@ -20,7 +20,7 @@
 #include "config.hpp"
 #include "FastaReader.hpp"
 #include "FastqReader.hpp"
-//#include "CramReader.hpp"
+#include "CramReader.hpp"
 #include "KtableReader.hpp"
 #include "KmerMatrix.hpp"
 #include "KmerCounter.hpp"
