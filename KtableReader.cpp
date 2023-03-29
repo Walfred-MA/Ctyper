@@ -64,7 +64,7 @@ bool KtableReader::nextLine_norm(std::string &StrLine)
 {
     bool ifget = 0;
     
-    while (std::getline(file, StrLine))
+    while (fgets((char*)StrLine.c_str(), StrLine.size() , file) !=NULL )
     {
         if (StrLine[0] == '$')
         {
