@@ -49,7 +49,7 @@ size_t PriorData::LoadIndex(const unordered_set<string>& geneset)
             
             prefixes.push_back(eles[0]);
 
-            file_pos.push_back(make_pair(stoi(eles[1]), stol(eles[2])));
+            file_pos.push_back(make_pair(stol(eles[1]), stol(eles[2])));
             
             kmervec_pos.push_back(make_pair(totalkmers , totalkmers  + stol(eles[3])));
             
