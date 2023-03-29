@@ -71,7 +71,6 @@ bool CramReader::nextLine(std::string &StrLine)
     int string_count = 0;
     int col_counter = 0 ;
 
-
     for (char StrLine_c:std::string(ks_str(kstring)))
     {
         if (StrLine_c =='\t' )
@@ -79,7 +78,6 @@ bool CramReader::nextLine(std::string &StrLine)
             col_counter++;
             continue;
         }
-        //std::cout<<StrLine_c<<":"<<col_counter <<",";
         switch (col_counter)
         {
             case 9:
