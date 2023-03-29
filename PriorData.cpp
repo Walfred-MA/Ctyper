@@ -231,7 +231,7 @@ void PriorData::LoadAlleles(PriorChunk &Chunk)
 void PriorData::LoadNorm(PriorChunk &Chunk)
 {
     string StrLine;
-    StrLine.resize(curr_genenum *curr_genenum );
+    StrLine.resize(Chunk.genenum *Chunk.genenum);
     
     if (!file.nextLine_norm(StrLine))
     {
