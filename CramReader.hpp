@@ -39,7 +39,6 @@ public:
     
     bool nextLine(std::string &StrLine);
     
-    void Load(){};
     void Load(std::vector<char *>& regions);
     void TotalReads(){};
     
