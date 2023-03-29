@@ -39,7 +39,8 @@ public:
     
     bool nextLine(std::string &StrLine);
     
-    void Load(std::vector<char *>& regions);
+    void LoadRegion(std::vector<char *>& regions);
+    void Load(){};
     void TotalReads(){};
     
     void Close(){ sam_close(samfile); };
