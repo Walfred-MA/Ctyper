@@ -3,7 +3,7 @@ SAN=
 
 
 ctyper: main.cpp CramReader.o  FastaReader.o FastqReader.o KmerCounter.o KmerMatrix.o KtableReader.o PriorData.o Regression.o TreeRound.o Processor.o
-	g++ $(SAN) -std=c++17 -g -O2 -o $@ $^ -I $(EIGEN_ROOT)/include/eigen3 -lpthread -lz 
+	g++ $(SAN) -std=c++17 -g -O2 -o $@ $^ -I $(EIGEN_ROOT)/include/eigen3 -I$(CONDA_PREFIX)/include/htslib/ -L$(CONDA_PREFIX)/lib/ -lhts -ldeflate -lbz2 -lpthread -lz -lpthread -lm 
 
 
 %.o: %.cpp %.hpp
