@@ -287,7 +287,7 @@ public:
     const std::vector<std::string>& inputfiles;
     const std::vector<std::string>& outputfiles;
     const std::string &matrixfile;
-    const std::vector<char *> &regions;
+    std::vector<char *> &regions;
     const std::vector<float> &depths;
     const std::unordered_set<std::string> &genes;
     const int nthreads;
