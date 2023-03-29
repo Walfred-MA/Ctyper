@@ -41,7 +41,7 @@ public:
     
     void Load(){};
     void Load(std::vector<char *>& regions);
-    void TotalReads();
+    void TotalReads(){};
     
     void Close(){ sam_close(samfile); };
 
