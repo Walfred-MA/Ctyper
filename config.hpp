@@ -19,7 +19,7 @@ typedef unsigned char  uint8;
 
 #define large_prime 2147483647
 #define MAX_UINT16 65535
-#define MAX_LINE 1000000
+#define MAX_LINE 10000000
 #define Comb2( size ) (size + 1) * size / 2
 #define MIN( A , B ) ( A <= B ) ? A : B
 #define MAX( A , B ) ( A >= B ) ? A : B
