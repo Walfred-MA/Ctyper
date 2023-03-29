@@ -123,7 +123,7 @@ public:
     kmer_hash_type_mul kmer_multi_hash;
     
     uint totalkmers = 0;
-    std::vector<char *> &regions;
+    std::vector<char *> regions;
     
     const int klen = 31;
 
