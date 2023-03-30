@@ -40,7 +40,7 @@ public:
     virtual void Close()=0;
 
   int GetLine(FILE* fptr, string &line) { 
-    char buf[1024];
+    char buf[1025];
     line="";
     int res;
     while ((res=fscanf(fptr, "%1024[^\n]", buf))) {
