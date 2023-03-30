@@ -18,8 +18,10 @@ static int Search(const item40_t *arr, const uint size, const uint40 x)
 }
 
 
-uint* Kmer32_hash::add(const ull key, const uint val)
+uint* Kmer32_hash::add(const ull kmer_int, const uint val)
 {
+    std::hash<std::uint64_t> hasher;
+    ull key = hasher(kmer_int);
     uint hash_ = key % modsize;
     uint40 reminder_ = uint40(key / modsize);
     
@@ -45,11 +47,13 @@ uint* Kmer32_hash::add(const ull key, const uint val)
 
 uint* Kmer32_hash::find(const ull kmer_int)
 {
-    uint hash_ = kmer_int % modsize;
-    uint40 reminder_ = uint40(kmer_int / modsize);
+    std::hash<std::uint64_t> hasher;
+    ull key = hasher(kmer_int);
+    uint hash_ = key % modsize;
+    uint40 reminder_ = uint40(key / modsize);
     
     uint size = key_sizes[hash_];
-    item40_t *&bucket = items[hash_];
+    item40_t *bucket = items[hash_];
     
     int loc = Search(bucket, size, reminder_);
     
