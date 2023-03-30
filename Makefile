@@ -3,7 +3,7 @@ SAN=
 
 CPPFLAGS=-std=c++17 -O2
 
-ctyper: main.cpp CramReader.o  FastaReader.o FastqReader.o KmerCounter.o KmerMatrix.o KtableReader.o PriorData.o Regression.o TreeRound.o Processor.o 
+ctyper: main.cpp CramReader.o  FastaReader.o FastqReader.o KmerHash.o KmerCounter.o KmerMatrix.o KtableReader.o PriorData.o Regression.o TreeRound.o Processor.o 
 	g++ $(SAN) $(CPPFLAGS)  -o $@ $^ -I $(EIGEN_ROOT)/include/eigen3 -I$(CONDA_PREFIX)/include/ -L$(CONDA_PREFIX)/lib/ -lhts -ldeflate -lbz2 -lpthread -lz -lm 
 
 
