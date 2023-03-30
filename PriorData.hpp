@@ -18,7 +18,7 @@
 #include "TreeRound.hpp"
 #include "KtableReader.hpp"
 
-#define buffer_size 100
+#define buffer_size 200
 
 using namespace std;
 
