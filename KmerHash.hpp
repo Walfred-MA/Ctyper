@@ -12,6 +12,8 @@
 #include <vector>
 #include <unordered_map>
 #include <tuple>
+#include <functional>
+#include <cstdint>
 #include "config.hpp"
 
 #define MAX_UINT24 16777215
