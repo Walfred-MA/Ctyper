@@ -12,7 +12,7 @@ static int Search(const item40_t *arr, const uint size, const uint40 x)
 {
     for (uint i = 0 ; i < size; ++i)
     {
-        if (arr[i].first == x) return i;
+        if (arr[i].first.first == x.first && arr[i].first.second == x.second) return i;
     }
     return -1;
 }
