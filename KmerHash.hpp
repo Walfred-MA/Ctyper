@@ -16,6 +16,7 @@
 
 #define MAX_UINT24 16777215
 #define item40_t std::pair<uint40,uint>
+#define uint unsigned int
 
 using namespace std;
 
