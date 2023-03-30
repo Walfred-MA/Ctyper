@@ -43,16 +43,11 @@ struct uint40
     uint40 (const ull x): first( x % UINT_MAX ) , second( x / UINT_MAX )
     {};
     
-    auto operator==(const uint40& other) const
-    {
-        return (this->first == other.first && this->second == other.second);
-    }
-    
-    auto operator>(const uint40& other) const
-    {
-        return (this->first > other.first || ( this->first == other.first && this->second > other.second) );
-    }
-
+    //auto operator==(const uint40& other) const
+    //{
+        //return (this->first == other.first && this->second == other.second);
+    //}
+ 
     uint first;
     uint8 second;
 };
