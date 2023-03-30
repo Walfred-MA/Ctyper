@@ -8,11 +8,11 @@
 #include "KmerHash.hpp"
 
 
-static int Search(const uint40 *arr, const uint size, const uint40 x)
+static int Search(const item40_t *arr, const uint size, const uint40 x)
 {
-    for (size_t i = 0 ; i < size; ++i)
+    for (uint i = 0 ; i < size; ++i)
     {
-        if (arr[i] == x) return i;
+        if (arr[i].first == x) return i;
     }
     return -1;
 }
@@ -24,25 +24,22 @@ uint* Kmer32_hash::add(const ull key, const uint val)
     uint40 reminder_ = uint40(key / modsize);
     
     uint &size = key_sizes[hash_];
-    uint40 *&bucket_key = keys[hash_];
-    uint *&bucket_val = values[hash_];
+    item40_t *&bucket = items[hash_];
     
-    int loc = Search(bucket_key, size, reminder_);
+    int loc = Search(bucket, size, reminder_);
     
     if ( loc == -1 )
     {
         size ++;
         
-        bucket_key = (uint40*) realloc(bucket_key, sizeof(uint40)*(size));
-        bucket_val = (uint*) realloc(bucket_val, sizeof(uint)*(size));
-        
-        bucket_key[size - 1] = reminder_;
-        bucket_val[size - 1] = val;
+        bucket = (item40_t *) realloc(bucket, sizeof(item40_t)*(size));
+
+        bucket[size - 1] = make_pair(reminder_, val);
                     
-        return &bucket_val[size - 1];
+        return &bucket[size - 1].second;
     }
     
-    return &bucket_val[loc];
+    return &bucket[loc].second;
 
 }
 
@@ -52,10 +49,9 @@ uint* Kmer32_hash::find(const ull kmer_int)
     uint40 reminder_ = uint40(kmer_int / modsize);
     
     uint size = key_sizes[hash_];
-    uint40 *bucket_key = keys[hash_];
-    uint *bucket_val = values[hash_];
+    item40_t *&bucket = items[hash_];
     
-    int loc = Search(bucket_key, size, reminder_);
+    int loc = Search(bucket, size, reminder_);
     
     if (loc < 0)
     {
@@ -63,7 +59,7 @@ uint* Kmer32_hash::find(const ull kmer_int)
     }
     else
     {
-        return &bucket_val[loc];
+        return &bucket[loc].second;
     }
 }
 

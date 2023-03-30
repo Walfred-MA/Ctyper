@@ -15,8 +15,10 @@
 #include "config.hpp"
 
 #define MAX_UINT24 16777215
+#define item40_t std::pair<uint40,uint>
 
 using namespace std;
+
 
 struct hash_128
 {
@@ -58,7 +60,7 @@ struct uint40
 class Kmer32_hash
 {
 public:
-    Kmer32_hash(size_t size): modsize(MAX(MAX_UINT24,size))
+    Kmer32_hash(int size): modsize(MAX(MAX_UINT24,size))
     {};
     
     ~Kmer32_hash()
@@ -67,12 +69,10 @@ public:
         {
             if (key_sizes[i])
             {
-                free(keys[i]);
-                free(values[i]);
+                free(items[i]);
             }
         }
-        free(keys);
-        free(values);
+        free(items);
     }
     
     uint* add(const ull kmer_int, const uint index);
@@ -80,8 +80,7 @@ public:
 
 private:
     const size_t modsize;
-    uint40** keys = new uint40*[modsize];
-    uint** values = new uint*[modsize];
+    item40_t** items = new item40_t*[modsize];
     uint* key_sizes = new uint[modsize] ();
 };
 
