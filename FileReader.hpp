@@ -39,21 +39,7 @@ public:
     
     virtual void Close()=0;
 
-  int GetLine(FILE* fptr, string &line) { 
-    char buf[1025];
-    line="";
-    int res;
-    while ((res=fscanf(fptr, "%1024[^\n]", buf))) {
-      if (res) {
-	line+=buf;
-      }
-      else {
-	break;
-      }
-    }
-    char c = fgetc(fptr);
-    return (!feof(fptr));
-  }
+    
         
 };
 
