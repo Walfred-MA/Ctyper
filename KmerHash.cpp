@@ -8,7 +8,7 @@
 #include "KmerHash.hpp"
 
 
-static int Search(const uint40 *arr, uint size, const uint40 x)
+static int Search(const uint40 *arr, const uint size, const uint40 x)
 {
     for (size_t i = 0 ; i < size; ++i)
     {
