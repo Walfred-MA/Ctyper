@@ -82,7 +82,7 @@ private:
     const size_t modsize;
     uint40** keys = new uint40*[modsize];
     uint** values = new uint*[modsize];
-    int* key_sizes = new int[modsize] ();
+    uint* key_sizes = new uint[modsize] ();
 };
 
 
