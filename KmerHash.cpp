@@ -6,7 +6,7 @@
 //
 
 #include "KmerHash.hpp"
-
+#define uint unsigned int
 
 static int Search(const item40_t *arr, const uint size, const uint40 x)
 {
