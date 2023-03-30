@@ -14,6 +14,8 @@
 #include <tuple>
 #include "config.hpp"
 
+#define MAX_UINT24 16777215
+
 using namespace std;
 
 struct hash_128
@@ -56,7 +58,7 @@ struct uint40
 class Kmer32_hash
 {
 public:
-    Kmer32_hash(int size): modsize(MAX(4194304,size))
+    Kmer32_hash(int size): modsize(MAX(MAX_UINT24,size))
     {};
     
     ~Kmer32_hash()
