@@ -51,7 +51,8 @@ public:
 	break;
       }
     }
-    return line.size();
+    char c = fgetc(fptr);
+    return (!feof(fptr));
   }
         
 };
