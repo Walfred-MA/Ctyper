@@ -20,7 +20,6 @@
 #include "config.hpp"
 #include "FastaReader.hpp"
 #include "FastqReader.hpp"
-#include "CramReader.hpp"
 #include "KtableReader.hpp"
 #include "KmerMatrix.hpp"
 #include "KmerCounter.hpp"
@@ -299,7 +298,7 @@ private:
     std::mutex Threads_lock;
     std::mutex Threads_lock2;
     
-    KmerCounter<ksize> Counter;
+    KmerCounter<ksize> *Counter =NULL;
     PriorData priordata_manager;
 };
 
@@ -319,8 +318,9 @@ void Processor<ksize>::Run()
    
 	cout<<"reading all kmer targets"<<endl;
  
-    Counter.LoadRegion(regions);
-    totalkmers = Counter.read_target(matrixfile.c_str(), 3 * priordata_manager.totalkmers);
+    Counter = new KmerCounter<ksize>(2 * priordata_manager.totalkmers);
+    Counter->LoadRegion(regions);
+    totalkmers = Counter->read_target(matrixfile.c_str());
     
     
 	cout<<"finishing reading targets, start genotyping"<<endl;
@@ -347,7 +347,7 @@ template <int ksize>
 void Processor<ksize>::Onethread()
 {
     
-    unique_ptr<Genotyper<ksize>> genotyper = unique_ptr<Genotyper<ksize>>(new Genotyper<ksize>(totalkmers, totalgroups, Counter,  priordata_manager));
+    unique_ptr<Genotyper<ksize>> genotyper = unique_ptr<Genotyper<ksize>>(new Genotyper<ksize>(totalkmers, totalgroups, *Counter,  priordata_manager));
     
     
     while (restfileindex < inputfiles.size() )
