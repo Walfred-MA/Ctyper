@@ -38,6 +38,21 @@ public:
     virtual void Load()=0;
     
     virtual void Close()=0;
+
+  int GetLine(FILE* fptr, string &line) { 
+    char buf[1024];
+    line="";
+    int res;
+    while ((res=fscanf(fptr, "%1024[^\n]", buf))) {
+      if (res) {
+	line+=buf;
+      }
+      else {
+	break;
+      }
+    }
+    return line.size();
+  }
         
 };
 

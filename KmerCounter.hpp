@@ -390,7 +390,7 @@ void KmerCounter<dictsize>::count_kmer(typefile &file, uint16* samplevecs)
     //int num_masked = 0 ;
     std::string StrLine;
     std::string Header;
-    
+    int nReads=0;
     while (file.nextLine(StrLine))
     {
         switch (StrLine[0])
@@ -419,8 +419,10 @@ void KmerCounter<dictsize>::count_kmer(typefile &file, uint16* samplevecs)
             auto larger_kmer = (current_kmer >= reverse_kmer) ? current_kmer:reverse_kmer;
             
             update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs);
-            
+
         }
+	if (nReads == 1000) { break;}
+	nReads+=1;
     }
         
     file.Close();
