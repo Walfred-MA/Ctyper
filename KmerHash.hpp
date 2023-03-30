@@ -58,7 +58,7 @@ struct uint40
 class Kmer32_hash
 {
 public:
-    Kmer32_hash(int size): modsize(MAX(MAX_UINT24,size))
+    Kmer32_hash(size_t size): modsize(MAX(MAX_UINT24,size))
     {};
     
     ~Kmer32_hash()
