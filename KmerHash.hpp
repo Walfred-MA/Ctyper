@@ -61,7 +61,9 @@ class Kmer32_hash
 {
 public:
     Kmer32_hash(int size): modsize(MAX(MAX_UINT24,size))
-    {};
+    {
+         memset(key_sizes, 0 , modsize);
+    };
     
     ~Kmer32_hash()
     {
@@ -81,7 +83,7 @@ public:
 private:
     const size_t modsize;
     item40_t** items = new item40_t*[modsize];
-    uint* key_sizes = new uint[modsize] ();
+    uint* key_sizes = new uint[modsize];
 };
 
 
