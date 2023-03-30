@@ -44,7 +44,7 @@ public:
         line = "";
         
         while (true) {
-            if (fgets(buf, sizeof(buf), fptr) == nullptr) {
+            if (fgets(buf, sizeof(buf)-1, fptr) == nullptr) {
                 // fgets failed, check if it's an error or end-of-file
                 if (feof(fptr)) {
                     // End-of-file reached
