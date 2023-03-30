@@ -421,7 +421,9 @@ void KmerCounter<dictsize>::count_kmer(typefile &file, uint16* samplevecs)
             update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs);
 
         }
-	if (nReads == 1000) { break;}
+	if (nReads % 1000000 == 0) {
+	  cerr << "processed " << nReads %1000000 << "M reads." << endl;
+	}
 	nReads+=1;
     }
         
