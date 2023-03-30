@@ -320,7 +320,7 @@ void Processor<ksize>::Run()
 	cout<<"reading all kmer targets"<<endl;
  
     Counter.LoadRegion(regions);
-    totalkmers = Counter.read_target(matrixfile.c_str(), 2 * priordata_manager.totalkmers);
+    totalkmers = Counter.read_target(matrixfile.c_str(), 3 * priordata_manager.totalkmers);
     
     
 	cout<<"finishing reading targets, start genotyping"<<endl;
