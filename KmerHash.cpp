@@ -8,9 +8,9 @@
 #include "KmerHash.hpp"
 
 
-static int Search(const uint40 *arr, int size, const uint40 x)
+static int Search(const uint40 *arr, uint size, const uint40 x)
 {
-    for (int i = 0 ; i < size; ++i)
+    for (size_t i = 0 ; i < size; ++i)
     {
         if (arr[i] == x) return i;
     }
@@ -20,10 +20,10 @@ static int Search(const uint40 *arr, int size, const uint40 x)
 
 uint* Kmer32_hash::add(const ull key, const uint val)
 {
-    int hash_ = key % modsize;
+    uint hash_ = key % modsize;
     uint40 reminder_ = uint40(key / modsize);
     
-    int &size = key_sizes[hash_];
+    uint &size = key_sizes[hash_];
     uint40 *&bucket_key = keys[hash_];
     uint *&bucket_val = values[hash_];
     
@@ -48,10 +48,10 @@ uint* Kmer32_hash::add(const ull key, const uint val)
 
 uint* Kmer32_hash::find(const ull kmer_int)
 {
-    int hash_ = kmer_int % modsize;
+    uint hash_ = kmer_int % modsize;
     uint40 reminder_ = uint40(kmer_int / modsize);
     
-    int size = key_sizes[hash_];
+    uint size = key_sizes[hash_];
     uint40 *bucket_key = keys[hash_];
     uint *bucket_val = values[hash_];
     
