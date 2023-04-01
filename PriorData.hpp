@@ -63,7 +63,7 @@ class PriorData
     
 public:
     
-    PriorData(const string &path): datapath(path), file(path.c_str())
+    PriorData(const string &path, const size_t b = 200): datapath(path), file(path.c_str()), buffers_size(b),
     {};
     ~PriorData()
     {}
@@ -96,6 +96,7 @@ private:
     vector<pair<size_t,size_t>> file_pos;
     vector<size_t> indexed_matrix_sizes;
     
+    const size_t buffer_size; //const variable will be initialized firstly than non-const.
     vector<PriorChunk> Buffers = vector<PriorChunk>( buffer_size );
     vector<size_t> Buffer_indexes = vector<size_t>( buffer_size , INT_MAX);
     vector<size_t> Buffer_working_counts = vector<size_t>( buffer_size , 0) ;
