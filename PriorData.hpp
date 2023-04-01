@@ -18,7 +18,7 @@
 #include "TreeRound.hpp"
 #include "KtableReader.hpp"
 
-#define buffer_size 200
+//#define buffer_size 200
 
 using namespace std;
 
@@ -63,7 +63,7 @@ class PriorData
     
 public:
     
-    PriorData(const string &path, const size_t b = 200): datapath(path), file(path.c_str()), buffers_size(b),
+    PriorData(const string &path, const size_t b = 200): datapath(path), file(path.c_str()), buffer_size(b);
     {};
     ~PriorData()
     {}
