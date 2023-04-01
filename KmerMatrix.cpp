@@ -34,8 +34,8 @@ inline void getEachRowValue(const float depth, const int count, const char sign,
         norm_value += 1.00/count_i;
     }
     
-    weight_value += new_weight;
-    //weight_value += (new_weight - ori_weight);  //weight is reversely proportion to square of estimated copy number, we calculate offsite to the original weight
+    //weight_value += new_weight;
+    weight_value += (new_weight - ori_weight);  //weight is reversely proportion to square of estimated copy number, we calculate offsite to the original weight
                //norm vector value of this kmer = count_i * weight = 1.00/count_i
     
     total_lambda += count_f;
