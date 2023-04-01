@@ -582,7 +582,7 @@ PriorChunk* PriorData::getNextChunk(const vector<bool>& finished)
     {
         auto buffer_index = Buffer_indexes[i];
                 
-        if (buffer_index && finished[buffer_index -1] == 0)
+        if (buffer_index == INT_MAX && finished[buffer_index -1] == 0)
         {
             Buffer_working_counts[i] ++;
             return &Buffers[i];
