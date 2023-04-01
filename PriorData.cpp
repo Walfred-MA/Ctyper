@@ -569,7 +569,6 @@ void PriorData::FinishChunk(PriorChunk* Chunk_prt)
         if (&Buffers[i] == Chunk_prt )
         {
             Buffer_working_counts[i]--;
-            Buffer_indexes[i] = 0;
             break;
         }
     }
