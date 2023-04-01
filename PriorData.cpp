@@ -516,13 +516,19 @@ PriorChunk* PriorData::getFreeBuffer(size_t Chunkindex)
 {
     
     size_t i = 0;
+	
     for (; i < buffer_size; ++i)
     {
-        if (Buffer_working_counts[i] == 0 ) break;
+        if (Buffer_indexes[i] == INT_MAX ) break;  //uninitialized block
+    }
+	
+    for (; i < buffer_size; ++i)
+    {
+        if (Buffer_working_counts[i] == 0 ) break;  //not in using block
     }
     
     Buffer_working_counts[i]++;
-    Buffer_indexes[i] = Chunkindex + 1;
+    Buffer_indexes[i] = Chunkindex;
     
     return &Buffers[i];
 }
@@ -582,13 +588,12 @@ PriorChunk* PriorData::getNextChunk(const vector<bool>& finished)
     {
         auto buffer_index = Buffer_indexes[i];
                 
-        if (buffer_index == INT_MAX && finished[buffer_index -1] == 0)
+        if (buffer_index != INT_MAX && finished[buffer_index] == 0)
         {
             Buffer_working_counts[i] ++;
             return &Buffers[i];
         }
     }
-    
     
     size_t i = 0;
     for (; i < finished.size(); ++i)
