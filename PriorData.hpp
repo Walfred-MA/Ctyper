@@ -97,7 +97,7 @@ private:
     vector<size_t> indexed_matrix_sizes;
     
     vector<PriorChunk> Buffers = vector<PriorChunk>( buffer_size );
-    vector<size_t> Buffer_indexes = vector<size_t>( buffer_size , 0);
+    vector<size_t> Buffer_indexes = vector<size_t>( buffer_size , INT_MAX);
     vector<size_t> Buffer_working_counts = vector<size_t>( buffer_size , 0) ;
     
     size_t buff_index = 0, total_buff;
