@@ -108,7 +108,7 @@ inline void AddOffsites(FLOAT_T *norm_vec, FLOAT_T *norm_matrix, const double  v
         norm_vec[i] += vec_offsite;                     //offsite for norm vector
         
         norm_matrix[i*gnum+i] *= 2;                     //this is doubling diagonal mentioned above
-        //norm_matrix[i*gnum+i] -= diag_offsites[i];       //we only want to double offsites, but prior values also doubled, should be changed back
+        norm_matrix[i*gnum+i] -= diag_offsites[i];       //we only want to double offsites, but prior values also doubled, should be changed back
         norm_matrix[i*gnum+i] += matrix_offsite;         //offsite for every cell
         
         for (int j = i + 1; j < gnum; ++j)
@@ -133,7 +133,7 @@ void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const 
     for (size_t i = 0; i < gnum; ++i)
     {
         row_offsites.get()[i] = 0;
-        //diag_offsites.get()[i] = norm_matrix[i * gnum + i];
+        diag_offsites.get()[i] = norm_matrix[i * gnum + i];
     }
     
     double matrix_offsite = 0, vec_offsite = 0;
