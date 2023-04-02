@@ -23,7 +23,7 @@ void trial_solution(vector<uint16>& passive_set, const uint16 passive_num, const
     
     if (passive_num == 1)
     {
-        s(passive_set[0]) = (double)y(passive_set[0]) / (double)A(passive_set[0], passive_set[0]);
+        s(passive_set[0]) = (FLOAT_T)y(passive_set[0]) / (FLOAT_T)A(passive_set[0], passive_set[0]);
         return ;
     }
      
