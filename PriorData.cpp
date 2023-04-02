@@ -295,7 +295,22 @@ void PriorData::LoadNorm(PriorChunk &Chunk)
                 }
         }
     }
+ 
+
+
+    node*& phylo_tree = Chunk.phylo_tree;
     
+    int leaveindex = 0;
+    for (size_t index =0; index < 2*curr_genenum ; ++index)
+    {
+        if (phylo_tree[index].numchildren == 0)
+        {
+            int leaveindex_ = leaveindex++;
+            phylo_tree[index].size = prior_norm[curr_genenum*leaveindex_+leaveindex_];
+        }
+    }
+
+   
 }
 
 size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine)
@@ -383,7 +398,7 @@ void PriorData::LoadTree(PriorChunk &Chunk)
 
     string StrLine;
     StrLine.resize(MAX_LINE);
-    
+   
     if (!file.nextLine(StrLine))
     {
         std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
@@ -502,6 +517,8 @@ void PriorData::LoadTree(PriorChunk &Chunk)
         {
             phylo_tree[index].size = gene_kmercounts[leaveindex];
             phylo_tree[index].index = leaveindex ++ ;
+        
+
         }
         else
         {
@@ -521,17 +538,14 @@ PriorChunk* PriorData::getFreeBuffer(size_t Chunkindex)
         if (Buffer_indexes[i] == INT_MAX ) break;  //uninitialized block
     }
 	
-    if (i == buffer_size)
+    for (i = 0; i < buffer_size; ++i)
     {
-        for (i = 0; i < buffer_size; ++i)
-        {
-            if (Buffer_working_counts[i] == 0 ) break;  //not in using block
-        }
+        if (Buffer_working_counts[i] == 0 ) break;  //not in using block
     }
     
     Buffer_working_counts[i]++;
     Buffer_indexes[i] = Chunkindex;
-    
+   
     return &Buffers[i];
 }
 
@@ -546,8 +560,6 @@ PriorChunk* PriorData::getChunkData(size_t Chunkindex)
     size_t chunk_start = chunk_region.first;
     file.Seek(chunk_start);
     
-
-    
     auto &kmervec_range = kmervec_pos[Chunkindex];
     Chunk.kmervec_start = kmervec_range.first;
     Chunk.kmervec_size = kmervec_range.second;
@@ -555,15 +567,15 @@ PriorChunk* PriorData::getChunkData(size_t Chunkindex)
     LoadHeader(Chunk);
     
     LoadCounts(Chunk);
-    
+ 
     LoadTree(Chunk);
     
     LoadAlleles(Chunk);
-    
     LoadNorm(Chunk);
     
     LoadMatrix(Chunk, indexed_matrix_sizes[Chunkindex] + 10);
-    
+   
+
     return &Chunk;
     
 }
@@ -585,7 +597,7 @@ void PriorData::FinishChunk(PriorChunk* Chunk_prt)
 PriorChunk* PriorData::getNextChunk(const vector<bool>& finished)
 {
     lock_guard<mutex> IO(IO_lock);
-        
+    
     for (size_t i = 0 ; i < Buffer_indexes.size(); ++i)
     {
         auto buffer_index = Buffer_indexes[i];
@@ -602,7 +614,8 @@ PriorChunk* PriorData::getNextChunk(const vector<bool>& finished)
     {
         if (finished[i] == 0) break;
     }
-    
+  
+
     if (i >= finished.size())
     {
         std::cerr << "Buffer Error" <<std::endl;

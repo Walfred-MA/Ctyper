@@ -93,7 +93,7 @@ public:
         
         write(outputfile, inputfile, priorData->prefix, priorData->genenames, Threads_lock);
         
-        
+		cout<<"finish run"<<endl;        
     };
     
     void write(const std::string& outputfile, const string &sample, const string &prefix, const vector<string>&genenames, std::mutex& Threads_lock)
@@ -210,7 +210,7 @@ public:
         
         for (int i = 0; i < pnum; ++i)
         {
-                        
+                       
             PriorChunk* priorData = priordata_manager.getNextChunk(finished_group);
             
 			cout << "running gene " << priorData->prefix << " for sample " << inputfile << endl ;
@@ -222,11 +222,12 @@ public:
             
                         
             runOneGroup (priorData, inputfile, outputfile, depth, Threads_lock);
-            
+    
             finished_group[priorData->index] = 1;
             
             priordata_manager.FinishChunk(priorData);
             
+		cout<<"finished"<<endl;
         }
                 
     };
