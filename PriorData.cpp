@@ -521,7 +521,7 @@ PriorChunk* PriorData::getFreeBuffer(size_t Chunkindex)
         if (Buffer_indexes[i] == INT_MAX ) break;  //uninitialized block
     }
 	
-    for (; i < buffer_size; ++i)
+    for (i = 0; i < buffer_size; ++i)
     {
         if (Buffer_working_counts[i] == 0 ) break;  //not in using block
     }
