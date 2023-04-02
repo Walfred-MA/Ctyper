@@ -138,7 +138,8 @@ void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const 
     
     FLOAT_T norm_value = 0.0, weight_value = 0.0;
     
-    uint16* rowdata = (uint16*) kmermatrix;
+    const uint16* rowdata = kmermatrix;
+    
     for (size_t i = 0; i < knum; ++i)
     {
         
