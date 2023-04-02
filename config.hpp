@@ -23,6 +23,7 @@ typedef unsigned char  uint8;
 #define Comb2( size ) (size + 1) * size / 2
 #define MIN( A , B ) ( A <= B ) ? A : B
 #define MAX( A , B ) ( A >= B ) ? A : B
+#define MAXABS( A , B ) ( abs(A) >= abs(B) ) ? A : B
 #define spair std::pair<std::string,std::string>
 typedef double FLOAT_T;
 typedef Eigen::MatrixXd Matrix_T ;

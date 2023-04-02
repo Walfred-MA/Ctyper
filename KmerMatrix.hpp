@@ -30,12 +30,12 @@ public:
     ~KmerMatrix()
     {};
     
-    void getNorm(const uint16* kmervec, const uint16* kmermatrix, const float depth, const uint16 gnum, const uint knum, FLOAT_T* norm_vec, FLOAT_T* norm_matrix, double &total_lambda);
+    void getNorm(const uint16* kmervec, const uint16* kmermatrix, const FLOAT_T depth, const uint16 gnum, const uint knum, FLOAT_T* norm_vec, FLOAT_T* norm_matrix, FLOAT_T &total_lambda);
     
 private:
         
-    unique_ptr<double > row_offsites = unique_ptr<double >( new double [MAX_UINT16] ) ;
-    unique_ptr<double > diag_offsites = unique_ptr<double >( new double [MAX_UINT16] ) ;
+    unique_ptr<FLOAT_T> row_offsites = unique_ptr<FLOAT_T >( new FLOAT_T [MAX_UINT16] ) ;
+    unique_ptr<FLOAT_T> diag_offsites = unique_ptr<FLOAT_T>( new FLOAT_T [MAX_UINT16] ) ;
     
     
     

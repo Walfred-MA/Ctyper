@@ -16,34 +16,6 @@ void node::clear()
     
 }
 
-FLOAT_T *node::coef(FLOAT_T* unround_coefs, FLOAT_T* unround_coefs_2)
-{
-    if (index > 0 )
-    {
-        return &unround_coefs[abs(index) - 1];
-    }
-    
-    else
-    {
-        return &unround_coefs_2[abs(index) - 1];
-    }
-}
-
-int *node::round(int* unround_coefs, int* unround_coefs_2)
-{
-    if (index > 0 )
-    {
-        return &unround_coefs[abs(index) - 1];
-    }
-    
-    else
-    {
-        return &unround_coefs_2[abs(index) - 1];
-    }
-}
-
-
-
 
 node* node::add(node * child)
 {
@@ -55,73 +27,109 @@ node* node::add(node * child)
 }
 
 
-float node::leaveto_root(FLOAT_T* unround_coefs, int * round_coefs, FLOAT_T *non_leaves_unrounds, int *non_leaves_rounds)
+void reproject(pair<const node*, float>& target, pair<const node*, float>& source, FLOAT_T* reminders, int * rounds)
 {
-    FLOAT_T &coef = *(this->coef(unround_coefs, non_leaves_unrounds));
-    int &round  = *(this->round(round_coefs, non_leaves_rounds));
+    FLOAT_T &reminder_source = reminders[source.first->index];
+    FLOAT_T &reminder_target = reminders[target.first->index];
+        
+    float total_dist = target.second + source.second;
+    
+    float proj_val = reminder_source * (1-total_dist) * source.first->size / target.first->size;
+    
+    reminder_target += proj_val;
+    
+    float round = ((reminder_target) > 0) ? int(reminder_target + 0.5) : int(reminder_target - 0.5);
+    
+    reminder_target -= round;
+    rounds[source.first->index] += round;
+    
+}
+
+
+void whichiscloser(pair<const node*, float>& left, pair<const node*, float>&right, pair<const node*, float>& closer, pair<const node*, float>& further,  FLOAT_T* reminders)
+{
+    
+    float left_reminder = left.first->size * reminders[left.first->index];
+    float right_reminder = right.first->size * reminders[right.first->index];
+    
+    float total_reminder = left_reminder + right_reminder ;
+    
+    if ( ( right_reminder > left_reminder ) == ( total_reminder >= 0 ) )  //when total reminder is positive, pick the bigger postive reminder
+    {
+        closer =  right ;
+        
+        further = left;
+    }
+    
+    else  //when total reminder is negative, pick the bigger negative reminder
+    {
+        closer =  left ;
+        
+        further = right ;
+    }
+    
+    
+}
+
+
+pair<const node*, float> node::leaveto_root(FLOAT_T* reminders, int * rounds) const
+{
+    pair<const node*, float> closer, further;
     
     if (numchildren)
     {
-        float total_dist = (1-(children[0]->dist+children[1]->dist));
         
-        coef += total_dist * (children[0]->leaveto_root(unround_coefs, round_coefs, non_leaves_unrounds, non_leaves_rounds) + children[1]->leaveto_root(unround_coefs, round_coefs, non_leaves_unrounds, non_leaves_rounds));
+        pair<const node*, float> left = children[0]->leaveto_root(reminders, rounds);
+        pair<const node*, float> right = children[1]->leaveto_root(reminders, rounds);
         
-        //total_coef +=  children[0]->total_coef + children[1]->total_coef;
-        
-        //total_round += children[0]->total_round + children[1]->total_round;
-    }
-
-    
-    round = int(coef + 0.5);
-    
-    //total_round += round;
-        
-    coef -= round;
-    
-    return coef;
-}
-
-void node::rootto_leave(FLOAT_T* unround_coefs, int * round_coefs, FLOAT_T *non_leaves_unrounds, int *non_leaves_rounds)
-{
-    
-    int &round  = *(this->round(round_coefs, non_leaves_rounds));
-    
-    if (round && numchildren)
-    {
-        node *prefer_leave;
-        if (round > 0)
+        if (reminders[right.first->index] == 0)
         {
-			prefer_leave = ( *children[1]->coef(unround_coefs, non_leaves_unrounds) > *children[0]->coef(unround_coefs, non_leaves_unrounds)  ) ?  children[1]: children[0];
-
+            closer = left;
         }
+        
+        else if (reminders[left.first->index] == 0)
+        {
+            closer = right;
+        }
+        
         else
         {
-			prefer_leave = ( *children[1]->coef(unround_coefs, non_leaves_unrounds) < *children[0]->coef(unround_coefs, non_leaves_unrounds) ) ?  children[1]: children[0];
+            whichiscloser(left, right, closer, further, reminders);
+            
+            reproject(closer, further, reminders, rounds);
         }
         
-        *prefer_leave->round(round_coefs, non_leaves_rounds) += round;
-        //prefer_leave->total_round += round;
+        closer.second += this->dist;
+        
     }
-    
-    if (numchildren)
+    else
     {
-        children[0]->rootto_leave(unround_coefs, round_coefs, non_leaves_unrounds, non_leaves_rounds);
-        children[1]->rootto_leave(unround_coefs, round_coefs, non_leaves_unrounds, non_leaves_rounds);
+        FLOAT_T &reminder = reminders[this->index];
+        
+        if (reminder == 0)
+        {
+            closer = make_pair(this, this->dist);
+        }
+        
+        else
+        {
+            float round = ((reminder) > 0) ? int(reminder + 0.5) : int(reminder - 0.5);
+            
+            reminder -= round;
+            rounds[this->index] += round;
+            
+            closer = make_pair(this, this->dist);
+        }
     }
+    return closer;
 }
+
 
 void TreeRound::Run(const node* nodes, FLOAT_T* unround_coefs, size_t size, int * round_coefs)
 {
-    memcpy(leaves_unrounds.get(), unround_coefs, sizeof (FLOAT_T) *  size);
-    memset(non_leaves_unrounds.get(), 0, sizeof(FLOAT_T) * size );
-    memset(non_leaves_rounds.get(), 0, sizeof(int) * size );
-
+    memcpy(reminder.get(), unround_coefs, sizeof (FLOAT_T) *  size);
+      
+    const node& root = nodes[0];
     
-    node root = nodes[0];
-    
-    root.leaveto_root(leaves_unrounds.get(), round_coefs, non_leaves_unrounds.get(),  non_leaves_rounds.get());
-    
-    root.rootto_leave(leaves_unrounds.get(), round_coefs, non_leaves_unrounds.get(),  non_leaves_rounds.get());
-    
-    
+    root.leaveto_root(reminder.get(), round_coefs);
 }

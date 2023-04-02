@@ -239,7 +239,7 @@ private:
     unique_ptr<FLOAT_T> norm_vec;
     unique_ptr<FLOAT_T> norm_matrix;
     
-    double total_lambda =0;
+    FLOAT_T total_lambda =0;
     
     PriorData &priordata_manager;
     KmerCounter<ksize> &counter;

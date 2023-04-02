@@ -7,7 +7,7 @@
 
 #include "KmerMatrix.hpp"
 
-inline void getEachRowValue(const float depth, const int count, const char sign, const uint16 rowsize, double &total_lambda, double &norm_value, double &weight_value)
+inline void getEachRowValue(const FLOAT_T depth, const int count, const char sign, const uint16 rowsize, FLOAT_T &total_lambda, FLOAT_T &norm_value, FLOAT_T &weight_value)
 {
     
     float ori_weight = 1.0;
@@ -44,7 +44,7 @@ inline void getEachRowValue(const float depth, const int count, const char sign,
 //A function to change values of norm vec and norm matrix for a list of kmers found in exactly the same list of samples
 //This version is for binaray major kmers (frequencies > 50% and no sample has more than 1)
 //We reverse calculate values for samples that missing this kmer
-inline void getEachRowNorm_major(const uint16 rowsize, const uint16 *row, const uint16 gnum, FLOAT_T* norm_vec, FLOAT_T* norm_matrix, const double norm_value, const double  weight_value, double  &vec_offsite, double &matrix_offsite, double* row_offsites)
+inline void getEachRowNorm_major(const uint16 rowsize, const uint16 *row, const uint16 gnum, FLOAT_T* norm_vec, FLOAT_T* norm_matrix, const FLOAT_T norm_value, const FLOAT_T  weight_value, FLOAT_T  &vec_offsite, FLOAT_T&matrix_offsite, FLOAT_T* row_offsites)
 {
     
     vec_offsite += norm_value;            //major kmer, default is add this weight change to whole norm vector
@@ -74,7 +74,7 @@ inline void getEachRowNorm_major(const uint16 rowsize, const uint16 *row, const 
 }
 
 //This version is for minor or non-binaray major kmers
-inline void getEachRowNorm_minor(const uint16 rowsize, const uint16 *row, const uint16 gnum, FLOAT_T* norm_vec, FLOAT_T* norm_matrix, const double norm_value, const double  weight_value)
+inline void getEachRowNorm_minor(const uint16 rowsize, const uint16 *row, const uint16 gnum, FLOAT_T* norm_vec, FLOAT_T* norm_matrix, const FLOAT_T norm_value, const FLOAT_T  weight_value)
 {
     for (int i = 0; i < rowsize; ++i)
     {
@@ -100,7 +100,7 @@ inline void getEachRowNorm_minor(const uint16 rowsize, const uint16 *row, const 
 
 
 //Add offsites back to norm vector and norm matrix
-inline void AddOffsites(FLOAT_T *norm_vec, FLOAT_T *norm_matrix, const double  vec_offsite, const double  matrix_offsite, const double  *row_offsites, const double *diag_offsites, uint16 gnum)
+inline void AddOffsites(FLOAT_T *norm_vec, FLOAT_T *norm_matrix, const FLOAT_T  vec_offsite, const FLOAT_T  matrix_offsite, const FLOAT_T  *row_offsites, const FLOAT_T *diag_offsites, uint16 gnum)
 {
     
     for (int i = 0; i < gnum; ++i)
@@ -125,10 +125,10 @@ inline void AddOffsites(FLOAT_T *norm_vec, FLOAT_T *norm_matrix, const double  v
 }
 
 
-void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const float depth, const uint16 gnum, const uint knum, FLOAT_T* norm_vec, FLOAT_T* norm_matrix, double  &total_lambda)
+void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const FLOAT_T depth, const uint16 gnum, const uint knum, FLOAT_T* norm_vec, FLOAT_T* norm_matrix, FLOAT_T  &total_lambda)
 {
         
-    memset(row_offsites.get(), 0, sizeof(double) * gnum);
+    memset(row_offsites.get(), 0, sizeof(FLOAT_T) * gnum);
     
     for (size_t i = 0; i < gnum; ++i)
     {
@@ -136,9 +136,9 @@ void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const 
         diag_offsites.get()[i] = norm_matrix[i * gnum + i];
     }
     
-    double matrix_offsite = 0, vec_offsite = 0;
+    FLOAT_T matrix_offsite = 0, vec_offsite = 0;
     
-    double norm_value = 0.0, weight_value = 0.0;
+    FLOAT_T norm_value = 0.0, weight_value = 0.0;
     
     uint16* rowdata = (uint16*) kmermatrix;
     for (size_t i = 0; i < knum; ++i)

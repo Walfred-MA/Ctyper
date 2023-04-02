@@ -490,17 +490,17 @@ void PriorData::LoadTree(PriorChunk &Chunk)
                 
                 break;
         }
-    }   
-
-
-
+    }
+    
+    const uint* gene_kmercounts = Chunk.gene_kmercounts;
  
-    int leaveindex = 1;
+    int leaveindex = 0;
     int nonleaveindex = -1;
     for (size_t index =0; index < count; ++index)
     {
         if (phylo_tree[index].numchildren == 0)
         {
+            phylo_tree[index].size = gene_kmercounts[leaveindex];
             phylo_tree[index].index = leaveindex ++ ;
         }
         else
@@ -508,7 +508,6 @@ void PriorData::LoadTree(PriorChunk &Chunk)
             phylo_tree[index].index = nonleaveindex --;
         }
     }
-    
 
 }
 
@@ -599,6 +598,12 @@ PriorChunk* PriorData::getNextChunk(const vector<bool>& finished)
     for (; i < finished.size(); ++i)
     {
         if (finished[i] == 0) break;
+    }
+    
+    if (i >= finished.size())
+    {
+        std::cerr << "Buffer Error" <<std::endl;
+        std::_Exit(EXIT_FAILURE);
     }
     
     return getChunkData(i);

@@ -8,12 +8,11 @@
 #include <iostream>
 #include <string>
 #include <unordered_set>
-
+#include <chrono>
 
 #include "Processor.hpp"
 
 
-//#include "CramReader.hpp"
 
 
 int main(int argc, const char * argv[]) {
@@ -163,9 +162,17 @@ int main(int argc, const char * argv[]) {
     
     if (!inputfiles.size()) return 1;
     
-    Processor<32> processor(inputfiles, outputfiles, depths, kmatrixfile, genes, regions,  nthreads);
+    auto begin = std::chrono::high_resolution_clock::now();
     
-    processor.Run();
+    Processor<32> *processor = new Processor<32>(inputfiles, outputfiles, depths, kmatrixfile, genes, regions,  nthreads);
+
+    processor->Run();
+    
+    auto end = std::chrono::high_resolution_clock::now();
+    
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+        
+    cout<<"finished running at time: "<<elapsed.count()* 1e-9 <<endl;
     
     
     return 0;
