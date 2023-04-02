@@ -144,7 +144,7 @@ int Regression::lawson_hanson_nnls(const FLOAT_T *kernal_vec, const FLOAT_T *wei
             // Update x.
             x = x + alpha * (x_trial - x);
             
-            trial_solution(passive_set, passive_num, y, A, size, x_trial);
+            if (passive_num) trial_solution(passive_set, passive_num, y, A, size, x_trial);
             
         }
 
