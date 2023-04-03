@@ -301,7 +301,7 @@ void PriorData::LoadNorm(PriorChunk &Chunk)
     node*& phylo_tree = Chunk.phylo_tree;
     
     int leaveindex = 0;
-    for (size_t index =0; index < 2*curr_genenum ; ++index)
+    for (size_t index =0; index < Chunk.nodenum ; ++index)
     {
         if (phylo_tree[index].numchildren == 0)
         {
@@ -412,7 +412,8 @@ void PriorData::LoadTree(PriorChunk &Chunk)
 
 	static float pow10[7] = {1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001};
     
-    size_t count = std::count_if( StrLine.begin(), StrLine.begin()+len, []( char c ){return c ==':';}) + 1;
+    size_t count = Chunk.nodenum;
+    count = std::count_if( StrLine.begin(), StrLine.begin()+len, []( char c ){return c ==':';}) + 1;
     
     size_t& phylo_tree_allocsize = Chunk.phylo_tree_allocsize;
     node*& phylo_tree = Chunk.phylo_tree;
@@ -571,6 +572,7 @@ PriorChunk* PriorData::getChunkData(size_t Chunkindex)
     LoadTree(Chunk);
     
     LoadAlleles(Chunk);
+    
     LoadNorm(Chunk);
     
     LoadMatrix(Chunk, indexed_matrix_sizes[Chunkindex] + 10);

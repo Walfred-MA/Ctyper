@@ -47,6 +47,7 @@ struct PriorChunk
     size_t kmer_matrix_allocsize = 0;
     
     node* phylo_tree = NULL;
+    size_t nodenum = 0;
     size_t phylo_tree_allocsize = 0;
     
     uint* gene_kmercounts = NULL;
@@ -97,9 +98,9 @@ private:
     vector<size_t> indexed_matrix_sizes;
     
     const size_t buffer_size; //const variable will be initialized firstly than non-const.
-    vector<PriorChunk> Buffers = vector<PriorChunk>( buffer_size );
-    vector<size_t> Buffer_indexes = vector<size_t>( buffer_size , INT_MAX);
-    vector<size_t> Buffer_working_counts = vector<size_t>( buffer_size , 0) ;
+    vector<PriorChunk> Buffers = vector<PriorChunk>( buffer_size + 10);
+    vector<size_t> Buffer_indexes = vector<size_t>( buffer_size + 10, INT_MAX);
+    vector<size_t> Buffer_working_counts = vector<size_t>( buffer_size + 10, 0) ;
     
     size_t buff_index = 0, total_buff;
     const string datapath;
