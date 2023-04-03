@@ -70,8 +70,8 @@ int Regression::lawson_hanson_nnls(const FLOAT_T *kernal_vec, const FLOAT_T *wei
     
     r = y - A * x;
     
-    
-    while (passive_num < size)
+    int j = 0;
+    while (passive_num < size && j++ < max_iterations)
     {
         // Find the max residual max_r in active set and its index;
         
