@@ -41,7 +41,7 @@ void reproject(pair<const node*, float>& target, pair<const node*, float>& sourc
     float round = ((reminder_target) > 0) ? int(reminder_target + 0.5) : int(reminder_target - 0.5);
     
     reminder_target -= round;
-    rounds[source.first->index] += round;
+    rounds[target.first->index] += round;
     
 }
 
