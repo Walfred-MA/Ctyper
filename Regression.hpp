@@ -12,7 +12,7 @@
 #include <string>
 #include <iostream>
 #include <cstdlib>
-
+#include <vector>
 #include "config.hpp"
 
 using namespace std;
