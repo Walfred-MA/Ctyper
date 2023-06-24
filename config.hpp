@@ -30,5 +30,6 @@ typedef Eigen::MatrixXd Matrix_T ;
 typedef Eigen::VectorXd Vector_T ;
 
 #define FLOAT_T double
+#define FIXCOL 5
 
 #endif /* config_hpp */

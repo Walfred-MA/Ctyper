@@ -16,7 +16,7 @@
 #include <zlib.h>
 #include <vector>
 #include <string>
-
+#include <mutex>
 #include <string.h>
 
 class CramReader: public FileReader {
@@ -60,7 +60,8 @@ private:
     hts_idx_t *indexdata;
     
     std::vector<char*>* workregions;
-    
+   
+    std::mutex IO_lock; 
 
   bool ifindex = 0;
          

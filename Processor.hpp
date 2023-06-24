@@ -43,13 +43,16 @@ public:
     unique_ptr<FLOAT_T> coefs;
     unique_ptr<FLOAT_T> residuels;
     const size_t knum, pnum;
-    
-    Genotyper(size_t k, size_t p, KmerCounter<ksize> &c, PriorData &priordata):
+    const uint window;
+    const int Nsubthreads;
+    Genotyper(size_t k, size_t p, KmerCounter<ksize> &c, PriorData &priordata, const int w, const int N):
     knum(k),
     pnum(p),
+    window(w),
     counter(c),
     priordata_manager(priordata),
     kmer_counts(new uint16[k+1]),
+    Nsubthreads(N),
     
     norm_vec(new FLOAT_T[DefaultSize]),
     norm_matrix(new FLOAT_T[DefaultSize*DefaultSize]),
@@ -66,37 +69,42 @@ public:
 
 		cout << "counting kmers for sample: " << inputfile<<endl;
 		
-        counter.Call(inputfile.c_str(), kmer_counts.get(), 1);
+        counter.Call(inputfile.c_str(), kmer_counts.get(), Nsubthreads);
         finishcounting = 1;
 
     };
     
     void runOneGroup(const PriorChunk* priorData, const std::string& inputfile, const std::string& outputfile, const float depth, std::mutex& Threads_lock)
     {
-                
         
-        matrix.getNorm(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size,
-                       norm_vec.get(), norm_matrix.get(), total_lambda);
+        cout << "generating kmer matrix for sample: " << inputfile<<endl;
+        matrix.getNorm(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size,norm_vec.get(), norm_matrix.get(), total_lambda);
         
-                        
-		cout << "generating kmer matrix for sample: " << inputfile<<endl;
-
-
+		
+        cout << "regressing to references for sample: " << inputfile<<endl;
         regresser.Call(priorData->genenum, norm_vec.get(), norm_matrix.get(),  total_lambda, priorData->gene_kmercounts, coefs.get(), residuels.get());
         
-		cout << "regressing to references for sample: " << inputfile<<endl;                    
+		                   
+        cout << "rounding for sample: " << inputfile<<endl;
+        tree.Run(priorData->phylo_tree, coefs.get(), gnum, &results.get()[0]);
 
-
-        tree.Run(priorData->phylo_tree, coefs.get(), gnum, results.get());
-
-		cout << "rounding for sample: " << inputfile<<endl;
+        cout << "determine window residuels: " << inputfile<<endl;
         
-        write(outputfile, inputfile, priorData->prefix, priorData->genenames, Threads_lock);
+        vector<vector<pair<int,int>>> windowcovers(priorData->pathsizes.size()+1);
+       
+        for (int i =0; i < priorData->pathsizes.size(); ++i)
+        {
+            windowcovers[i].resize(priorData->pathsizes[i]/window + 1);
+        }
         
-		cout<<"finish run"<<endl;        
+        matrix.WindowCovers(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size, priorData->genenum, results.get(), windowcovers, window);
+                
+        write(outputfile, inputfile, priorData->prefix, priorData->genenames, windowcovers, depth, Threads_lock);
+
+		cout<<"finish run"<<endl;
     };
     
-    void write(const std::string& outputfile, const string &sample, const string &prefix, const vector<string>&genenames, std::mutex& Threads_lock)
+    void write(const std::string& outputfile, const string &sample, const string &prefix, const vector<string>&genenames, const vector<vector<pair<int,int>>>& windowcovers, const float depth, std::mutex& Threads_lock)
     {
         std::unique_lock<std::mutex> lck(Threads_lock);
         
@@ -125,7 +133,7 @@ public:
         const float cutoff = 0.5 / (gnum + 1);
         for (int i = 0; i < gnum; ++i)
         {
-            if (coefs.get()[i] > cutoff) fprintf(fwrite,"%s:%.4lf,", genenames[i].c_str(),coefs.get()[i]);
+            if (coefs.get()[i] > cutoff) fprintf(fwrite,"%s:%.2lf,", genenames[i].c_str(),coefs.get()[i]);
         }
         fprintf(fwrite,"\n");
         
@@ -142,9 +150,34 @@ public:
         
         fprintf(fwrite,"\n");
         
+        for (int path = 1; path < windowcovers.size(); ++path )
+        {
+            auto& windowcover = windowcovers[path];
+            ull totalwindow = 0;
+            for (pair<int,int> thepair: windowcover)
+            {
+                totalwindow += thepair.second;
+            }
+            if (totalwindow < 1000) continue;
+            
+      	    fprintf(fwrite,"windows size %u at path %u:\n", window,path); 
+            for (pair<int,int> thepair: windowcover)
+            {
+                int query = thepair.first;
+                int ref = thepair.second;
+                if (query > 0 or ref >0)
+                {
+                    fprintf(fwrite,"%d/%d,", query, ref);
+                }
+                else
+                {
+                    fprintf(fwrite,",", query, ref);
+                }
+            }
+            fprintf(fwrite,"\n");
+        }
+        
         fclose(fwrite);
-        
-        
         
         return ;
     };
@@ -194,7 +227,7 @@ public:
         memset(residuels.get(), 0, sizeof(FLOAT_T) * gnum);
         
         memset(results.get(), 0, sizeof(int) * gnum);
-        
+                
         total_lambda = 0;
 
                 
@@ -267,7 +300,9 @@ public:
               std::string &mfile,
               std::unordered_set<std::string> &g,
               std::vector<char *> &r,
-              const int n
+              const int w,
+              const int n,
+              const int N
               ):
     inputfiles(infiles),
     outputfiles(outfiles),
@@ -276,7 +311,9 @@ public:
     matrixfile(mfile),
     priordata_manager(mfile, 2*n),
     regions(r),
-    nthreads(n)
+    window(w),
+    nthreads(n),
+    Nsubthreads(N)
     {};
     
     
@@ -290,8 +327,9 @@ public:
     std::vector<char *> &regions;
     const std::vector<float> &depths;
     const std::unordered_set<std::string> &genes;
+    const int window;
     const int nthreads;
-    
+    const int Nsubthreads;
     
 private:
     uint totalkmers, totalgroups;
@@ -348,7 +386,7 @@ template <int ksize>
 void Processor<ksize>::Onethread()
 {
     
-    unique_ptr<Genotyper<ksize>> genotyper = unique_ptr<Genotyper<ksize>>(new Genotyper<ksize>(totalkmers, totalgroups, *Counter,  priordata_manager));
+    unique_ptr<Genotyper<ksize>> genotyper = unique_ptr<Genotyper<ksize>>(new Genotyper<ksize>(totalkmers, totalgroups, *Counter,  priordata_manager, window, Nsubthreads));
     
     
     while (restfileindex < inputfiles.size() )

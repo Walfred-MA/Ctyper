@@ -51,6 +51,7 @@ void CramReader::LoadRegion(std::vector<char *>& bedregions)
  
 bool CramReader::nextLine(std::string &StrLine)
 {
+    lock_guard<mutex> IO(IO_lock);
     
     if (ifindex)
     {

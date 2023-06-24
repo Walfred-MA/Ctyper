@@ -73,6 +73,8 @@ bool KtableReader::nextLine_norm(std::string &StrLine)
         }
     }
     
+    StrLine += '\n';
+    
     return ifget;
 }
 

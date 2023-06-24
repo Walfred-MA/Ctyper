@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <vector>
+#include <utility>
 #include <unordered_set>
 
 #include "config.hpp"
@@ -39,6 +40,8 @@ struct PriorChunk
     size_t genenum = 0;
     
     vector<string> genenames;
+    
+    vector<uint> pathsizes;
 
     FLOAT_T* prior_norm= NULL;
     size_t prior_norm_allocsize = 0;
@@ -105,7 +108,7 @@ private:
     size_t buff_index = 0, total_buff;
     const string datapath;
     
-    size_t LoadRow(uint16* matrix, size_t index, string &StrLine);
+    size_t LoadRow(uint16* matrix, size_t index, string &StrLine, vector<uint> &pathsizes);
     KtableReader file;
     std::mutex IO_lock;
     

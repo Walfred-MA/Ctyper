@@ -148,6 +148,8 @@ void PriorData::LoadHeader(PriorChunk &Chunk)
         curr_genenum += c - '0';
     }
     
+    
+    
 }
 
 void PriorData::LoadCounts(PriorChunk &Chunk)
@@ -230,17 +232,6 @@ void PriorData::LoadAlleles(PriorChunk &Chunk)
 
 void PriorData::LoadNorm(PriorChunk &Chunk)
 {
-    string StrLine;
-    //StrLine.resize(10*Chunk.genenum *Chunk.genenum);
-    
-    if (!file.nextLine_norm(StrLine))
-    {
-        std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
-        std::_Exit(EXIT_FAILURE);
-        return;
-    }
-    
-    const size_t len = strlen(StrLine.c_str());
     
     size_t& curr_genenum = Chunk.genenum;
     FLOAT_T*& prior_norm = Chunk.prior_norm;
@@ -258,46 +249,62 @@ void PriorData::LoadNorm(PriorChunk &Chunk)
     bool ifdecimal = 0;
     uint16 rowindex = 0, colindex = 0;
     
-    int norm_c = 0;
-    char c;
-    for (int startpos = 1; startpos < len; ++startpos)
+    string StrLine;
+    //StrLine.resize(10*Chunk.genenum *Chunk.genenum);
+    
+    
+    for ( int i = 0 ; i < curr_genenum ; ++i)
     {
-        c = StrLine[startpos];
-        switch (c)
+        
+        if (!file.nextLine_norm(StrLine))
         {
-            case '\t': case '\n': case ' ':
-                prior_norm[curr_genenum * rowindex + colindex ] = element;
-                prior_norm[curr_genenum * colindex + rowindex ] = element;
-                ifdecimal = 0;
-                element = 0.0;
-                decimal = 1.0;
-                norm_c++;
+            std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
+            std::_Exit(EXIT_FAILURE);
+            return;
+        }
+        
+        size_t len = strlen(StrLine.c_str());
                 
-                if (++colindex >= curr_genenum)
-                {
-                    rowindex++;
-                    colindex = rowindex;
-                }
-                break;
-            case '.':
-                ifdecimal = 1;
-                break;
-            default:
-                if (ifdecimal)
-                {
-                    decimal *= 0.1;
-                    element += (c - '0') * decimal;
-                }
-                else
-                {
-                    element *= 10;
-                    element += c - '0';
-                }
+        int norm_c = 0;
+        char c;
+        for (int startpos = 1; startpos < len; ++startpos)
+        {
+            c = StrLine[startpos];
+            switch (c)
+            {
+                case '\t': case ' ': case '\n':
+                    prior_norm[curr_genenum * rowindex + colindex ] = element;
+                    prior_norm[curr_genenum * colindex + rowindex ] = element;
+                    ifdecimal = 0;
+                    element = 0.0;
+                    decimal = 1.0;
+                    norm_c++;
+                    
+                    if (++colindex >= curr_genenum )
+                    {
+                        rowindex++;
+                        colindex = rowindex;
+                    }
+                    break;
+                case '.':
+                    ifdecimal = 1;
+                    break;
+                default:
+                    if (ifdecimal)
+                    {
+                        decimal *= 0.1;
+                        element += (c - '0') * decimal;
+                    }
+                    else
+                    {
+                        element *= 10;
+                        element += c - '0';
+                    }
+            }
         }
     }
- 
-
-
+    
+    
     node*& phylo_tree = Chunk.phylo_tree;
     
     int leaveindex = 0;
@@ -313,7 +320,7 @@ void PriorData::LoadNorm(PriorChunk &Chunk)
    
 }
 
-size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine)
+size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine, vector<uint> &pathsizes)
 {
         
     if (!file.nextLine(StrLine))
@@ -327,19 +334,52 @@ size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine)
     //size_t count = std::count_if( StrLine.begin(), StrLine.end(), []( char c ){return c ==',';}) + 3;
     matrix[0] = StrLine[1];
     
-    uint16 rownum = 2;
+    uint16 rownum = FIXCOL;
     uint16 element = 0;
     char c;
         
     size_t startpos = 3;
+
+    uint16 path=0;
+    for (; startpos < len ; ++startpos)
+    {
+        if (StrLine[startpos] == '\t') break;
+        path <<= 6;
+        path += StrLine[startpos] - '0';
+    }
+    ++startpos;
+    
+    matrix[2] = path;
+   
+    if (pathsizes.size() <= path) pathsizes.resize(path + 1,0); 
+    
+    uint loc=0;
+    for (; startpos < len ; ++startpos)
+    {
+        if (StrLine[startpos] == '\t') break;
+        loc <<= 6;
+        loc += StrLine[startpos] - '0';
+    }
+    ++startpos;
+    
+    
+    pathsizes[path] = MAX(pathsizes[path], loc);
+    
+    uint16 part2 = loc & 0xFFFF;
+    uint16 part1 = (loc >> 16) & 0xFFFF;
+    
+    matrix[3] = part1;
+    matrix[4] = part2;
+
     for (; startpos < len ; ++startpos)
     {
         if (StrLine[startpos] == '\t') break;
     }
-    startpos++;
-
+    ++startpos;
+    
     for (; startpos < len; ++startpos)
     {
+        
         c = StrLine[startpos];
         switch (c)
         {
@@ -352,9 +392,8 @@ size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine)
                 element += c - '0';
         }
     }
-
     
-    matrix[1] = rownum - 2;
+    matrix[1] = rownum - FIXCOL;
     
     return rownum;
     
@@ -376,20 +415,21 @@ void PriorData::LoadMatrix(PriorChunk &Chunk, size_t new_kmer_matrix_allocsize)
         kmer_matrix_size = new_kmer_matrix_allocsize;
     }
     
+    Chunk.pathsizes.clear(); 
     uint16* matrix = kmer_matrix;
     for (size_t rindex =0; rindex < kmernum; ++ rindex)
     {
-        uint16 rsize = LoadRow(matrix , rindex, StrLine);
+        uint16 rsize = LoadRow(matrix , rindex, StrLine, Chunk.pathsizes);
         matrix = &matrix[rsize];
     }
-            
+          
+    /*
     size_t total2 = 0;
     for (size_t rindex =0; rindex < kmernum; ++ rindex)
     {
         total2 += kmer_matrix[total2 + 1] + 2;
     }
-    
-    
+    */
 
 }
 
@@ -410,7 +450,7 @@ void PriorData::LoadTree(PriorChunk &Chunk)
     
     if (len==0) return ;
 
-	static float pow10[7] = {1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001};
+    static float pow10[7] = {1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001};
     
     size_t count = Chunk.nodenum;
     count = std::count_if( StrLine.begin(), StrLine.begin()+len, []( char c ){return c ==':';}) + 1;

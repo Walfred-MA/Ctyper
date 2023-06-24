@@ -94,9 +94,12 @@ public:
     template <class typefile>
     void count_kmer(typefile &file, uint16* samplevecs);
     
+    template <class typefile>
+    void count_kmer_(typefile &file, uint16* samplevecs, const int nthreads);
+    
     void count_kmer(FastaReader &file, uint16* samplevecs);
     
-    void count_kmer_(char* infile, uint16* samplevecs);
+    
     
     void read_files(std::vector<std::string>& inputfiles, std::vector<std::string>& outputfiles, std::vector<std::string>& prefixes,std::vector<float>& deps,int numthread);
     
@@ -221,8 +224,8 @@ static void kmer_read_31(char base,  std::size_t &current_size, T &current_kmer,
     if (base_to_int(base, converted))
     {
         
-        current_kmer <<= ( 8*sizeof(current_kmer) - 2*klen + 2 );
-        current_kmer >>=  ( 8*sizeof(current_kmer) - 2*klen );
+        current_kmer <<= 2;
+        current_kmer &= (((T)1 << klen*2) - 1);
         current_kmer += converted;
         
         reverse_kmer >>= 2;
@@ -308,7 +311,20 @@ ull KmerCounter<dictsize>::read_target(KtableReader &ktablefile)
     int pos;
     while (ktablefile.nextLine_kmer(StrLine))
     {
-        for (pos = 0; pos < klen; ++pos)
+        pos = 0;
+        for (; pos < klen; ++pos)
+        {
+            base = StrLine[pos];
+            if (base == '\t') break;
+        }
+        ++pos;
+        for (; pos < klen; ++pos)
+        {
+            base = StrLine[pos];
+            if (base == '\t') break;
+        }
+        ++pos;
+        for (; pos < klen; ++pos)
         {
             base = StrLine[pos];
             if (base == '\t') break;
@@ -398,7 +414,6 @@ void KmerCounter<dictsize>::count_kmer(FastaReader &file, uint16* samplevecs)
     }
     }
         
-    file.Close();
     return ;
 };
 
@@ -438,13 +453,34 @@ void KmerCounter<dictsize>::count_kmer(typefile &file, uint16* samplevecs)
 	}
     }
         
-    file.Close();
     return ;
 };
 
 
 template <int dictsize>
-void KmerCounter<dictsize>::count_kmer_(char* inputfile, uint16* samplevecs)
+template <class typefile>
+void KmerCounter<dictsize>::count_kmer_(typefile &file, uint16* samplevecs, const int nthreads)
+{
+    
+    std::vector<std::thread> threads;
+        
+    for(int i=0; i< nthreads; ++i)
+    {
+        threads.push_back(std::thread([this, &file, &samplevecs]()
+        {
+            this->count_kmer<typefile>(file, samplevecs);
+        }));
+    }
+    
+    for(int i=0; i< nthreads; ++i)
+    {
+        threads[i].join();
+    }
+    
+};
+
+template <int dictsize>
+void KmerCounter<dictsize>::Call(const char* inputfile, uint16* samplevecs, const int nthreads)
 {
     
     int pathlen = (int)strlen(inputfile);
@@ -452,41 +488,25 @@ void KmerCounter<dictsize>::count_kmer_(char* inputfile, uint16* samplevecs)
     if ( pathlen > 2 && strcmp(inputfile+(pathlen-3),".gz") == 0 )
     {
         FastqReader readsfile(inputfile);
-        count_kmer(readsfile, samplevecs);
+        count_kmer_(readsfile, samplevecs, nthreads);
+	readsfile.Close();
     }
         
     else if ( (pathlen > 2 && strcmp(inputfile+(pathlen-3),".fa")==0) || (pathlen > 6 && strcmp(inputfile+(pathlen-6),".fasta") == 0 ))
     {
         FastaReader readsfile(inputfile);
         
-        count_kmer(readsfile, samplevecs);
+        count_kmer_(readsfile, samplevecs, 1);
+	
+	readsfile.Close();
     }
     else if (pathlen > 5 && ( strcmp(inputfile+(pathlen-5),".cram") == 0 ))
     {
         CramReader readsfile(inputfile);
         readsfile.LoadRegion(regions);
-        count_kmer(readsfile, samplevecs);
+        count_kmer_(readsfile, samplevecs, nthreads);
+	readsfile.Close();
     }
-    
-};
-
-template <int dictsize>
-void KmerCounter<dictsize>::Call(const char* infile, uint16* samplevecs, const int nthreads)
-{
-    std::vector<std::thread> threads;
-        
-    for(int i=0; i< nthreads; ++i)
-    {
-        threads.push_back(std::thread( std::bind( &KmerCounter<dictsize>::count_kmer_, this, (char*)infile, samplevecs ) ));
-    }
-    
-    
-    for(int i=0; i< nthreads; ++i)
-    {
-        threads[i].join();
-    }
-    
-    
 }
 
 

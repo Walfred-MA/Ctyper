@@ -14,9 +14,8 @@
 
 
 
-
-int main(int argc, const char * argv[]) {
-    
+int main(int argc, const char * argv[])
+{
     
     std::vector<std::string> inputfiles;
         
@@ -32,7 +31,8 @@ int main(int argc, const char * argv[]) {
     
     const char* Argument;
     int nthreads = 1;
-    
+    int Nsubthreads = 1;
+    int window = 30;
     
     for (int i = 1; i < argc ; i++)
     {
@@ -115,7 +115,7 @@ int main(int argc, const char * argv[]) {
         {
             genes.insert(argv[i]);
         }
-
+         
         else if (strcmp(Argument, "-G")==0 or strcmp(Argument, "--Genes")==0)
         {
             std::ifstream pathfile(argv[i]);
@@ -137,11 +137,16 @@ int main(int argc, const char * argv[]) {
             nthreads=(int)atoi(argv[i]);
         }
         
+        else if (strcmp(Argument, "-N")==0 or strcmp(Argument, "--Nsubthreads")==0)
+        {
+            Nsubthreads=(int)atoi(argv[i]);
+        }
+        
         else if (strcmp(Argument, "-d")==0 or strcmp(Argument, "--depth")==0)
         {
             depths.push_back(atof(argv[i]));
         }
-
+        
         else if (strcmp(Argument, "-D")==0 or strcmp(Argument, "--Depth")==0)
         {
             std::ifstream pathfile(argv[i]);
@@ -157,6 +162,10 @@ int main(int argc, const char * argv[]) {
                 depths.push_back(atof(line.c_str()));
             }
         }
+        else if (strcmp(Argument, "-w")==0 or strcmp(Argument, "--window")==0)
+        {
+            window = (int)atoi(argv[i]);
+        }
         
     }
     
@@ -164,7 +173,7 @@ int main(int argc, const char * argv[]) {
     
     auto begin = std::chrono::high_resolution_clock::now();
     
-    Processor<32> *processor = new Processor<32>(inputfiles, outputfiles, depths, kmatrixfile, genes, regions,  nthreads);
+    Processor<32> *processor = new Processor<32>(inputfiles, outputfiles, depths, kmatrixfile, genes, regions, window, nthreads, Nsubthreads);
 
     processor->Run();
     
