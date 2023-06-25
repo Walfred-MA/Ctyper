@@ -158,7 +158,7 @@ public:
             {
                 totalwindow += thepair.second;
             }
-            if (totalwindow < 1000) continue;
+            if (totalwindow < 100) continue;
             
       	    fprintf(fwrite,"windows size %u at path %u:\n", window,path); 
             for (pair<int,int> thepair: windowcover)
