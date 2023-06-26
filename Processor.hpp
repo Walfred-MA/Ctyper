@@ -160,7 +160,7 @@ public:
             }
             if (totalwindow < 100) continue;
             
-      	    fprintf(fwrite,"windows size %u at path %d:", window,path-1); 
+      	    fprintf(fwrite,"windows size %u at path %d:", window,path); 
             for (pair<int,int> thepair: windowcover)
             {
                 int query = thepair.first;
