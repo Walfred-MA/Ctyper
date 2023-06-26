@@ -154,11 +154,13 @@ public:
         {
             auto& windowcover = windowcovers[path];
             ull totalwindow = 0;
+	    ull totalobserve = 0;
             for (pair<int,int> thepair: windowcover)
             {
                 totalwindow += thepair.second;
+		totalobserve += thepair.first;
             }
-            if (totalwindow < 100) continue;
+            if (totalwindow < 100 && totalobserve < 1000) continue;
             
       	    fprintf(fwrite,"windows size %u at path %d:", window,path); 
             for (pair<int,int> thepair: windowcover)
