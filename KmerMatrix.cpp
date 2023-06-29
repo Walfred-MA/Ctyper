@@ -11,10 +11,10 @@ inline void getEachRowValue(const FLOAT_T depth, const int count, const char sig
 {
     
     float ori_weight = 1.0;
-    if (sign==1 && rowsize == 1)
-    {
-        ori_weight = 0.05 ;
-    }
+    //if (sign==1 && rowsize == 1)
+    //{
+        //ori_weight = 0.05 ;
+    //}
     
     float count_f;           //float copy number value
     float count_i;   //estimate number of copy and at least one copy
@@ -23,8 +23,7 @@ inline void getEachRowValue(const FLOAT_T depth, const int count, const char sig
     {
         count_f = 0.0;
         count_i = 1.0;
-        new_weight = ori_weight;
-        
+        new_weight = 1.0;
     }
     else
     {
@@ -34,7 +33,6 @@ inline void getEachRowValue(const FLOAT_T depth, const int count, const char sig
         norm_value += 1.00/count_i;
     }
     
-    //weight_value += new_weight;
     weight_value += (new_weight - ori_weight);  //weight is reversely proportion to square of estimated copy number, we calculate offsite to the original weight
                //norm vector value of this kmer = count_i * weight = 1.00/count_i
     
@@ -128,14 +126,13 @@ void KmerMatrix::WindowCovers(const uint16* kmervec, const uint16* kmermatrix, c
 {
     
     const uint16* rowdata = kmermatrix;
-
+    
     int copynum = 0;
     for (int i = 0; i < genenum; ++i)
     {
         copynum += results[i];
-    }       
-
- 
+    }
+    
     vector<int*> oldwindows;
     oldwindows.reserve(1000000);
     
@@ -143,7 +140,8 @@ void KmerMatrix::WindowCovers(const uint16* kmervec, const uint16* kmermatrix, c
     int kmernum = 0;
     for (size_t i = 0; i < knum; ++i)
     {
-
+        
+        
         loc= ( rowdata[3] << 16 ) + rowdata[4];
         loc /= window;
 
@@ -208,10 +206,13 @@ void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const 
         diag_offsites.get()[i] = norm_matrix[i * gnum + i];
     }
     
+    
+    
     FLOAT_T matrix_offsite = 0, vec_offsite = 0;
     
     FLOAT_T norm_value = 0.0, weight_value = 0.0;
     
+    size_t seg_counter = 0;
     const uint16* rowdata = kmermatrix;
     
     for (size_t i = 0; i < knum; ++i)
@@ -224,22 +225,28 @@ void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const 
                 break;
             case '=':
                 getEachRowValue(depth, kmervec[i], 1, rowdata[1], total_lambda, norm_value, weight_value);
+                if (kmervec[i] > 3) ++seg_counter;
                 break;
             case '-':
+                
                 getEachRowValue(depth, kmervec[i], 0, rowdata[1], total_lambda, norm_value, weight_value);
                 
                 getEachRowNorm_major(rowdata[1], &rowdata[FIXCOL], gnum, norm_vec,  norm_matrix, norm_value, weight_value,
                                      vec_offsite, matrix_offsite, row_offsites.get());
+                
                 norm_value = 0.0;
                 weight_value = 0.0;
                 break;
             case '+':
+                if (rowdata[1] < 2) weight_value += 0.95 * seg_counter;
+                
                 getEachRowValue(depth, kmervec[i], 1, rowdata[1], total_lambda, norm_value, weight_value);
                 
                 getEachRowNorm_minor(rowdata[1], &rowdata[FIXCOL], gnum, norm_vec,  norm_matrix, norm_value, weight_value);
                 
                 norm_value = 0.0;
                 weight_value = 0.0;
+                seg_counter =0;
                 break;
             default:
                 
