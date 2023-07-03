@@ -23,10 +23,13 @@
 #include "KtableReader.hpp"
 #include "KmerMatrix.hpp"
 #include "KmerCounter.hpp"
+#include "KmerWindow.hpp"
 #include "Regression.hpp"
 #include "PriorData.hpp"
 
+
 #define DefaultSize 4000
+
 
 using namespace std;
 
@@ -61,7 +64,9 @@ public:
     residuels(new FLOAT_T[MAX_UINT16]),
     
     results(new int[MAX_UINT16]),
-    finished_group(p)
+    finished_group(p),
+    
+    kmerwindow(w)
     {};
     
     void counting(const std::string& inputfile)
@@ -72,15 +77,16 @@ public:
         counter.Call(inputfile.c_str(), kmer_counts.get(), Nsubthreads);
         finishcounting = 1;
 
+        
     };
     
     void runOneGroup(const PriorChunk* priorData, const std::string& inputfile, const std::string& outputfile, const float depth, std::mutex& Threads_lock)
     {
         
         cout << "generating kmer matrix for sample: " << inputfile<<endl;
-        matrix.getNorm(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size,norm_vec.get(), norm_matrix.get(), total_lambda);
+        matrix.getNorm(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size,
+                       norm_vec.get(), norm_matrix.get(), total_lambda);
         
-		
         cout << "regressing to references for sample: " << inputfile<<endl;
         regresser.Call(priorData->genenum, norm_vec.get(), norm_matrix.get(),  total_lambda, priorData->gene_kmercounts, coefs.get(), residuels.get());
         
@@ -90,21 +96,16 @@ public:
 
         cout << "determine window residuels: " << inputfile<<endl;
         
-        vector<vector<pair<int,int>>> windowcovers(priorData->pathsizes.size()+1);
-       
-        for (int i =0; i < priorData->pathsizes.size(); ++i)
-        {
-            windowcovers[i].resize(priorData->pathsizes[i]/window + 1);
-        }
+        kmerwindow.resize(priorData->pathsizes);
         
-        matrix.WindowCovers(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size, priorData->genenum, results.get(), windowcovers, window);
+        kmerwindow.WindowCovers(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size, priorData->genenum, results.get());
                 
-        write(outputfile, inputfile, priorData->prefix, priorData->genenames, windowcovers, depth, Threads_lock);
+        write(outputfile, inputfile, priorData->prefix, priorData->genenames, kmerwindow.windowcovers, depth, Threads_lock);
 
 		cout<<"finish run"<<endl;
     };
     
-    void write(const std::string& outputfile, const string &sample, const string &prefix, const vector<string>&genenames, const vector<vector<pair<int,int>>>& windowcovers, const float depth, std::mutex& Threads_lock)
+    void write(const std::string& outputfile, const string &sample, const string &prefix, const vector<string>&genenames, const vector<vector<tuple<int,int,int>>>& windowcovers, const float depth, std::mutex& Threads_lock)
     {
         std::unique_lock<std::mutex> lck(Threads_lock);
         
@@ -152,23 +153,36 @@ public:
         
         for (int path = 1; path < windowcovers.size(); ++path )
         {
-            auto& windowcover = windowcovers[path];
-            ull totalwindow = 0;
-	    ull totalobserve = 0;
-            for (pair<int,int> thepair: windowcover)
-            {
-                totalwindow += thepair.second;
-		totalobserve += thepair.first;
-            }
-            if (totalwindow < 100 && totalobserve < 1000) continue;
+            auto &windowcover = windowcovers[path];
             
-      	    fprintf(fwrite,"windows size %u at path %d:", window,path); 
-            for (pair<int,int> thepair: windowcover)
+            ull totalwindow = 0;
+            for (auto &thepair: windowcover)
             {
-                int query = thepair.first;
-                int ref = thepair.second;
+                totalwindow += get<1>(thepair);
+            }
+            if (totalwindow < 100) continue;
+            
+            fprintf(fwrite,"windows size %u at path %d: ", window,path);
+            
+            int lastcpnum = -1;
+            for (auto &thepair: windowcover)
+            {
+                int query = get<0>(thepair);
+                int ref = get<1>(thepair);
+                int cpnum = get<2>(thepair);
+                
+                if (ref > 0)
+                {
+                    if (cpnum != lastcpnum)
+                    {
+                        fprintf(fwrite,"%d|", cpnum);
+                        lastcpnum = cpnum;
+                    }
+                }
+                
                 if (query > 0 or ref >0)
                 {
+                    
                     fprintf(fwrite,"%d/%d,", query, ref);
                 }
                 else
@@ -229,7 +243,7 @@ public:
         memset(residuels.get(), 0, sizeof(FLOAT_T) * gnum);
         
         memset(results.get(), 0, sizeof(int) * gnum);
-                
+                        
         total_lambda = 0;
 
                 
@@ -282,6 +296,7 @@ private:
     KmerMatrix matrix;
     Regression regresser;
     TreeRound tree;
+    KmerWindow kmerwindow;
     
     size_t gnum;
     size_t alloc_size = 1000;

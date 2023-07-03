@@ -7,35 +7,34 @@
 
 #include "KmerMatrix.hpp"
 
-inline void getEachRowValue(const FLOAT_T depth, const int count, const char sign, const uint16 rowsize, FLOAT_T &total_lambda, FLOAT_T &norm_value, FLOAT_T &weight_value)
+inline void getEachRowValue(const FLOAT_T depth, const int count, const char sign, const uint16 uniqcounter,const FLOAT_T mean_repeat,FLOAT_T &total_lambda, FLOAT_T &norm_value, FLOAT_T &weight_value)
 {
-    
     float ori_weight = 1.0;
-    //if (sign==1 && rowsize == 1)
-    //{
-        //ori_weight = 0.05 ;
-    //}
+    if (sign==1 && uniqcounter == 1)
+    {
+        ori_weight = 0.05 ;
+    }
+    
+    if (count <= 3 )
+    {
+        if (mean_repeat > 1.0) weight_value += (ori_weight/mean_repeat - ori_weight);
+        return ;
+    }
     
     float count_f;           //float copy number value
     float count_i;   //estimate number of copy and at least one copy
     float new_weight;
-    if (count <= 3)
-    {
-        count_f = 0.0;
-        count_i = 1.0;
-        new_weight = 1.0;
-    }
-    else
-    {
-        count_f = 1.0 * count/depth;
-        count_i = (int(count_f+ 0.5) > 1.0) ? int(count_f+ 0.5) : 1.0;   //estimate number of copy and at least one copy
-        new_weight =  1.00/(count_i*count_i);
-        norm_value += 1.00/count_i;
-    }
     
-    weight_value += (new_weight - ori_weight);  //weight is reversely proportion to square of estimated copy number, we calculate offsite to the original weight
+    count_f = 1.0 * count/depth;
+    count_i = (int(count_f+ 0.5) > 1.0) ? int(count_f+ 0.5) : 1.0;   //estimate number of copy and at least one copy
+    
+    new_weight =  1.00/(count_i*count_i * mean_repeat);
+    
+    norm_value += count_i * new_weight ;
+    weight_value += new_weight - ori_weight;
+    //weight_value += (new_weight - ori_weight);  //weight is reversely proportion to square of estimated copy number, we calculate offsite to the original weight
                //norm vector value of this kmer = count_i * weight = 1.00/count_i
-    
+        
     total_lambda += count_f;
 }
 
@@ -122,84 +121,11 @@ inline void AddOffsites(FLOAT_T *norm_vec, FLOAT_T *norm_matrix, const FLOAT_T  
         
 }
 
-void KmerMatrix::WindowCovers(const uint16* kmervec, const uint16* kmermatrix, const FLOAT_T depth, const uint16 gnum, const uint knum, const int genenum, const int* results, vector<vector<pair<int,int>>>& covers, const int window)
-{
-    
-    const uint16* rowdata = kmermatrix;
-    
-    int copynum = 0;
-    for (int i = 0; i < genenum; ++i)
-    {
-        copynum += results[i];
-    }
-    
-    vector<int*> oldwindows;
-    oldwindows.reserve(1000000);
-    
-    uint loc;
-    int kmernum = 0;
-    for (size_t i = 0; i < knum; ++i)
-    {
-        
-        
-        loc= ( rowdata[3] << 16 ) + rowdata[4];
-        loc /= window;
-
-        pair<int,int>& thiswindow = covers[rowdata[2]][loc];
-
-        thiswindow.first += (int)kmervec[i];
-        
-        switch (rowdata[0])
-        {
-            case '_':
-                
-                oldwindows.push_back(&thiswindow.second);
-                break;
-            case '=':
-                
-                oldwindows.push_back(&thiswindow.second);
-                break;
-            case '-':
-                kmernum = copynum;
-                for (int i = 0 ; i < rowdata[1] ; i++)
-                {
-                    kmernum -= results[rowdata[ FIXCOL + i]];
-                }
-                
-                for (int* oldwindow: oldwindows)
-                {
-                    *oldwindow += kmernum;
-                }
-                
-                oldwindows.clear();
-                break;
-            case '+':
-                kmernum = 0;
-                for (int i = 0 ; i < rowdata[1] ; i++)
-                {
-                    kmernum += results[rowdata[ FIXCOL + i]];
-                }
-                
-                for (int* oldwindow: oldwindows)
-                {
-                    *oldwindow += kmernum;
-                }
-                
-                oldwindows.clear();
-                break;
-            default:
-                break;
-        }
-        
-        rowdata = &rowdata[rowdata[1] + FIXCOL];
-    }
-    
-}
-
 
 void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const FLOAT_T depth, const uint16 gnum, const uint knum, FLOAT_T* norm_vec, FLOAT_T* norm_matrix, FLOAT_T  &total_lambda)
 {
-            
+    //memset(norm_matrix , 0,sizeof(FLOAT_T)*gnum*gnum);
+    
     for (size_t i = 0; i < gnum; ++i)
     {
         row_offsites.get()[i] = 0;
@@ -207,56 +133,117 @@ void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const 
     }
     
     
-    
     FLOAT_T matrix_offsite = 0, vec_offsite = 0;
     
-    FLOAT_T norm_value = 0.0, weight_value = 0.0;
+    FLOAT_T norm_value = 0.0, weight_value = 0.0, mean_repeat = 1.0, mean_repeat_this = 1.0;
     
-    size_t seg_counter = 0;
+    uint16 uniqcounter=0, j =0;
+    
+    uint16 lastsize = 0;
+    uint16 lastsign = 0;
+    const uint16* lastnorm = NULL;
     const uint16* rowdata = kmermatrix;
     
-    for (size_t i = 0; i < knum; ++i)
+    for (size_t i = 0; i < knum ; ++i)
     {
-        
+       
         switch (rowdata[0])
         {
             case '_':
-                getEachRowValue(depth, kmervec[i], 0, rowdata[1], total_lambda, norm_value, weight_value);
+                getEachRowValue(depth, kmervec[i], 0, 2, 1.0, total_lambda, norm_value, weight_value);
                 break;
             case '=':
-                getEachRowValue(depth, kmervec[i], 1, rowdata[1], total_lambda, norm_value, weight_value);
-                if (kmervec[i] > 3) ++seg_counter;
+                
+                if (rowdata[2] && (rowdata[3] || rowdata[4] >= 30 ))
+                {
+                    mean_repeat_this = 1.0;
+                }
+                else
+                {
+                    mean_repeat_this = mean_repeat;
+                }
+                
+                getEachRowValue(depth, kmervec[i], 1, uniqcounter, mean_repeat_this, total_lambda, norm_value, weight_value);
                 break;
+                
             case '-':
                 
-                getEachRowValue(depth, kmervec[i], 0, rowdata[1], total_lambda, norm_value, weight_value);
+                if (lastsign == '-')
+                {
+                    getEachRowNorm_major(lastsize, lastnorm, gnum, norm_vec,  norm_matrix, norm_value, weight_value,
+                                         vec_offsite, matrix_offsite, row_offsites.get());
+                }
+                else if (lastsign == '+')
+                {
+                    getEachRowNorm_minor(lastsize, lastnorm, gnum, norm_vec,  norm_matrix, norm_value, weight_value);
+                }
                 
-                getEachRowNorm_major(rowdata[1], &rowdata[FIXCOL], gnum, norm_vec,  norm_matrix, norm_value, weight_value,
-                                     vec_offsite, matrix_offsite, row_offsites.get());
-                
+                lastsize = rowdata[1];
+                lastnorm = &rowdata[FIXCOL];
+                lastsign = rowdata[0];
                 norm_value = 0.0;
                 weight_value = 0.0;
+                
+                getEachRowValue(depth, kmervec[i], 0,  2, 1.0,  total_lambda, norm_value, weight_value);
                 break;
-            case '+':
-                if (rowdata[1] < 2) weight_value += 0.95 * seg_counter;
+            case'+':
                 
-                getEachRowValue(depth, kmervec[i], 1, rowdata[1], total_lambda, norm_value, weight_value);
+                if (lastsign == '-')
+                {
+                    getEachRowNorm_major(lastsize, lastnorm, gnum, norm_vec,  norm_matrix, norm_value, weight_value,
+                                         vec_offsite, matrix_offsite, row_offsites.get());
+                }
+                else if (lastsign == '+')
+                {
+                    getEachRowNorm_minor(lastsize, lastnorm, gnum, norm_vec,  norm_matrix, norm_value, weight_value);
+                }
                 
-                getEachRowNorm_minor(rowdata[1], &rowdata[FIXCOL], gnum, norm_vec,  norm_matrix, norm_value, weight_value);
-                
+                lastsize = rowdata[1];
+                lastnorm = &rowdata[FIXCOL];
+                lastsign = rowdata[0];
                 norm_value = 0.0;
                 weight_value = 0.0;
-                seg_counter =0;
+                
+                uniqcounter = 1;
+                for (j = FIXCOL + 1 ; j < FIXCOL + rowdata[1]  ; ++j)
+                {
+                    if ( rowdata[j] != rowdata[j-1] ) ++ uniqcounter;
+                }
+                mean_repeat = MAX(1.0, 1.0 * rowdata[1])/uniqcounter;
+                mean_repeat *= mean_repeat  ;
+                    
+                if (rowdata[2] && (rowdata[3] || rowdata[4] >= 30 ))
+                {
+                    mean_repeat_this = 1.0;
+                }
+                else
+                {
+                    mean_repeat_this = mean_repeat;
+                }
+                getEachRowValue(depth, kmervec[i], 1, uniqcounter, mean_repeat_this, total_lambda, norm_value, weight_value);
                 break;
             default:
-                
                 break;
         }
-        
+                    
         rowdata = &rowdata[rowdata[1] + FIXCOL];
         
     }
     
+    if (lastsign == '-')
+    {
+        getEachRowNorm_major(lastsize, lastnorm, gnum, norm_vec,  norm_matrix, norm_value, weight_value,
+                             vec_offsite, matrix_offsite, row_offsites.get());
+    }
+    else if (lastsign == '+')
+    {
+        getEachRowNorm_minor(lastsize, lastnorm, gnum, norm_vec,  norm_matrix, norm_value, weight_value);
+    }
+    
+    
     AddOffsites(norm_vec, norm_matrix, vec_offsite, matrix_offsite, row_offsites.get(), diag_offsites.get(), gnum);
     
+    
+    
 }
+
