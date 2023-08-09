@@ -16,7 +16,7 @@ void KmerWindow::WindowCovers(const uint16* kmervec, const uint16* kmermatrix, c
     int copynum = 0;
     for (int i = 0; i < genenum; ++i)
     {
-        copynum += results[i];
+        if (results[i] > 0) copynum += results[i];
     }
     
     uint loc;
