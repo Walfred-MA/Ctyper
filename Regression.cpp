@@ -190,7 +190,8 @@ void Regression::Call(uint size,  FLOAT_T *kernal_vec, FLOAT_T *weightnorm, floa
     {
         regressed_kmer += kmercounts[i] * coefs[i];
     }
-    
+    regressed_kmer = (regressed_kmer > 0 ) ? regressed_kmer : 1;
+
     float correction = total_lambda/regressed_kmer;
     
     for (int i = 0; i < size; ++i)
