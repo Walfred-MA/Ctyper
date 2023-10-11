@@ -4,11 +4,11 @@ SAN=
 CPPFLAGS=-std=c++17 -O3
 
 ctyper: main.cpp CramReader.o  FastaReader.o FastqReader.o KmerHash.o KmerCounter.o KmerMatrix.o KmerWindow.o KtableReader.o PriorData.o Regression.o TreeRound.o Processor.o 
-	g++ $(SAN) $(CPPFLAGS)  -o $@ $^ -I $(EIGEN_ROOT)/include/eigen3 -I$(CONDA_PREFIX)/include/ -L$(CONDA_PREFIX)/lib/ -lhts -ldeflate -lbz2 -lpthread -lz -lm -lstdc++fs  
+	g++ $(SAN) $(CPPFLAGS)  -o $@ $^ -I $(EIGEN_ROOT)/include/eigen3 -I$(CONDA_PREFIX)/include/ -L/usr/local/lib -L$(CONDA_PREFIX)/lib/ -lhts -ldeflate -lbz2 -lpthread -lz -lm -lstdc++fs  
 
 
 %.o: %.cpp %.hpp FileReader.hpp
-	g++ $(SAN) $(CPPFLAGS) -c $^  -I $(EIGEN_ROOT)/include/eigen3 -I$(CONDA_PREFIX)/include/ -L$(CONDA_PREFIX)/lib/ -lhts -ldeflate -lbz2 -lpthread -lz -lm -lstdc++fs 
+	g++ $(SAN) $(CPPFLAGS) -c $^  -I $(EIGEN_ROOT)/include/eigen3 -I$(CONDA_PREFIX)/include/ -L/usr/local/lib -L$(CONDA_PREFIX)/lib/ -lhts -ldeflate -lbz2 -lpthread -lz -lm -lstdc++fs 
 
 clean:
 	rm *.o *.gch  ctyper
