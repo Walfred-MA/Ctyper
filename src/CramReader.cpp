@@ -21,14 +21,6 @@ void CramReader::LoadRegion(std::vector<char *>& bedregions)
             
     samfile = hts_open(filepath, "r");
                 
-    if (!samfile) {
-        
-        std::cerr << "ERROR: Could not open " << filepath << " for reading.\n" << std::endl;
-        std::_Exit(EXIT_FAILURE);
-        
-        return;
-    }
-
         
     indexdata = sam_index_load2(samfile, filepath, indexpath.c_str());
     
