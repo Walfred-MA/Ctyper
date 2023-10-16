@@ -432,7 +432,7 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
 
     for (uint16 i = 0; i < groupnum + 1; ++i)
     {
-        if (grouptotalnums[i] > 0.2)
+        if (grouptotalnums[i] >= 0.2)
         {
             std::sort(allratios[i].begin(), allratios[i].begin() + grouptotalobs[i]);
             
