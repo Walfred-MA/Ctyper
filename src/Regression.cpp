@@ -273,7 +273,7 @@ inline void GetMedianAttemp2_mul(const FLOAT_T* coefs, const uint16* kmervec, co
 {
     
     FLOAT_T localnum = 0.0;
-    vector<FLOAT_T> grouplocalnums (groupnum, 0.0);
+    vector<FLOAT_T> grouplocalnums (groupnum + 1, 0.0);
     vector<size_t> oldtotalobs = grouptotalobs;
     
     for (size_t i = 0; i < knum; ++i)
