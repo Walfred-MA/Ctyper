@@ -388,7 +388,7 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
         grouptotalnums[groups[i]] += coefs[i];
     }
     
-    vector<vector<FLOAT_T>> allratios(groupnum);
+    vector<vector<FLOAT_T>> allratios(groupnum + 1);
     for (uint16 index = 0; index < groupnum;++index)
     {
         if ( grouptotalnums[index] > 0.2) allratios[index].resize(knum,0);
@@ -399,7 +399,7 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     size_t totalobs = 500;
     for (uint16 index = 0; index < groupnum;++index)
     {
-        if ( grouptotalnums[index] > 0.2 && grouptotalobs[index] < totalobs)
+        if ( grouptotalnums[index] > 0.2 && grouptotalobs[index] < 500)
         {
             totalobs = grouptotalobs[index];
             allratios[index].resize(100 * 1000 + knum,0);
@@ -414,7 +414,7 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     totalobs = 500;
     for (uint16 index = 0; index < groupnum;++index)
     {
-        if ( grouptotalnums[index] >= 0.2 && grouptotalobs[index] < totalobs)
+        if ( grouptotalnums[index] >= 0.2 && grouptotalobs[index] < 500)
         {
             totalobs = grouptotalobs[index];
             allratios[index].resize(100 * 1000 + knum,0);
