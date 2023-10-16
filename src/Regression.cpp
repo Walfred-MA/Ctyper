@@ -230,11 +230,19 @@ inline void GetMedianAttemp1_mul(const FLOAT_T* coefs, const uint16* kmervec, co
     
     for (size_t i = 0; i < knum; ++i)
     {
-        if (kmervec[i] < 3) continue;
+        if (kmervec[i] < 3)
+        {
+            rowdata = &rowdata[rowdata[1] + FIXCOL];
+            continue;
+        }
         
         getlocalnum_mul(coefs, rowdata, totalnum, localnum, grouptotalnums, grouplocalnums, groups);
         
-        if (localnum < 0.5) continue;
+        if (localnum < 0.5)
+        {
+            rowdata = &rowdata[rowdata[1] + FIXCOL];
+            continue;
+        }
 
         grouplocalnums[groupnum] = localnum;
         
@@ -270,11 +278,19 @@ inline void GetMedianAttemp2_mul(const FLOAT_T* coefs, const uint16* kmervec, co
     
     for (size_t i = 0; i < knum; ++i)
     {   
-        if (kmervec[i] < 3) continue;
+        if (kmervec[i] < 3)
+        {
+            rowdata = &rowdata[rowdata[1] + FIXCOL];
+            continue;
+        }
         
         getlocalnum_mul(coefs, rowdata, totalnum, localnum, grouptotalnums, grouplocalnums, groups);
 
-        if (localnum < 0.5) continue;
+        if (localnum < 0.5)
+        {
+            rowdata = &rowdata[rowdata[1] + FIXCOL];
+            continue;
+        }
         
         FLOAT_T ratio = kmervec[i] / localnum;
         grouplocalnums[groupnum] = localnum;
@@ -322,11 +338,19 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
     for (size_t i = 0; i < knum; ++i)
     {
 
-        if (kmervec[i] < 3) continue;
+        if (kmervec[i] < 3)
+        {
+            rowdata = &rowdata[rowdata[1] + FIXCOL];
+            continue;
+        }
         
         getlocalnum_mul(coefs, rowdata, totalnum, localnum, grouptotalnums, grouplocalnums, groups);
 
-        if (localnum < 0.5) continue;
+        if (localnum < 0.5)
+        {
+            rowdata = &rowdata[rowdata[1] + FIXCOL];
+            continue;
+        }
         
         FLOAT_T ratio = kmervec[i] / localnum;
         grouplocalnums[groupnum] = localnum;
@@ -478,11 +502,19 @@ inline void GetMedianAttemp1(const FLOAT_T* coefs, const uint16* kmervec, const 
     FLOAT_T localnum = 0.0;
     for (size_t i = 0; i < knum; ++i)
     {
-        if (kmervec[i] < 3) continue;
+        if (kmervec[i] < 3)
+        {
+            rowdata = &rowdata[rowdata[1] + FIXCOL];
+            continue;
+        }
         
         getlocalnum(coefs, rowdata, totalnum, localnum);
         
-        if ( localnum < 0.5) continue;
+        if ( localnum < 0.5)
+        {
+            rowdata = &rowdata[rowdata[1] + FIXCOL];
+            continue;
+        }
 
         FLOAT_T ratio = kmervec[i] / localnum;
             
@@ -511,11 +543,19 @@ inline void GetMedianAttemp2(const FLOAT_T* coefs, const uint16* kmervec, const 
     for (size_t i = 0; i < knum; ++i)
     {
 
-        if (kmervec[i] < 3) continue;
+        if (kmervec[i] < 3)
+        {
+            rowdata = &rowdata[rowdata[1] + FIXCOL];
+            continue;
+        }
         
         getlocalnum(coefs, rowdata, totalnum, localnum);
         
-        if ( localnum < 0.5) continue;
+        if ( localnum < 0.5)
+        {
+            rowdata = &rowdata[rowdata[1] + FIXCOL];
+            continue;
+        }
         
         FLOAT_T ratio = kmervec[i] / localnum;
             
@@ -547,11 +587,19 @@ inline void GetMedianAttemp3(const FLOAT_T* coefs, const uint16* kmervec, const 
     FLOAT_T localnum = 0.0;
     for (size_t i = 0; i < knum; ++i)
     {
-        if (kmervec[i] < 3) continue;
+        if (kmervec[i] < 3)
+        {
+            rowdata = &rowdata[rowdata[1] + FIXCOL];
+            continue;
+        }
         
         getlocalnum(coefs, rowdata, totalnum, localnum);
 
-        if ( localnum < 0.5) continue;
+        if ( localnum < 0.5)
+        {
+            rowdata = &rowdata[rowdata[1] + FIXCOL];
+            continue;
+        }
         
         FLOAT_T ratio = kmervec[i] / localnum;
             
@@ -673,7 +721,6 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
                 
                 residuels[i] *= correction;
             }
-            
         }
     }
 }
