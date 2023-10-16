@@ -305,7 +305,7 @@ inline void GetMedianAttemp2_mul(const FLOAT_T* coefs, const uint16* kmervec, co
         {
             for (int i = 0 ; i < groupnum + 1; ++i)
             {
-                if (oldtotalobs[i] < 500 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                if (oldtotalobs[i] < sufficient && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
                 {
                     fill(allratios[i].begin() + grouptotalobs[i], allratios[i].begin() + grouptotalobs[i]+10, ratio);
                     grouptotalobs[i] += 10;
@@ -317,7 +317,7 @@ inline void GetMedianAttemp2_mul(const FLOAT_T* coefs, const uint16* kmervec, co
         {
             for (int i = 0 ; i < groupnum + 1; ++i)
             {
-                if (oldtotalobs[i] < 500 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                if (oldtotalobs[i] < sufficient && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
                 {
                     allratios[i][grouptotalobs[i]++] = ratio;
                 }
@@ -365,7 +365,7 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
         {
             for (int i = 0 ; i < groupnum + 1; ++i)
             {
-                if (oldtotalobs[i] < 500 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                if (oldtotalobs[i] < sufficient && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
                 {
                     fill(allratios[i].begin() + grouptotalobs[i], allratios[i].begin() + grouptotalobs[i]+20, ratio);
                     grouptotalobs[i] += 20;
@@ -377,7 +377,7 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
         {
             for (int i = 0 ; i < groupnum + 1; ++i)
             {
-                if (oldtotalobs[i] < 500 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                if (oldtotalobs[i] < sufficient && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
                 {
                     fill(allratios[i].begin() + grouptotalobs[i], allratios[i].begin() + grouptotalobs[i]+10, ratio);
                     grouptotalobs[i] += 10;
@@ -390,7 +390,7 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
         {
             for (int i = 0 ; i < groupnum + 1; ++i)
             {
-                if (oldtotalobs[i] < 500 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                if (oldtotalobs[i] < sufficient && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
                 {
                     allratios[i][grouptotalobs[i]++] = ratio;
                 }
@@ -407,6 +407,7 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     
     vector<size_t> grouptotalobs (groupnum + 1, 0.0);
     vector<FLOAT_T> grouptotalnums (groupnum + 1, 0.0);
+    vector<vector<FLOAT_T>> allratios(groupnum + 1);
     
     FLOAT_T totalnum = 0.0;
     for (int i = 0; i < gnum; ++i)
@@ -416,7 +417,6 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     }
     grouptotalnums[groupnum] = 1.0;
     
-    vector<vector<FLOAT_T>> allratios(groupnum + 1);
     for (uint16 index = 0; index < groupnum + 1;++index)
     {
         if ( grouptotalnums[index] >= 0.2) allratios[index].resize(knum,0);
@@ -424,32 +424,32 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     
     GetMedianAttemp1_mul(coefs, kmervec,kmermatrix,knum, totalnum,grouptotalnums,groups, groupnum, grouptotalobs, allratios);
     
-    size_t totalobs = 500;
+    size_t totalobs = sufficient;
 
     for (uint16 index = 0; index < groupnum + 1;++index)
     {
-        if ( grouptotalnums[index] >= 0.2 && grouptotalobs[index] < 500)
+        if ( grouptotalnums[index] >= 0.2 && grouptotalobs[index] < sufficient)
         {
             totalobs = grouptotalobs[index];
-            allratios[index].resize(100 * 1000 + knum,0);
+            allratios[index].resize(20 * sufficient + knum,0);
         }
     }
         
-    if ( totalobs < 500)
+    if ( totalobs < sufficient)
     {
         GetMedianAttemp2_mul(coefs, kmervec,kmermatrix,knum, totalnum,grouptotalnums,groups, groupnum, grouptotalobs, allratios);
     }
     
-    totalobs = 500;
+    totalobs = sufficient;
     for (uint16 index = 0; index < groupnum + 1;++index)
     {
-        if ( grouptotalnums[index] >= 0.2 && grouptotalobs[index] < 500)
+        if ( grouptotalnums[index] >= 0.2 && grouptotalobs[index] < sufficient)
         {
             totalobs = grouptotalobs[index];
         }
     }
     
-    if ( totalobs < 500)
+    if ( totalobs < sufficient)
     {
         GetMedianAttemp3_mul(coefs, kmervec,kmermatrix,knum, totalnum,grouptotalnums,groups, groupnum, grouptotalobs, allratios);
     }
@@ -643,14 +643,14 @@ FLOAT_T aggregateCorr(const FLOAT_T * coefs, const uint16* kmervec, const uint16
     
     GetMedianAttemp1(coefs, kmervec, kmermatrix, knum, totalnum, totalobs, ratios);
     
-    if ( totalobs < 500)
+    if ( totalobs < sufficient)
     {
         ratios.resize(100 * 1000 + knum);
         GetMedianAttemp2(coefs, kmervec, kmermatrix, knum,totalnum, totalobs, ratios);
     }
     
     
-    if ( totalobs < 500)
+    if ( totalobs < sufficient)
     {
         GetMedianAttemp3(coefs, kmervec, kmermatrix, knum,totalnum, totalobs, ratios);
     }
