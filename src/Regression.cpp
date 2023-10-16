@@ -226,40 +226,38 @@ inline void GetMedianAttemp1_mul(const FLOAT_T* coefs, const uint16* kmervec, co
 {
     
     FLOAT_T localnum = 0.0;
-    vector<FLOAT_T> grouplocalnums (groupnum, 0.0);
-    
+    vector<FLOAT_T> grouplocalnums (groupnum + 1, 0.0);
     
     for (size_t i = 0; i < knum; ++i)
     {
+        if (kmervec[i] < 3) continue;
         
         getlocalnum_mul(coefs, rowdata, totalnum, localnum, grouptotalnums, grouplocalnums, groups);
         
-        if ( localnum > 0.5 && kmervec[i] > 2)
+        if (localnum < 0.5) continue;
+
+        grouplocalnums[groupnum] = localnum;
+        
+        if (rowdata[5] < errorcutoff1)
         {
-            
-            
-            if (rowdata[5] < errorcutoff1)
-            {
-                FLOAT_T ratio = kmervec[i] / localnum;
+            FLOAT_T ratio = kmervec[i] / localnum;
                 
-                if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
+            if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
+            {
+                float corr = 0.01 * (rowdata[5] & 0xFFC0)/64;
+                ratio *= corr;
+            }
+
+            for (int i = 0 ; i < groupnum + 1; ++i)
+            {
+                if (grouplocalnums[i] > 0.5 && grouptotalnums[i] > 0.2)
                 {
-                    float corr = 0.01 * (rowdata[5] & 0xFFC0)/64;
-                    ratio *= corr;
-                }
-                                    
-                for (int i = 0 ; i < groupnum ; ++i)
-                {
-                    if (grouplocalnums[i] > 0.5 && grouptotalnums[i] > 0.2)
-                    {
-                        allratios[i][grouptotalobs[i]++] = ratio;
-                    }
+                    allratios[i][grouptotalobs[i]++] = ratio;
                 }
             }
-        }
+         }
         
         rowdata = &rowdata[rowdata[1] + FIXCOL];
-        
     }
 }
 
@@ -271,11 +269,15 @@ inline void GetMedianAttemp2_mul(const FLOAT_T* coefs, const uint16* kmervec, co
     vector<size_t> oldtotalobs = grouptotalobs;
     
     for (size_t i = 0; i < knum; ++i)
-    {
+    {   
+        if (kmervec[i] < 3) continue;
         
         getlocalnum_mul(coefs, rowdata, totalnum, localnum, grouptotalnums, grouplocalnums, groups);
+
+        if (localnum < 0.5) continue;
         
         FLOAT_T ratio = kmervec[i] / localnum;
+        grouplocalnums[groupnum] = localnum;
         
         if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
         {
@@ -285,8 +287,7 @@ inline void GetMedianAttemp2_mul(const FLOAT_T* coefs, const uint16* kmervec, co
         
         if (rowdata[5] < errorcutoff1)
         {
-                                
-            for (int i = 0 ; i < groupnum ; ++i)
+            for (int i = 0 ; i < groupnum + 1; ++i)
             {
                 if (oldtotalobs[i] < 500 && grouplocalnums[i] > 0.5 && grouptotalnums[i] > 0.2)
                 {
@@ -298,15 +299,13 @@ inline void GetMedianAttemp2_mul(const FLOAT_T* coefs, const uint16* kmervec, co
         
         else if (rowdata[5] < errorcutoff2)
         {
-                                
-            for (int i = 0 ; i < groupnum ; ++i)
+            for (int i = 0 ; i < groupnum + 1; ++i)
             {
                 if (oldtotalobs[i] < 500 && grouplocalnums[i] > 0.5 && grouptotalnums[i] > 0.2)
                 {
                     allratios[i][grouptotalobs[i]++] = ratio;
                 }
-            }
-        
+            }        
         }
         
         rowdata = &rowdata[rowdata[1] + FIXCOL];
@@ -317,15 +316,20 @@ inline void GetMedianAttemp2_mul(const FLOAT_T* coefs, const uint16* kmervec, co
 inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, const uint16* rowdata, const uint knum, const FLOAT_T &totalnum, const vector<FLOAT_T> &grouptotalnums,const vector<uint16> &groups, const uint16 groupnum, vector<size_t> &grouptotalobs, vector<vector<FLOAT_T>> &allratios)
 {
     FLOAT_T localnum = 0.0;
-    vector<FLOAT_T> grouplocalnums (groupnum, 0.0);
+    vector<FLOAT_T> grouplocalnums (groupnum + 1, 0.0);
     vector<size_t> oldtotalobs = grouptotalobs;
     
     for (size_t i = 0; i < knum; ++i)
     {
+
+        if (kmervec[i] < 3) continue;
         
         getlocalnum_mul(coefs, rowdata, totalnum, localnum, grouptotalnums, grouplocalnums, groups);
+
+        if (localnum < 0.5) continue;
         
         FLOAT_T ratio = kmervec[i] / localnum;
+        grouplocalnums[groupnum] = localnum;
         
         if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
         {
@@ -335,8 +339,7 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
         
         if (rowdata[5] < errorcutoff1)
         {
-                                            
-            for (int i = 0 ; i < groupnum ; ++i)
+            for (int i = 0 ; i < groupnum + 1; ++i)
             {
                 if (oldtotalobs[i] < 500 && grouplocalnums[i] > 0.5 && grouptotalnums[i] > 0.2)
                 {
@@ -348,7 +351,7 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
         
         else if (rowdata[5] < errorcutoff2)
         {
-            for (int i = 0 ; i < groupnum ; ++i)
+            for (int i = 0 ; i < groupnum + 1; ++i)
             {
                 if (oldtotalobs[i] < 500 && grouplocalnums[i] > 0.5 && grouptotalnums[i] > 0.2)
                 {
@@ -361,7 +364,7 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
         
         else
         {
-            for (int i = 0 ; i < groupnum ; ++i)
+            for (int i = 0 ; i < groupnum + 1; ++i)
             {
                 if (oldtotalobs[i] < 500 && grouplocalnums[i] > 0.5 && grouptotalnums[i] > 0.2)
                 {
@@ -378,8 +381,8 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
 void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kmermatrix, const uint16 gnum, const uint knum, const vector<uint16> &groups, const uint16 groupnum, vector<FLOAT_T> &corrections)
 {
     
-    vector<size_t> grouptotalobs (groupnum, 0.0);
-    vector<FLOAT_T> grouptotalnums (groupnum, 0.0);
+    vector<size_t> grouptotalobs (groupnum + 1, 0.0);
+    vector<FLOAT_T> grouptotalnums (groupnum + 1, 0.0);
     
     FLOAT_T totalnum = 0.0;
     for (int i = 0; i < gnum; ++i)
@@ -387,9 +390,10 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
         totalnum += coefs[i];
         grouptotalnums[groups[i]] += coefs[i];
     }
+    grouptotalnums[groupnum] = 1.0;
     
     vector<vector<FLOAT_T>> allratios(groupnum + 1);
-    for (uint16 index = 0; index < groupnum;++index)
+    for (uint16 index = 0; index < groupnum + 1;++index)
     {
         if ( grouptotalnums[index] > 0.2) allratios[index].resize(knum,0);
     }
@@ -397,7 +401,8 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     GetMedianAttemp1_mul(coefs, kmervec,kmermatrix,knum, totalnum,grouptotalnums,groups, groupnum, grouptotalobs, allratios);
     
     size_t totalobs = 500;
-    for (uint16 index = 0; index < groupnum;++index)
+
+    for (uint16 index = 0; index < groupnum + 1;++index)
     {
         if ( grouptotalnums[index] > 0.2 && grouptotalobs[index] < 500)
         {
@@ -412,12 +417,11 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     }
     
     totalobs = 500;
-    for (uint16 index = 0; index < groupnum;++index)
+    for (uint16 index = 0; index < groupnum + 1;++index)
     {
         if ( grouptotalnums[index] >= 0.2 && grouptotalobs[index] < 500)
         {
             totalobs = grouptotalobs[index];
-            allratios[index].resize(100 * 1000 + knum,0);
         }
     }
     
@@ -425,8 +429,8 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     {
         GetMedianAttemp3_mul(coefs, kmervec,kmermatrix,knum, totalnum,grouptotalnums,groups, groupnum, grouptotalobs, allratios);
     }
-    
-    for (uint16 i = 0; i < groupnum; ++i)
+
+    for (uint16 i = 0; i < groupnum + 1; ++i)
     {
         if (grouptotalnums[i] > 0.2)
         {
@@ -435,7 +439,6 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
             corrections[i] = allratios[i][grouptotalobs[i]/2];
         }
     }
-
 }
 
 inline void getlocalnum(const FLOAT_T* coefs, const uint16* rowdata,const FLOAT_T totalnum, FLOAT_T &localnum)
@@ -475,24 +478,24 @@ inline void GetMedianAttemp1(const FLOAT_T* coefs, const uint16* kmervec, const 
     FLOAT_T localnum = 0.0;
     for (size_t i = 0; i < knum; ++i)
     {
+        if (kmervec[i] < 3) continue;
         
         getlocalnum(coefs, rowdata, totalnum, localnum);
         
-        if ( localnum > 0.5 && kmervec[i] > 2)
+        if ( localnum < 0.5) continue;
+
+        FLOAT_T ratio = kmervec[i] / localnum;
+            
+        if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
         {
-            FLOAT_T ratio = kmervec[i] / localnum;
+            float corr = 0.01 * (rowdata[5] & 0xFFC0)/64;
+            ratio *= corr;
+        }
             
-            if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
-            {
-                float corr = 0.01 * (rowdata[5] & 0xFFC0)/64;
-                ratio *= corr;
-            }
-            
-            if (rowdata[5] < errorcutoff1)
-            {
-                ratios[totalobs] = ratio;
-                totalobs ++;
-            }
+        if (rowdata[5] < errorcutoff1)
+        {
+            ratios[totalobs] = ratio;
+            totalobs ++;
         }
         
         rowdata = &rowdata[rowdata[1] + FIXCOL];
@@ -507,28 +510,30 @@ inline void GetMedianAttemp2(const FLOAT_T* coefs, const uint16* kmervec, const 
     
     for (size_t i = 0; i < knum; ++i)
     {
+
+        if (kmervec[i] < 3) continue;
+        
         getlocalnum(coefs, rowdata, totalnum, localnum);
         
-        if ( localnum > 0.5 && kmervec[i] > 2)
+        if ( localnum < 0.5) continue;
+        
+        FLOAT_T ratio = kmervec[i] / localnum;
+            
+        if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
         {
-            FLOAT_T ratio = kmervec[i] / localnum;
+            float corr = 0.01 * (rowdata[5] & 0xFFC0) / 64;
+            ratio *= corr;
+        }
             
-            if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
-            {
-                float corr = 0.01 * (rowdata[5] & 0xFFC0) / 64;
-                ratio *= corr;
-            }
-            
-            if (rowdata[5] < errorcutoff1)
-            {
-                fill(ratios.begin() + totalobs, ratios.begin() + totalobs+10, ratio);
-                totalobs += 10;
-            }
-            else if (rowdata[5] < errorcutoff2)
-            {
-                ratios[totalobs] = ratio;
-                totalobs ++;
-            }
+        if (rowdata[5] < errorcutoff1)
+        {
+            fill(ratios.begin() + totalobs, ratios.begin() + totalobs+10, ratio);
+            totalobs += 10;
+        }
+        else if (rowdata[5] < errorcutoff2)
+        {
+            ratios[totalobs] = ratio;
+            totalobs ++;
         }
         
         rowdata = &rowdata[rowdata[1] + FIXCOL];
@@ -542,35 +547,34 @@ inline void GetMedianAttemp3(const FLOAT_T* coefs, const uint16* kmervec, const 
     FLOAT_T localnum = 0.0;
     for (size_t i = 0; i < knum; ++i)
     {
+        if (kmervec[i] < 3) continue;
         
         getlocalnum(coefs, rowdata, totalnum, localnum);
+
+        if ( localnum < 0.5) continue;
         
-        if ( localnum > 0.5 && kmervec[i] > 2)
+        FLOAT_T ratio = kmervec[i] / localnum;
+            
+        if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
         {
+            float corr = 0.01 * (rowdata[5] & 0xFFC0) / 64;
+            ratio *= corr;
+        }
             
-            FLOAT_T ratio = kmervec[i] / localnum;
-            
-            if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
-            {
-                float corr = 0.01 * (rowdata[5] & 0xFFC0) / 64;
-                ratio *= corr;
-            }
-            
-            if (rowdata[5] < errorcutoff1)
-            {
-                fill(ratios.begin() + totalobs, ratios.begin() + totalobs+20, ratio);
-                totalobs += 20;
-            }
-            else if (rowdata[5] < errorcutoff2)
-            {
-                fill(ratios.begin() + totalobs, ratios.begin() + totalobs+10, ratio);
-                totalobs += 10;
-            }
-            else
-            {
-                ratios[totalobs] = ratio;
-                totalobs ++;
-            }
+        if (rowdata[5] < errorcutoff1)
+        {
+            fill(ratios.begin() + totalobs, ratios.begin() + totalobs+20, ratio);
+            totalobs += 20;
+        }
+        else if (rowdata[5] < errorcutoff2)
+        {
+            fill(ratios.begin() + totalobs, ratios.begin() + totalobs+10, ratio);
+            totalobs += 10;
+        }
+        else
+        {
+            ratios[totalobs] = ratio;
+            totalobs ++;
         }
         
         rowdata = &rowdata[rowdata[1] + FIXCOL];
@@ -629,10 +633,9 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
     float correction = total_lambda/regressed_kmer;
     */
     
-    FLOAT_T correction = aggregateCorr(coefs, kmervec, kmermatrix, gnum, knum) / depth;
-    
     if (numgroup <= 1)
     {
+        FLOAT_T correction = aggregateCorr(coefs, kmervec, kmermatrix, gnum, knum) / depth;
         
         for (int i = 0; i < gnum; ++i)
         {
@@ -645,13 +648,15 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
     }
     else
     {
-        vector<FLOAT_T> corrections(numgroup, 0.0);
+        vector<FLOAT_T> corrections(numgroup + 1, 0.0);
         aggregateCorr_mul(coefs, kmervec, kmermatrix, gnum, knum, groups, numgroup, corrections);
         
         for (int index = 0; index < numgroup ; ++index)
         {
             corrections[index] = corrections[index]/depth;
         }
+
+        FLOAT_T correction = corrections[numgroup];
         
         for (int i = 0; i < gnum; ++i)
         {
