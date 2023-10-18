@@ -38,7 +38,7 @@ typedef Eigen::VectorXd Vector_T ;
 
 #define errorcutoff1 7
 #define errorcutoff2 11
-#define sufficient 500
+#define sufficient 0
 
 extern bool optioncorr;
 
