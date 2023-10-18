@@ -232,32 +232,29 @@ inline void GetMedianAttemp1_mul(const FLOAT_T* coefs, const uint16* kmervec, co
     {
         getlocalnum_mul(coefs, rowdata, totalnum, localnum, grouptotalnums, grouplocalnums, groups);
         
-        if ( localnum < 0.5 || kmervec[i] <= 2)
+        if (localnum >= 0.5 && kmervec[i] > 2)
         {
-            rowdata = &rowdata[rowdata[1] + FIXCOL];
-            continue;
-        }
-
-        grouplocalnums[groupnum] = localnum;
-        
-        if (rowdata[5] < errorcutoff1)
-        {
-            FLOAT_T ratio = kmervec[i] / localnum;
-                
-            if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
+            grouplocalnums[groupnum] = localnum;
+            
+            if (rowdata[5] < errorcutoff1)
             {
-                float corr = 0.01 * (rowdata[5] & 0xFFC0)/64;
-                ratio *= corr;
-            }
-
-            for (int i = 0 ; i < groupnum + 1; ++i)
-            {
-                if (grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                FLOAT_T ratio = kmervec[i] / localnum;
+                    
+                if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
                 {
-                    allratios[i][grouptotalobs[i]++] = ratio;
+                    float corr = 0.01 * (rowdata[5] & 0xFFC0)/64;
+                    ratio *= corr;
+                }
+
+                for (int i = 0 ; i < groupnum + 1; ++i)
+                {
+                    if (grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                    {
+                        allratios[i][grouptotalobs[i]++] = ratio;
+                    }
                 }
             }
-         }
+        }
         
         rowdata = &rowdata[rowdata[1] + FIXCOL];
     }
@@ -282,42 +279,39 @@ inline void GetMedianAttemp2_mul(const FLOAT_T* coefs, const uint16* kmervec, co
         
         getlocalnum_mul(coefs, rowdata, totalnum, localnum, grouptotalnums, grouplocalnums, groups);
 
-        if ( localnum < 0.5 || kmervec[i] <= 2)
+        if ( localnum >= 0.5 && kmervec[i] > 2)
         {
-            rowdata = &rowdata[rowdata[1] + FIXCOL];
-            continue;
-        }
-        
-        FLOAT_T ratio = kmervec[i] / localnum;
-        grouplocalnums[groupnum] = localnum;
-        
-        if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
-        {
-            float corr = 0.01 * (rowdata[5] & 0xFFC0)/64;
-            ratio *= corr;
-        }
-        
-        if (rowdata[5] < errorcutoff1)
-        {
-            for (int i = 0 ; i < groupnum + 1; ++i)
+            FLOAT_T ratio = kmervec[i] / localnum;
+            grouplocalnums[groupnum] = localnum;
+            
+            if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
             {
-                if (oldtotalobs[i] < sufficient && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                float corr = 0.01 * (rowdata[5] & 0xFFC0)/64;
+                ratio *= corr;
+            }
+            
+            if (rowdata[5] < errorcutoff1)
+            {
+                for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    fill(allratios[i].begin() + grouptotalobs[i], allratios[i].begin() + grouptotalobs[i]+10, ratio);
-                    grouptotalobs[i] += 10;
+                    if (oldtotalobs[i] < sufficient && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                    {
+                        fill(allratios[i].begin() + grouptotalobs[i], allratios[i].begin() + grouptotalobs[i]+10, ratio);
+                        grouptotalobs[i] += 10;
+                    }
                 }
             }
-        }
-        
-        else if (rowdata[5] < errorcutoff2)
-        {
-            for (int i = 0 ; i < groupnum + 1; ++i)
+            
+            else if (rowdata[5] < errorcutoff2)
             {
-                if (oldtotalobs[i] < sufficient && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    allratios[i][grouptotalobs[i]++] = ratio;
+                    if (oldtotalobs[i] < sufficient && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                    {
+                        allratios[i][grouptotalobs[i]++] = ratio;
+                    }
                 }
-            }        
+            }
         }
         
         rowdata = &rowdata[rowdata[1] + FIXCOL];
@@ -336,53 +330,50 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
         
         getlocalnum_mul(coefs, rowdata, totalnum, localnum, grouptotalnums, grouplocalnums, groups);
 
-        if ( localnum < 0.5 || kmervec[i] <= 2)
+        if ( localnum >= 0.5 && kmervec[i] > 2)
         {
-            rowdata = &rowdata[rowdata[1] + FIXCOL];
-            continue;
-        }
-        
-        FLOAT_T ratio = kmervec[i] / localnum;
-        grouplocalnums[groupnum] = localnum;
-        
-        if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
-        {
-            float corr = 0.01 * (rowdata[5] & 0xFFC0)/64;
-            ratio *= corr;
-        }
-        
-        if (rowdata[5] < errorcutoff1)
-        {
-            for (int i = 0 ; i < groupnum + 1; ++i)
+            FLOAT_T ratio = kmervec[i] / localnum;
+            grouplocalnums[groupnum] = localnum;
+            
+            if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
             {
-                if (oldtotalobs[i] < sufficient && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                float corr = 0.01 * (rowdata[5] & 0xFFC0)/64;
+                ratio *= corr;
+            }
+            
+            if (rowdata[5] < errorcutoff1)
+            {
+                for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    fill(allratios[i].begin() + grouptotalobs[i], allratios[i].begin() + grouptotalobs[i]+20, ratio);
-                    grouptotalobs[i] += 20;
+                    if (oldtotalobs[i] < sufficient && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                    {
+                        fill(allratios[i].begin() + grouptotalobs[i], allratios[i].begin() + grouptotalobs[i]+20, ratio);
+                        grouptotalobs[i] += 20;
+                    }
                 }
             }
-        }
-        
-        else if (rowdata[5] < errorcutoff2)
-        {
-            for (int i = 0 ; i < groupnum + 1; ++i)
+            
+            else if (rowdata[5] < errorcutoff2)
             {
-                if (oldtotalobs[i] < sufficient && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    fill(allratios[i].begin() + grouptotalobs[i], allratios[i].begin() + grouptotalobs[i]+10, ratio);
-                    grouptotalobs[i] += 10;
+                    if (oldtotalobs[i] < sufficient && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                    {
+                        fill(allratios[i].begin() + grouptotalobs[i], allratios[i].begin() + grouptotalobs[i]+10, ratio);
+                        grouptotalobs[i] += 10;
+                    }
                 }
+            
             }
-        
-        }
-        
-        else
-        {
-            for (int i = 0 ; i < groupnum + 1; ++i)
+            
+            else
             {
-                if (oldtotalobs[i] < sufficient && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    allratios[i][grouptotalobs[i]++] = ratio;
+                    if (oldtotalobs[i] < sufficient && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                    {
+                        allratios[i][grouptotalobs[i]++] = ratio;
+                    }
                 }
             }
         }
@@ -495,24 +486,21 @@ inline void GetMedianAttemp1(const FLOAT_T* coefs, const uint16* kmervec, const 
         
         getlocalnum(coefs, rowdata, totalnum, localnum);
         
-        if ( localnum < 0.5 || kmervec[i] <= 2)
+        if ( localnum >= 0.5 && kmervec[i] > 2)
         {
-            rowdata = &rowdata[rowdata[1] + FIXCOL];
-            continue;
-        }
-
-        FLOAT_T ratio = kmervec[i] / localnum;
-            
-        if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
-        {
-            float corr = 0.01 * (rowdata[5] & 0xFFC0)/64;
-            ratio *= corr;
-        }
-            
-        if (rowdata[5] < errorcutoff1)
-        {
-            ratios[totalobs] = ratio;
-            totalobs ++;
+            FLOAT_T ratio = kmervec[i] / localnum;
+                
+            if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
+            {
+                float corr = 0.01 * (rowdata[5] & 0xFFC0)/64;
+                ratio *= corr;
+            }
+                
+            if (rowdata[5] < errorcutoff1)
+            {
+                ratios[totalobs] = ratio;
+                totalobs ++;
+            }
         }
         
         rowdata = &rowdata[rowdata[1] + FIXCOL];
@@ -530,29 +518,26 @@ inline void GetMedianAttemp2(const FLOAT_T* coefs, const uint16* kmervec, const 
         
         getlocalnum(coefs, rowdata, totalnum, localnum);
         
-        if ( localnum < 0.5 || kmervec[i] <= 2)
+        if ( localnum >= 0.5 && kmervec[i] > 2)
         {
-            rowdata = &rowdata[rowdata[1] + FIXCOL];
-            continue;
-        }
-        
-        FLOAT_T ratio = kmervec[i] / localnum;
-            
-        if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
-        {
-            float corr = 0.01 * (rowdata[5] & 0xFFC0) / 64;
-            ratio *= corr;
-        }
-            
-        if (rowdata[5] < errorcutoff1)
-        {
-            fill(ratios.begin() + totalobs, ratios.begin() + totalobs+10, ratio);
-            totalobs += 10;
-        }
-        else if (rowdata[5] < errorcutoff2)
-        {
-            ratios[totalobs] = ratio;
-            totalobs ++;
+            FLOAT_T ratio = kmervec[i] / localnum;
+                
+            if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
+            {
+                float corr = 0.01 * (rowdata[5] & 0xFFC0) / 64;
+                ratio *= corr;
+            }
+                
+            if (rowdata[5] < errorcutoff1)
+            {
+                fill(ratios.begin() + totalobs, ratios.begin() + totalobs+10, ratio);
+                totalobs += 10;
+            }
+            else if (rowdata[5] < errorcutoff2)
+            {
+                ratios[totalobs] = ratio;
+                totalobs ++;
+            }
         }
         
         rowdata = &rowdata[rowdata[1] + FIXCOL];
@@ -568,34 +553,31 @@ inline void GetMedianAttemp3(const FLOAT_T* coefs, const uint16* kmervec, const 
     {
         getlocalnum(coefs, rowdata, totalnum, localnum);
 
-        if ( localnum < 0.5 || kmervec[i] <= 2)
+        if ( localnum >= 0.5 && kmervec[i] > 2)
         {
-            rowdata = &rowdata[rowdata[1] + FIXCOL];
-            continue;
-        }
-        
-        FLOAT_T ratio = kmervec[i] / localnum;
-            
-        if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
-        {
-            float corr = 0.01 * (rowdata[5] & 0xFFC0) / 64;
-            ratio *= corr;
-        }
-            
-        if (rowdata[5] < errorcutoff1)
-        {
-            fill(ratios.begin() + totalobs, ratios.begin() + totalobs+20, ratio);
-            totalobs += 20;
-        }
-        else if (rowdata[5] < errorcutoff2)
-        {
-            fill(ratios.begin() + totalobs, ratios.begin() + totalobs+10, ratio);
-            totalobs += 10;
-        }
-        else
-        {
-            ratios[totalobs] = ratio;
-            totalobs ++;
+            FLOAT_T ratio = kmervec[i] / localnum;
+                
+            if (optioncorr && (rowdata[5] & 0x3F) > errorcutoff1 )
+            {
+                float corr = 0.01 * (rowdata[5] & 0xFFC0) / 64;
+                ratio *= corr;
+            }
+                
+            if (rowdata[5] < errorcutoff1)
+            {
+                fill(ratios.begin() + totalobs, ratios.begin() + totalobs+20, ratio);
+                totalobs += 20;
+            }
+            else if (rowdata[5] < errorcutoff2)
+            {
+                fill(ratios.begin() + totalobs, ratios.begin() + totalobs+10, ratio);
+                totalobs += 10;
+            }
+            else
+            {
+                ratios[totalobs] = ratio;
+                totalobs ++;
+            }
         }
         
         rowdata = &rowdata[rowdata[1] + FIXCOL];
