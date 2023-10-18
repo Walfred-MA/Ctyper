@@ -451,21 +451,22 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
         {
             
             GetMedianAttemp2_mul(coefs, kmervec,kmermatrix,knum, totalnum,grouptotalnums,groups, groupnum, grouptotalobs, allratios);
-        }
-        
-        totalobs = 3 * sufficient;
-        for (uint16 index = 0; index < groupnum + 1;++index)
-        {
-            if ( grouptotalnums[index] >= 0.2 && grouptotalobs[index] < 3 * sufficient)
+            
+            totalobs = 3 * sufficient;
+            for (uint16 index = 0; index < groupnum + 1;++index)
             {
-                totalobs = grouptotalobs[index];
+                if ( grouptotalnums[index] >= 0.2 && grouptotalobs[index] < 3 * sufficient)
+                {
+                    totalobs = grouptotalobs[index];
+                }
+            }
+            
+            if ( totalobs < 3 * sufficient)
+            {
+                GetMedianAttemp3_mul(coefs, kmervec,kmermatrix,knum, totalnum,grouptotalnums,groups, groupnum, grouptotalobs, allratios);
             }
         }
         
-        if ( totalobs < 3 * sufficient)
-        {
-            GetMedianAttemp3_mul(coefs, kmervec,kmermatrix,knum, totalnum,grouptotalnums,groups, groupnum, grouptotalobs, allratios);
-        }
     }
     
     for (uint16 i = 0; i < groupnum + 1; ++i)
@@ -554,6 +555,8 @@ inline void GetMedianAttemp1(const FLOAT_T* coefs, const uint16* kmervec, const 
         
         rowdata = &rowdata[rowdata[1] + FIXCOL];
     }
+    
+    
 }
 
 inline void GetMedianAttemp2(const FLOAT_T* coefs, const uint16* kmervec, const uint16* rowdata, const uint knum, FLOAT_T &totalnum, size_t &totalobs, vector<FLOAT_T>& ratios)
@@ -657,16 +660,16 @@ FLOAT_T aggregateCorr(const FLOAT_T * coefs, const uint16* kmervec, const uint16
         {
             ratios.resize(10 * sufficient + knum);
             GetMedianAttemp2(coefs, kmervec, kmermatrix, knum,totalnum, totalobs, ratios);
+            
+            if ( totalobs < 3 * sufficient)
+            {
+                GetMedianAttemp3(coefs, kmervec, kmermatrix, knum,totalnum, totalobs, ratios);
+            }
         }
         
-        
-        if ( totalobs < 3 * sufficient)
-        {
-            GetMedianAttemp3(coefs, kmervec, kmermatrix, knum,totalnum, totalobs, ratios);
-        }
-        
-        std::sort(ratios.begin(), ratios.begin() + totalobs);
     }
+    std::sort(ratios.begin(), ratios.begin() + totalobs);
+    
     
     FLOAT_T median = ratios[totalobs/2];
     
