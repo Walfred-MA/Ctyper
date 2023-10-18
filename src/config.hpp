@@ -36,10 +36,14 @@ typedef Eigen::VectorXd Vector_T ;
 #define genomesize_male 6270605410.0
 #define genomesize_female 6320012150.0
 
+extern bool optioncorr;
+
 #define errorcutoff1 7
 #define errorcutoff2 11
-#define sufficient 0
 
-extern bool optioncorr;
+
+#define sufficient 1000
+
+
 
 #endif /* config_hpp */
