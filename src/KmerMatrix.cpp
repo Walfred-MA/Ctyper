@@ -23,7 +23,7 @@ inline void getEachRowValue(const FLOAT_T depth, const int count, const char sig
     
     if (count < 3 )
     {
-        if (mean_repeat > 1.0) weight_value += (ori_weight/mean_repeat - ori_weight);
+        if (mean_repeat > 1.0) weight_value += (4 * ori_weight/mean_repeat - ori_weight);
         return ;
     }
     
@@ -44,8 +44,8 @@ inline void getEachRowValue(const FLOAT_T depth, const int count, const char sig
     
     new_weight =  1.00/(count_i*count_i * mean_repeat);
     
-    norm_value += count_i * new_weight ;
-    weight_value += new_weight - ori_weight;
+    norm_value += 4 * count_i * new_weight ;
+    weight_value += 4 *  new_weight - ori_weight;
     //weight_value += (new_weight - ori_weight);  //weight is reversely proportion to square of estimated copy number, we calculate offsite to the original weight
                //norm vector value of this kmer = count_i * weight = 1.00/count_i
         
@@ -259,6 +259,8 @@ void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const 
     
     
     AddOffsites(norm_vec, norm_matrix, vec_offsite, matrix_offsite, row_offsites.get(), diag_offsites.get(), gnum);
+    
+    
     
 }
 
