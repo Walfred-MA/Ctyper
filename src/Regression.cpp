@@ -703,7 +703,7 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
     */
     if (numgroup <= 1)
     {
-        FLOAT_T correction = aggregateCorr(coefs, kmervec, kmermatrix, gnum, knum) / depth;
+        FLOAT_T correction = (aggregateCorr(coefs, kmervec, kmermatrix, gnum, knum) + 0.5) / depth;
         
         for (int i = 0; i < gnum; ++i)
         {
@@ -722,10 +722,10 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
         
         for (int index = 0; index < numgroup ; ++index)
         {
-            corrections[index] = corrections[index]/depth;
+            corrections[index] = (corrections[index] + 0.5)/depth; //poisson median ≈ lambda - 0.5
         }
 
-        FLOAT_T correction = corrections[numgroup]/depth;
+        FLOAT_T correction = (corrections[numgroup] + 0.5)/depth;
         
         for (int i = 0; i < gnum; ++i)
         {
