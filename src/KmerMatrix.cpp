@@ -29,8 +29,8 @@ inline void getEachRowValue(const FLOAT_T depth, const int count, const char sig
     
     if (count == 2 )
     {
-        weight_value += (0.04 * ori_weight/mean_repeat - ori_weight);
-        norm_value += 0.04 *  ori_weight/mean_repeat ;
+        weight_value += (0.2 * ori_weight/mean_repeat - ori_weight);
+        norm_value += 0.2 *  ori_weight/mean_repeat ;
         return ;
     }
     
