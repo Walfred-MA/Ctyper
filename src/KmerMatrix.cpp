@@ -23,10 +23,16 @@ inline void getEachRowValue(const FLOAT_T depth, const int count, const char sig
     
     if (count < 3 )
     {
-        if (mean_repeat > 1.0) weight_value += (4 * ori_weight/mean_repeat - ori_weight);
+        if (mean_repeat != 2.0) weight_value += (4 * ori_weight/mean_repeat - ori_weight);
         return ;
     }
     
+    if (count == 2 )
+    {
+        weight_value += (0.04 * ori_weight/mean_repeat - ori_weight);
+        norm_value += 0.04 *  ori_weight/mean_repeat ;
+        return ;
+    }
     
     float count_f;           //float copy number value
     float count_i;   //estimate number of copy and at least one copy

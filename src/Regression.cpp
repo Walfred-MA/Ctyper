@@ -232,7 +232,7 @@ inline void GetMedianNofil_mul(const FLOAT_T* coefs, const uint16* kmervec, cons
     {
         getlocalnum_mul(coefs, rowdata, totalnum, localnum, grouptotalnums, grouplocalnums, groups);
         
-        if (localnum >= 0.5 && kmervec[i] > 2)
+        if (localnum >= 0.5 && kmervec[i] >= 2)
         {
             grouplocalnums[groupnum] = localnum;
             
@@ -240,7 +240,7 @@ inline void GetMedianNofil_mul(const FLOAT_T* coefs, const uint16* kmervec, cons
 
             for (int i = 0 ; i < groupnum + 1; ++i)
             {
-                if (grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                if (grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.3)
                 {
                     allratios[i][grouptotalobs[i]++] = ratio;
                 }
@@ -262,7 +262,7 @@ inline void GetMedianAttemp1_mul(const FLOAT_T* coefs, const uint16* kmervec, co
     {
         getlocalnum_mul(coefs, rowdata, totalnum, localnum, grouptotalnums, grouplocalnums, groups);
         
-        if (localnum >= 0.5 && kmervec[i] > 2)
+        if (localnum >= 0.5 && kmervec[i] >= 2)
         {
             grouplocalnums[groupnum] = localnum;
             
@@ -278,7 +278,7 @@ inline void GetMedianAttemp1_mul(const FLOAT_T* coefs, const uint16* kmervec, co
 
                 for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    if (grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                    if (grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.3)
                     {
                         allratios[i][grouptotalobs[i]++] = ratio;
                     }
@@ -301,7 +301,7 @@ inline void GetMedianAttemp2_mul(const FLOAT_T* coefs, const uint16* kmervec, co
         
         getlocalnum_mul(coefs, rowdata, totalnum, localnum, grouptotalnums, grouplocalnums, groups);
 
-        if ( localnum >= 0.5 && kmervec[i] > 2)
+        if ( localnum >= 0.5 && kmervec[i] >= 2)
         {
             FLOAT_T ratio = kmervec[i] / localnum;
             grouplocalnums[groupnum] = localnum;
@@ -317,7 +317,7 @@ inline void GetMedianAttemp2_mul(const FLOAT_T* coefs, const uint16* kmervec, co
                 
                 for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.3)
                     {
                         fill(allratios[i].begin() + grouptotalobs[i], allratios[i].begin() + grouptotalobs[i]+3, ratio);
                         grouptotalobs[i] += 3;
@@ -329,7 +329,7 @@ inline void GetMedianAttemp2_mul(const FLOAT_T* coefs, const uint16* kmervec, co
             {
                 for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.3)
                     {
                         allratios[i][grouptotalobs[i]++] = ratio;
                     }
@@ -353,7 +353,7 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
         
         getlocalnum_mul(coefs, rowdata, totalnum, localnum, grouptotalnums, grouplocalnums, groups);
 
-        if ( localnum >= 0.5 && kmervec[i] > 2)
+        if ( localnum >= 0.5 && kmervec[i] >= 2)
         {
             FLOAT_T ratio = kmervec[i] / localnum;
             grouplocalnums[groupnum] = localnum;
@@ -368,7 +368,7 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
             {
                 for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.3)
                     {
                         fill(allratios[i].begin() + grouptotalobs[i], allratios[i].begin() + grouptotalobs[i]+6, ratio);
                         grouptotalobs[i] += 6;
@@ -380,7 +380,7 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
             {
                 for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.3)
                     {
                         fill(allratios[i].begin() + grouptotalobs[i], allratios[i].begin() + grouptotalobs[i]+2, ratio);
                         grouptotalobs[i] += 2;
@@ -393,7 +393,7 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
             {
                 for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.2)
+                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.3)
                     {
                         allratios[i][grouptotalobs[i]++] = ratio;
                     }
@@ -482,7 +482,7 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     
     for (uint16 i = 0; i < groupnum + 1; ++i)
     {
-        if (grouptotalnums[i] >= 0.2)
+        if (grouptotalnums[i] >= 0.3)
         {
             std::sort(allratios[i].begin(), allratios[i].begin() + grouptotalobs[i]);
             
@@ -532,7 +532,7 @@ inline void GetMedianNofil(const FLOAT_T* coefs, const uint16* kmervec, const ui
         
         getlocalnum(coefs, rowdata, totalnum, localnum);
         
-        if ( localnum >= 0.5 && kmervec[i] > 2)
+        if ( localnum >= 0.5 && kmervec[i] >= 2)
         {
             FLOAT_T ratio = kmervec[i] / localnum;
                 
@@ -553,7 +553,7 @@ inline void GetMedianAttemp1(const FLOAT_T* coefs, const uint16* kmervec, const 
         
         getlocalnum(coefs, rowdata, totalnum, localnum);
         
-        if ( localnum >= 0.5 && kmervec[i] > 2)
+        if ( localnum >= 0.5 && kmervec[i] >= 2)
         {
             FLOAT_T ratio = kmervec[i] / localnum;
                 
@@ -579,7 +579,7 @@ inline void GetMedianAttemp2(const FLOAT_T* coefs, const uint16* kmervec, const 
         
         getlocalnum(coefs, rowdata, totalnum, localnum);
         
-        if ( localnum >= 0.5 && kmervec[i] > 2)
+        if ( localnum >= 0.5 && kmervec[i] >= 2)
         {
             FLOAT_T ratio = kmervec[i] / localnum;
                 
@@ -612,7 +612,7 @@ inline void GetMedianAttemp3(const FLOAT_T* coefs, const uint16* kmervec, const 
     {
         getlocalnum(coefs, rowdata, totalnum, localnum);
 
-        if ( localnum >= 0.5 && kmervec[i] > 2)
+        if ( localnum >= 0.5 && kmervec[i] >= 2)
         {
             FLOAT_T ratio = kmervec[i] / localnum;
                 
@@ -703,7 +703,7 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
     */
     if (numgroup <= 1)
     {
-        FLOAT_T correction = (aggregateCorr(coefs, kmervec, kmermatrix, gnum, knum) + 0.5) / depth;
+        FLOAT_T correction = ( aggregateCorr(coefs, kmervec, kmermatrix, gnum, knum) ) / depth;
         
         for (int i = 0; i < gnum; ++i)
         {
@@ -722,10 +722,10 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
         
         for (int index = 0; index < numgroup ; ++index)
         {
-            corrections[index] = (corrections[index] + 0.5)/depth; //poisson median ≈ lambda - 0.5
+            corrections[index] = (corrections[index]  )/depth;
         }
 
-        FLOAT_T correction = (corrections[numgroup] + 0.5)/depth;
+        FLOAT_T correction = ( corrections[numgroup] )/depth ;
         
         for (int i = 0; i < gnum; ++i)
         {
@@ -743,6 +743,9 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
                 residuels[i] *= correction;
             }
         }
+        
+        
+        
     }
 }
 
