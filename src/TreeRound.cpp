@@ -34,8 +34,10 @@ inline pair<const node*, float> reproject(pair<const node*, float>& left, pair<c
     int index_left = left.first->index;
     int index_right = right.first->index;
     
-    FLOAT_T norm_value_left = 0.0, norm_value_right = 0.0, norm_dot_residuel_left = 0.0, norm_dot_residuel_right = 0.0, residuel = 0.0 ;
+    FLOAT_T norm_value_left = 0.0, norm_value_right = 0.0, norm_dot_residuel_left = 0.0, norm_dot_residuel_right = 0.0, residuel = 0.0;
     
+    
+    //here we calculate the coeficients of left and right side as distinations after reprojection
     for (int i =0; i < size; ++i)
     {
         residuel = residuels[i] + rounding_residuels[i] -  reminder_left * weightnorm[size*i+index_left] - reminder_right * weightnorm[size*i+index_right] ;
@@ -52,7 +54,9 @@ inline pair<const node*, float> reproject(pair<const node*, float>& left, pair<c
     FLOAT_T new_reminder_left = - norm_dot_residuel_left / norm_value_left;
     
     FLOAT_T new_reminder_right = - norm_dot_residuel_right / norm_value_right;
+
     
+    //calculate the left coeficients as sources after reprojection
     norm_dot_residuel_left = 0.0; norm_dot_residuel_right = 0.0; residuel = 0.0 ;
     
     for (int i =0; i < size; ++i)
@@ -60,7 +64,6 @@ inline pair<const node*, float> reproject(pair<const node*, float>& left, pair<c
         residuel = residuels[i] + rounding_residuels[i] +  (new_reminder_right - reminder_right) * weightnorm[size*i+index_right] ;
         
         norm_dot_residuel_left += residuel * weightnorm[size*i+index_left];
-        
         
         residuel = residuels[i] + rounding_residuels[i] +  (new_reminder_left - reminder_left) * weightnorm[size*i+index_left] ;
         
@@ -72,6 +75,7 @@ inline pair<const node*, float> reproject(pair<const node*, float>& left, pair<c
     FLOAT_T legacy_reminder_right = - norm_dot_residuel_right / norm_value_right;
     
     
+    //calculate residuel after reprojection
     FLOAT_T residuel_left = 0.0, residuel_right = 0.0;
     for (int i =0; i < size; ++i)
     {
@@ -88,6 +92,8 @@ inline pair<const node*, float> reproject(pair<const node*, float>& left, pair<c
     if (residuel_right < residuel_left)
     {
         /*
+        cout<< "to right"<< endl;
+        cout<< "norm:" << norm_value_left << ","<< norm_value_right << endl;
         cout<< "distance: " << left.second + right.second << endl;
         cout<< "source: "<< reminder_left << endl;
         cout<< "old: "<<reminder_right << endl;
@@ -95,12 +101,22 @@ inline pair<const node*, float> reproject(pair<const node*, float>& left, pair<c
         cout<< "reser: "<<index_left<< ","<<reminder_left + legacy_reminder_left << endl;
         */
         
+        norm_dot_residuel_left = 0.0; norm_dot_residuel_right = 0.0; residuel = 0.0 ;
+        for (int i =0; i < size; ++i)
+        {
+            residuel = -  reminder_left * weightnorm[size*i+index_left] - reminder_right * weightnorm[size*i+index_right] ;
+                        
+            norm_dot_residuel_right += residuel * weightnorm[size*i+index_right];
+        }
+        
+        new_reminder_right = - norm_dot_residuel_right / norm_value_right;
+        
         for (int i =0; i < size; ++i)
         {
             rounding_residuels[i] += (new_reminder_right - reminder_right) * weightnorm[size*i+index_right] - reminder_left * weightnorm[size*i+index_left]  ;
         }
         
-        reminders[left.first->index] += legacy_reminder_left;
+        reminders[left.first->index] = legacy_reminder_left;
         
         float round = ((new_reminder_right) > 0) ? int(new_reminder_right + 0.5) : int(new_reminder_right - 0.5);
         
@@ -112,24 +128,38 @@ inline pair<const node*, float> reproject(pair<const node*, float>& left, pair<c
     else
     {
         /*
+        cout<< "to left"<< endl;
+        cout<< "norm:" << norm_value_right << ","<< norm_value_left << endl;
         cout<< "distance: " << left.second + right.second << endl;
         cout<< "source: "<< reminder_right << endl;
         cout<< "old: "<<reminder_left << endl;
         cout<< "new: "<<new_reminder_left << endl;
         cout<< "reser: "<<index_right<< ","<<reminder_right + legacy_reminder_right << endl;
-    	*/    
+        */
+    	
+        norm_dot_residuel_left = 0.0; norm_dot_residuel_right = 0.0; residuel = 0.0 ;
+        for (int i =0; i < size; ++i)
+        {
+            residuel = - reminder_right * weightnorm[size*i+index_right] ;
+            
+            norm_dot_residuel_left += residuel * weightnorm[size*i+index_left];
+        }
+        
+        new_reminder_left = - norm_dot_residuel_left / norm_value_left;
+        
         for (int i =0; i < size; ++i)
         {
             rounding_residuels[i] += (new_reminder_left - reminder_left) * weightnorm[size*i+index_left] - reminder_right * weightnorm[size*i+index_right] ;
         }
         
         
-        reminders[right.first->index] += legacy_reminder_right;
+        reminders[right.first->index] = legacy_reminder_right;
         
         float round = ((new_reminder_left) > 0) ? int(new_reminder_left + 0.5) : int(new_reminder_left - 0.5);
         
         reminders[index_left] = new_reminder_left - round;
         rounds[index_left] += round;
+        
         
         return left;
     }
@@ -213,6 +243,7 @@ pair<const node*, float> node::leaveto_root(FLOAT_T* reminders ,int * rounds, ve
         
         if (children[0]->numchildren > 0 && children[1]->numchildren > 0)
         {
+            
             vector<FLOAT_T> rounding_residuels_second = rounding_residuels;
             
             left = children[0]->leaveto_root(reminders,  rounds, rounding_residuels, residuels, weightnorm, size);
@@ -223,6 +254,12 @@ pair<const node*, float> node::leaveto_root(FLOAT_T* reminders ,int * rounds, ve
             {
                  rounding_residuels[i] += rounding_residuels_second[i];
             }
+            
+            
+            //left = children[0]->leaveto_root(reminders,  rounds, rounding_residuels, residuels, weightnorm, size);
+            
+            //right = children[1]->leaveto_root(reminders, rounds, rounding_residuels, residuels, weightnorm, size);
+            
         }
         else
         {
