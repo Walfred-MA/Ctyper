@@ -249,6 +249,8 @@ inline void GetMedianNofil_mul(const FLOAT_T* coefs, const uint16* kmervec, cons
         
         rowdata = &rowdata[rowdata[1] + FIXCOL];
     }
+    
+    
 }
 
 
@@ -542,6 +544,8 @@ inline void GetMedianNofil(const FLOAT_T* coefs, const uint16* kmervec, const ui
         
         rowdata = &rowdata[rowdata[1] + FIXCOL];
     }
+    
+    
 }
 
 
@@ -566,6 +570,8 @@ inline void GetMedianAttemp1(const FLOAT_T* coefs, const uint16* kmervec, const 
         
         rowdata = &rowdata[rowdata[1] + FIXCOL];
     }
+    
+    cout << totalobs << endl;
     
     
 }
@@ -690,6 +696,9 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
     
     lawson_hanson_nnls(norm_vec, norm_matrix, gnum, coefs, residuels);
     
+    
+    float regressed_kmer = 0.0;
+    
     /*
     float regressed_kmer = 0.0;
     
@@ -713,7 +722,9 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
             residuels[i] *= correction;
             
         }
-    }
+            }
+    
+    
     else
     {
         vector<FLOAT_T> corrections(numgroup + 1, 0.0);
@@ -724,7 +735,7 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
         {
             corrections[index] = (corrections[index]  )/depth;
         }
-
+        
         FLOAT_T correction = ( corrections[numgroup] )/depth ;
         
         for (int i = 0; i < gnum; ++i)
@@ -745,7 +756,14 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
         }
         
         
-        
     }
+    
+    for (int i = 0; i < gnum; ++i)
+    {
+        cout << coefs[i] << ",";
+    }
+    cout << endl;
+    
+    
 }
 
