@@ -157,7 +157,7 @@ public:
         fprintf(fwrite,"round: ");
         for (int i = 0; i < gnum; ++i)
         {
-            int result = round(reminders.get()[i]) + results.get()[i];
+            int result = results.get()[i];
             
             if (result > 0)
             {
@@ -176,7 +176,7 @@ public:
         fprintf(fwrite,"result: ");
         for (int i = 0; i < gnum; ++i)
         {
-            int result = round(reminders.get()[i]) + results.get()[i];
+            int result = results.get()[i];
             
             if (result  > 0)
             {
