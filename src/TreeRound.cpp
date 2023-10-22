@@ -101,20 +101,23 @@ inline pair<const node*, float> reproject(pair<const node*, float>& left, pair<c
         cout<< "reser: "<<index_left<< ","<<reminder_left + legacy_reminder_left << endl;
         */
         
+        
         norm_dot_residuel_left = 0.0; norm_dot_residuel_right = 0.0; residuel = 0.0 ;
         for (int i =0; i < size; ++i)
         {
-            residuel = -  reminder_left * weightnorm[size*i+index_left] - reminder_right * weightnorm[size*i+index_right] ;
+            residuel =  reminder_left * weightnorm[size*i+index_left] ;
                         
             norm_dot_residuel_right += residuel * weightnorm[size*i+index_right];
         }
         
-        new_reminder_right = - norm_dot_residuel_right / norm_value_right;
+        new_reminder_right = norm_dot_residuel_right / norm_value_right + reminder_right;
         
+        /*
         for (int i =0; i < size; ++i)
         {
             rounding_residuels[i] += (new_reminder_right - reminder_right) * weightnorm[size*i+index_right] - reminder_left * weightnorm[size*i+index_left]  ;
         }
+        */
         
         reminders[left.first->index] = legacy_reminder_left;
         
@@ -140,18 +143,20 @@ inline pair<const node*, float> reproject(pair<const node*, float>& left, pair<c
         norm_dot_residuel_left = 0.0; norm_dot_residuel_right = 0.0; residuel = 0.0 ;
         for (int i =0; i < size; ++i)
         {
-            residuel = - reminder_right * weightnorm[size*i+index_right] ;
+            residuel = reminder_right * weightnorm[size*i+index_right] ;
             
             norm_dot_residuel_left += residuel * weightnorm[size*i+index_left];
         }
         
-        new_reminder_left = - norm_dot_residuel_left / norm_value_left;
         
+        new_reminder_left = norm_dot_residuel_left / norm_value_left + reminder_left;
+        
+        /*
         for (int i =0; i < size; ++i)
         {
-            rounding_residuels[i] += (new_reminder_left - reminder_left) * weightnorm[size*i+index_left] - reminder_right * weightnorm[size*i+index_right] ;
+            //rounding_residuels[i] += (new_reminder_left - reminder_left) * weightnorm[size*i+index_left] - reminder_right * weightnorm[size*i+index_right] ;
         }
-        
+        */
         
         reminders[right.first->index] = legacy_reminder_right;
         
@@ -243,28 +248,23 @@ pair<const node*, float> node::leaveto_root(FLOAT_T* reminders ,int * rounds, ve
         
         if (children[0]->numchildren > 0 && children[1]->numchildren > 0)
         {
-            
+            /*
             vector<FLOAT_T> rounding_residuels_second = rounding_residuels;
-            
             left = children[0]->leaveto_root(reminders,  rounds, rounding_residuels, residuels, weightnorm, size);
-            
             right = children[1]->leaveto_root(reminders, rounds, rounding_residuels_second, residuels, weightnorm, size);
-            
             for (size_t i = 0; i < size; ++i)
             {
                  rounding_residuels[i] += rounding_residuels_second[i];
             }
+            */
             
-            
-            //left = children[0]->leaveto_root(reminders,  rounds, rounding_residuels, residuels, weightnorm, size);
-            
-            //right = children[1]->leaveto_root(reminders, rounds, rounding_residuels, residuels, weightnorm, size);
+            left = children[0]->leaveto_root(reminders,  rounds, rounding_residuels, residuels, weightnorm, size);
+            right = children[1]->leaveto_root(reminders, rounds, rounding_residuels, residuels, weightnorm, size);
             
         }
         else
         {
             left = children[0]->leaveto_root(reminders,  rounds, rounding_residuels, residuels, weightnorm, size);
-            
             right = children[1]->leaveto_root(reminders, rounds, rounding_residuels, residuels, weightnorm, size);
         }
         
