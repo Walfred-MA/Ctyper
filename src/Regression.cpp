@@ -722,7 +722,7 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
             residuels[i] *= correction;
             
         }
-            }
+    }
     
     
     else
@@ -754,16 +754,6 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
                 residuels[i] *= correction;
             }
         }
-        
-        
-    }
-    
-    for (int i = 0; i < gnum; ++i)
-    {
-        cout << coefs[i] << ",";
-    }
-    cout << endl;
-    
-    
+    }    
 }
 
