@@ -225,7 +225,7 @@ static void kmer_read_31(char base,  std::size_t &current_size, T &current_kmer,
     T reverse_converted;
     const int klen = 31;
     
-    if (base == '\n' || base == ' ') return;
+    if (base == '\n' || base == '\0') return;
     
     if (base_to_int(base, converted))
     {
@@ -457,7 +457,7 @@ void KmerCounter<dictsize>::count_kmer(FastaReader &file, uint16* samplevecs, ul
 
         }
         
-    nBases+=MAX(0, StrLine.length() - klen + 1);
+    //nBases+=MAX(0, StrLine.length() - klen + 1);
     nReads+=1;
     if (nReads % 10000000 == 0) {
       cerr << "processed " << nReads / 1000000 << "M reads." << endl;
@@ -500,7 +500,7 @@ void KmerCounter<dictsize>::count_kmer(typefile &file, uint16* samplevecs, ull &
 
         }
         
-    nBases+=MAX(0, StrLine.length() - klen + 1);
+    	//nBases+=MAX(0, StrLine.length() - klen + 1);
 	nReads+=1;
 	if (nReads % 10000000 == 0) {
 	  cerr << "processed " << nReads / 1000000 << "M reads." << endl;
