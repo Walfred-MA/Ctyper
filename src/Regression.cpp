@@ -569,10 +569,7 @@ inline void GetMedianAttemp1(const FLOAT_T* coefs, const uint16* kmervec, const 
         }
         
         rowdata = &rowdata[rowdata[1] + FIXCOL];
-    }
-    
-    cout << totalobs << endl;
-    
+    }    
     
 }
 
