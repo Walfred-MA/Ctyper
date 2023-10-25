@@ -74,12 +74,17 @@ public:
     void counting(const std::string& inputfile)
     {
 
-		cout << "counting kmers for sample: " << inputfile<<endl;
+	cout << "counting kmers for sample: " << inputfile<<endl;
 		
         counter.Call(inputfile.c_str(), kmer_counts.get(), totalbases, totalreads, totalbgs, Nsubthreads);
 
         finishcounting = 1;
 
+	auto end = std::chrono::high_resolution_clock::now();
+        
+        auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+            
+        cout<<"finished counting at time: "<<elapsed.count()* 1e-9 <<endl;
         
     };
     
