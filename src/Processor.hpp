@@ -75,6 +75,8 @@ public:
     {
 
 	cout << "counting kmers for sample: " << inputfile<<endl;
+
+	auto begin = std::chrono::high_resolution_clock::now();
 		
         counter.Call(inputfile.c_str(), kmer_counts.get(), totalbases, totalreads, totalbgs, Nsubthreads);
 
