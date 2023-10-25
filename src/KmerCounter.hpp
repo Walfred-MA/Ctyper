@@ -225,7 +225,7 @@ static void kmer_read_31(char base,  std::size_t &current_size, T &current_kmer,
     T reverse_converted;
     const int klen = 31;
     
-    if (base == '\n' || base == '\0') return;
+    if (base == '\n' || base == ' ') return;
     
     if (base_to_int(base, converted))
     {
