@@ -21,6 +21,14 @@ void CramReader::LoadRegion(std::vector<char *>& bedregions)
             
     samfile = hts_open(filepath, "r");
                 
+    if (!samfile) {
+        
+        std::cerr << "ERROR: Could not open " << filepath << " for reading.\n" << std::endl;
+        std::_Exit(EXIT_FAILURE);
+        
+        return;
+    }
+
         
     indexdata = sam_index_load2(samfile, filepath, indexpath.c_str());
     
@@ -43,7 +51,7 @@ void CramReader::LoadRegion(std::vector<char *>& bedregions)
  
 bool CramReader::nextLine(std::string &StrLine)
 {
-    
+
     if (ifindex)
     {
         if (sam_itr_multi_next(samfile , iter, SRread)<0) return false;
@@ -58,7 +66,7 @@ bool CramReader::nextLine(std::string &StrLine)
 
     }
     int readLength= SRread->core.l_qseq;
-    StrLine.resize(readLength+1);
+    if (StrLine.size() <= readLength ) StrLine.resize(readLength+1);
     uint8_t *q = bam_get_seq(SRread);
 
     for (int i=0; i < readLength; i++) {StrLine[i]=seq_nt16_str[bam_seqi(q,i)];	}
