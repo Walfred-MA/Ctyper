@@ -32,6 +32,11 @@
 #include "KtableReader.hpp"
 #include "KmerHash.hpp"
 
+struct Hash10M {
+    std::size_t operator()(ull key) const {
+        return static_cast<std::size_t>(key % prime10M);
+    }
+};
 
 template <typename T1>
 string int_to_kmer(T1 value, int size = 31)
@@ -106,7 +111,7 @@ public:
     
     kmer_hash_type kmer_hash;
     kmer_hash_type_mul kmer_multi_hash;
-    unordered_set<ull> backgrounds;
+    unordered_set<ull, Hash10M> backgrounds;
     
     uint totalkmers = 0;
     std::vector<char *> regions;
