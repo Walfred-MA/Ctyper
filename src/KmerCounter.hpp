@@ -451,7 +451,7 @@ void KmerCounter<dictsize>::count_kmer(FastaReader &file, uint16* samplevecs, ul
             
             auto larger_kmer = (current_kmer >= reverse_kmer) ? current_kmer:reverse_kmer;
             
-            if (backgrounds.size() >0 && backgrounds.find(larger_kmer) != backgrounds.end()) nBg++;
+            nBg += backgrounds.count(larger_kmer);
             
             update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs);
 
@@ -494,7 +494,7 @@ void KmerCounter<dictsize>::count_kmer(typefile &file, uint16* samplevecs, ull &
             
             auto larger_kmer = (current_kmer >= reverse_kmer) ? current_kmer:reverse_kmer;
 
-	    if (backgrounds.size() >0 && backgrounds.find(larger_kmer) != backgrounds.end()) nBg++;
+	    nBg += backgrounds.count(larger_kmer);
             
             update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs);
 
