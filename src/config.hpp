@@ -18,6 +18,7 @@ typedef unsigned short  uint16;
 typedef unsigned char  uint8;
 
 #define large_prime 2147483647
+#define prime10M 9999991
 #define MAX_UINT16 65535
 #define MAX_LINE 10000000
 #define Comb2( size ) (size + 1) * size / 2
