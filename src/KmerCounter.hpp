@@ -84,7 +84,7 @@ class KmerCounter
  
 public:
     
-    KmerCounter (size_t size): kmer_hash(size)
+    KmerCounter (size_t size): kmer_hash(4 * size)
     {};
     ~KmerCounter()
     {};
