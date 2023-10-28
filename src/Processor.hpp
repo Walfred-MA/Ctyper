@@ -106,7 +106,8 @@ public:
         tree.Run(priorData->phylo_tree, coefs.get(), gnum, &results.get()[0], &reminders.get()[0], residuels.get(), norm_matrix.get());
 
         cout << "determine window residuels: " << inputfile<<endl;
-    
+
+	kmerwindow.resize(priorData->pathsizes);
         kmerwindow.WindowCovers(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size, priorData->genenum, &results.get()[0], total_obs, total_exp);
                 
         write(priorData, outputfile, inputfile, priorData->prefix, priorData->genenames, kmerwindow.windowcovers, depth, Threads_lock);
@@ -292,7 +293,7 @@ public:
         
         memset(results.get(), 0, sizeof(int) * gnum);
         
-        kmerwindow.resize(priorData->pathsizes);
+        //kmerwindow.resize(priorData->pathsizes);
                         
         total_lambda = 0;
         total_obs = 0;
