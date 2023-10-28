@@ -240,7 +240,7 @@ inline void GetMedianNofil_mul(const FLOAT_T* coefs, const uint16* kmervec, cons
 
             for (int i = 0 ; i < groupnum + 1; ++i)
             {
-                if (grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.3)
+                if (grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= corrstartpoint)
                 {
                     allratios[i][grouptotalobs[i]++] = ratio;
                 }
@@ -280,7 +280,7 @@ inline void GetMedianAttemp1_mul(const FLOAT_T* coefs, const uint16* kmervec, co
 
                 for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    if (grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.3)
+                    if (grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= corrstartpoint)
                     {
                         allratios[i][grouptotalobs[i]++] = ratio;
                     }
@@ -319,7 +319,7 @@ inline void GetMedianAttemp2_mul(const FLOAT_T* coefs, const uint16* kmervec, co
                 
                 for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.3)
+                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= corrstartpoint)
                     {
                         fill(allratios[i].begin() + grouptotalobs[i], allratios[i].begin() + grouptotalobs[i]+3, ratio);
                         grouptotalobs[i] += 3;
@@ -331,7 +331,7 @@ inline void GetMedianAttemp2_mul(const FLOAT_T* coefs, const uint16* kmervec, co
             {
                 for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.3)
+                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= corrstartpoint)
                     {
                         allratios[i][grouptotalobs[i]++] = ratio;
                     }
@@ -370,7 +370,7 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
             {
                 for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.3)
+                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= corrstartpoint)
                     {
                         fill(allratios[i].begin() + grouptotalobs[i], allratios[i].begin() + grouptotalobs[i]+6, ratio);
                         grouptotalobs[i] += 6;
@@ -382,7 +382,7 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
             {
                 for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.3)
+                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= corrstartpoint)
                     {
                         fill(allratios[i].begin() + grouptotalobs[i], allratios[i].begin() + grouptotalobs[i]+2, ratio);
                         grouptotalobs[i] += 2;
@@ -395,7 +395,7 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
             {
                 for (int i = 0 ; i < groupnum + 1; ++i)
                 {
-                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= 0.3)
+                    if (oldtotalobs[i] == 0 && grouplocalnums[i] >= 0.5 && grouptotalnums[i] >= corrstartpoint)
                     {
                         allratios[i][grouptotalobs[i]++] = ratio;
                     }
@@ -424,9 +424,9 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     grouptotalnums[groupnum] = MAX(totalnum, 1.0);
     
     
-    for (uint16 index = 0; index < groupnum; ++index)
+    for (uint16 index = 0; index < groupnum;++index)
     {
-        if ( grouptotalnums[index] >= 0.2) allratios[index].resize(10 * sufficient + kmercounts[index],0);
+        if ( grouptotalnums[index] >= corrstartpoint) allratios[index].resize(10 * sufficient + kmercounts[index],0);
     }
     allratios[groupnum].resize(10 * sufficient + knum,0);
     
@@ -443,7 +443,7 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
         
         for (uint16 index = 0; index < groupnum + 1;++index)
         {
-            if ( grouptotalnums[index] >= 0.2 && grouptotalobs[index] < sufficient)
+            if ( grouptotalnums[index] >= corrstartpoint && grouptotalobs[index] < sufficient)
             {
                 totalobs = grouptotalobs[index];
                 //allratios[index].resize(10 * sufficient + knum,0);
@@ -465,7 +465,7 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
             totalobs = 3 * sufficient;
             for (uint16 index = 0; index < groupnum + 1;++index)
             {
-                if ( grouptotalnums[index] >= 0.2 && oldtotalobs[index] ==0 && grouptotalobs[index] < 3 * sufficient)
+                if ( grouptotalnums[index] >= corrstartpoint && oldtotalobs[index] ==0 && grouptotalobs[index] < 3 * sufficient)
                 {
                     totalobs = grouptotalobs[index];
                 }
@@ -485,7 +485,7 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     
     for (uint16 i = 0; i < groupnum + 1; ++i)
     {
-        if (grouptotalnums[i] >= 0.3)
+        if (grouptotalnums[i] >= corrstartpoint)
         {
             std::sort(allratios[i].begin(), allratios[i].begin() + grouptotalobs[i]);
             
