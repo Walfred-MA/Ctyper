@@ -426,9 +426,9 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     
     for (uint16 index = 0; index < groupnum; ++index)
     {
-        if ( grouptotalnums[index] >= 0.2) allratios[index].resize(kmercounts[index],0);
+        if ( grouptotalnums[index] >= 0.2) allratios[index].resize(10 * sufficient + kmercounts[index],0);
     }
-    allratios[groupnum].resize(knum,0);
+    allratios[groupnum].resize(10 * sufficient + knum,0);
     
     if (!optioncorr)
     {
@@ -446,7 +446,7 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
             if ( grouptotalnums[index] >= 0.2 && grouptotalobs[index] < sufficient)
             {
                 totalobs = grouptotalobs[index];
-                allratios[index].resize(10 * sufficient + knum,0);
+                //allratios[index].resize(10 * sufficient + knum,0);
             }
             else if (grouptotalobs[index] >= sufficient)
             {
