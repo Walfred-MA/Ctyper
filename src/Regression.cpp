@@ -408,7 +408,7 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
 }
 
 
-void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kmermatrix, const uint16 gnum, const uint knum, const vector<uint16> &groups, const uint16 groupnum, vector<FLOAT_T> &corrections)
+void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kmermatrix, const uint *kmercounts, const uint16 gnum, const uint knum, const vector<uint16> &groups, const uint16 groupnum, vector<FLOAT_T> &corrections)
 {
     
     vector<size_t> grouptotalobs (groupnum + 1, 0);
@@ -424,10 +424,11 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     grouptotalnums[groupnum] = MAX(totalnum, 1.0);
     
     
-    for (uint16 index = 0; index < groupnum + 1;++index)
+    for (uint16 index = 0; index < groupnum; ++index)
     {
-        if ( grouptotalnums[index] >= 0.2) allratios[index].resize(knum,0);
+        if ( grouptotalnums[index] >= 0.2) allratios[index].resize(kmercounts[index],0);
     }
+    allratios[groupnum].resize(knum,0);
     
     if (!optioncorr)
     {
@@ -726,7 +727,7 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
     {
         vector<FLOAT_T> corrections(numgroup + 1, 0.0);
         
-        aggregateCorr_mul(coefs, kmervec, kmermatrix, gnum, knum, groups, numgroup, corrections);
+        aggregateCorr_mul(coefs, kmervec, kmermatrix, kmercounts, gnum, knum, groups, numgroup, corrections);
         
         for (int index = 0; index < numgroup ; ++index)
         {
