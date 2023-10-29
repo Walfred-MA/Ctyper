@@ -256,10 +256,10 @@ public:
     
     void newgroup(const PriorChunk* priorData)
     {
-	if (MAX(gnum, alloc_size) > DefaultSize)
+	size_t newalloc_size = MAX( DefaultSize, gnum + 10 );
+	
+	if (MAX(newalloc_size, alloc_size) > DefaultSize)
         {
-            size_t newalloc_size = MAX( DefaultSize , gnum + 10 );
-            
             norm_vec.reset(new FLOAT_T[newalloc_size]);
             
             norm_matrix.reset(new FLOAT_T[newalloc_size*newalloc_size]);
