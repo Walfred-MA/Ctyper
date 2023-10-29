@@ -66,9 +66,7 @@ public:
     reminders(new FLOAT_T[MAX_UINT16]),
     results(new int[MAX_UINT16]),
     
-    finished_group(p),
-    
-    kmerwindow(w)
+    finished_group(p)
     {};
     
     void counting(const std::string& inputfile)
@@ -107,6 +105,7 @@ public:
 
         cout << "determine window residuels: " << inputfile<<endl;
 
+	KmerWindow kmerwindow(window);
 	kmerwindow.resize(priorData->pathsizes);
         kmerwindow.WindowCovers(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size, priorData->genenum, &results.get()[0], total_obs, total_exp);
                 
@@ -390,7 +389,7 @@ private:
     KmerMatrix matrix;
     Regression regresser;
     TreeRound tree;
-    KmerWindow kmerwindow;
+    //KmerWindow kmerwindow;
     
     ull totalbases = 0, totalreads = 0, totalbgs = 0;
     size_t gnum;
