@@ -368,7 +368,7 @@ public:
             
             priordata_manager.FinishChunk(priorData);
             
-	    cout<<"finished sample:" << inputfile << "for gene:"<< inputfile <<endl;
+	    cout<<"finished sample:" << inputfile << "for gene:"<< priorData->prefix <<endl;
         }
 
 	cerr<<"finished sample: "<<inputfile << endl;
