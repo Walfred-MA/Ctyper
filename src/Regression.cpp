@@ -10,9 +10,38 @@
 #include <algorithm>
 #include "Regression.hpp"
 #include <iomanip>
+#include <functional>
+#include <chrono>
+#include <thread>
 
 #define max_repetitions 5
 extern bool optioncorr;
+
+
+template<typename Func>
+void try_function_with_retries(Func func, int max_attempts = 100)
+{
+    int attempts = max_attempts;
+    
+    while (attempts-- > 0)
+    {
+        try
+        {
+            func();
+            return;
+        }
+        
+        catch (const std::bad_alloc&)
+        {
+            std::cerr << "Matrix solving memory allocation failed in function call, Attempt: " << max_attempts - attempts << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(10));
+        }
+    }
+    
+    std::cerr << "Matrix solving failed to call function after " << max_attempts << " attempts. Exiting." << std::endl;
+    std::exit(EXIT_FAILURE);
+}
+
 
 void trial_solution(vector<uint16>& passive_set, const uint16 passive_num, const Vector_T &y, const Matrix_T &A, const uint16 size, Vector_T &s)
 {
@@ -47,7 +76,6 @@ void trial_solution(vector<uint16>& passive_set, const uint16 passive_num, const
     {
         s(passive_set[i]) = s_(i);
     }
-    
 }
 
 int Regression::lawson_hanson_nnls(const FLOAT_T *kernal_vec, const FLOAT_T *weightnorm, uint16 size, FLOAT_T *coefs, FLOAT_T *residuel)
@@ -99,7 +127,10 @@ int Regression::lawson_hanson_nnls(const FLOAT_T *kernal_vec, const FLOAT_T *wei
         passive_set[passive_num++] = max_r_index;
         active_or_passive[max_r_index] = 1;
         
-        trial_solution(passive_set, passive_num, y, A, size, x_trial); //solve || y - A * x || on passive vectors
+        
+        try_function_with_retries( [&]() {trial_solution(passive_set, passive_num, y, A, size, x_trial); } );
+        
+        //trial_solution(passive_set, passive_num, y, A, size, x_trial); //solve || y - A * x || on passive vectors
         
         int k = 0;
         while (passive_num && k++ < max_iterations)
@@ -144,7 +175,7 @@ int Regression::lawson_hanson_nnls(const FLOAT_T *kernal_vec, const FLOAT_T *wei
             // Update x.
             x = x + alpha * (x_trial - x);
             
-            if (passive_num) trial_solution(passive_set, passive_num, y, A, size, x_trial);
+            if (passive_num) try_function_with_retries( [&]() {trial_solution(passive_set, passive_num, y, A, size, x_trial); } );
             
         }
 
@@ -407,6 +438,14 @@ inline void GetMedianAttemp3_mul(const FLOAT_T* coefs, const uint16* kmervec, co
     }
 }
 
+void resize_mul(vector<vector<FLOAT_T>> &allratios, const vector<uint> &groupkmermax, const vector<FLOAT_T> &grouptotalnums, const uint knum, const uint16 groupnum)
+{
+    for (uint16 index = 0; index < groupnum;++index)
+    {
+        if ( grouptotalnums[index] >= corrstartpoint) allratios[index].resize(10 * sufficient + groupkmermax[index],0);
+    }
+    allratios[groupnum].resize(10 * sufficient + knum,0);
+}
 
 void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kmermatrix, const uint *kmercounts, const uint16 gnum, const uint knum, const vector<uint16> &groups, const uint16 groupnum, vector<FLOAT_T> &corrections)
 {
@@ -414,7 +453,7 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     vector<size_t> grouptotalobs (groupnum + 1, 0);
     vector<FLOAT_T> grouptotalnums (groupnum + 1, 0.0);
     vector<vector<FLOAT_T>> allratios(groupnum + 1);
-    vector<size_t> groupkmermax (groupnum + 1, 1);
+    vector<uint> groupkmermax (groupnum + 1, 1);
     
     FLOAT_T totalnum = 0.0;
     for (int i = 0; i < gnum; ++i)
@@ -425,11 +464,8 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     }
     grouptotalnums[groupnum] = MAX(totalnum, 1.0);
     
-    for (uint16 index = 0; index < groupnum;++index)
-    {
-        if ( grouptotalnums[index] >= corrstartpoint) allratios[index].resize(10 * sufficient + groupkmermax[index],0);
-    }
-    allratios[groupnum].resize(10 * sufficient + knum,0);
+    try_function_with_retries( [&]() { resize_mul(allratios, groupkmermax, grouptotalnums, knum,groupnum);} );
+    
     
     if (!optioncorr)
     {
