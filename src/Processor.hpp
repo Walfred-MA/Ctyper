@@ -74,7 +74,7 @@ public:
     void counting(const std::string& inputfile)
     {
 
-	cout << "counting kmers for sample: " << inputfile<<endl;
+	cerr << "counting kmers for sample: " << inputfile<<endl;
 
 	auto begin = std::chrono::high_resolution_clock::now();
 		
@@ -86,7 +86,7 @@ public:
         
         auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
             
-        cout<<"finished counting at time: "<<elapsed.count()* 1e-9 <<endl;
+        cerr<<"finished counting at time: "<<elapsed.count()* 1e-9 <<endl;
         
     };
     
@@ -112,7 +112,7 @@ public:
                 
         write(priorData, outputfile, inputfile, priorData->prefix, priorData->genenames, kmerwindow.windowcovers, depth, Threads_lock);
 
-		cout<<"finish run"<<endl;
+	cout<<"finish run"<<endl;
     };
     
     void write(const PriorChunk* priorData, const std::string& outputfile, const string &sample, const string &prefix, const vector<string>&genenames, const vector<vector<tuple<int,int,int>>>& windowcovers, const float depth, std::mutex& Threads_lock)
@@ -319,7 +319,7 @@ public:
     
     void run(const std::string& inputfile, const std::string& outputfile, float depth,std::mutex& Threads_lock)
     {
-		cout<<"running for sample: "<<inputfile << endl;
+	cerr<<"running for sample: "<<inputfile << endl;
 
         newsample();
         
@@ -356,7 +356,7 @@ public:
                        
             PriorChunk* priorData = priordata_manager.getNextChunk(finished_group);
             
-			cout << "running gene " << priorData->prefix << " for sample " << inputfile << endl ;
+	    cout << "running gene " << priorData->prefix << " for sample " << inputfile << endl ;
 
             gnum = priorData->genenum;
             
@@ -368,9 +368,10 @@ public:
             
             priordata_manager.FinishChunk(priorData);
             
-		cout<<"finished"<<endl;
+	    cout<<"finished sample:" << inputfile << "for gene:"<< inputfile <<endl;
         }
-                
+
+	cerr<<"finished sample: "<<inputfile << endl;
     };
     
     
