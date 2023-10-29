@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <chrono>
 
 #include "config.hpp"
 #include "FastaReader.hpp"
@@ -33,6 +34,29 @@
 
 using namespace std;
 
+template<typename T>
+void try_allocate_unique(std::unique_ptr<T[]>& uptr, size_t size)
+{
+    int attemps = 200;
+    
+    while (attemps-- > 0)
+    {
+        try
+        {
+            uptr.reset(new T[size]);
+            
+            return;
+        }
+        catch (const std::bad_alloc&)
+        {
+            std::cerr << "Allocation retrying, Attemp: " << 200 - attemps << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(10));
+        }
+    }
+    
+    std::cerr << "Failed to allocate memory after 200 attempts. Exiting." << std::endl;
+    std::exit(EXIT_FAILURE);
+}
 
 template <int ksize>
 class Genotyper
@@ -261,7 +285,7 @@ public:
         {
             norm_vec.reset(new FLOAT_T[newalloc_size]);
             
-            norm_matrix.reset(new FLOAT_T[newalloc_size*newalloc_size]);
+            try_allocate_unique(norm_matrix, newalloc_size*newalloc_size);
             
             coefs.reset(new FLOAT_T[newalloc_size]);
             
