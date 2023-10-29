@@ -86,7 +86,7 @@ public:
         
         auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
             
-        cerr<<"finished counting at time: "<<elapsed.count()* 1e-9 <<endl;
+        cerr<<"finished counting "<< inputfile <<" at time: "<<elapsed.count()* 1e-9 <<endl;
         
     };
     
