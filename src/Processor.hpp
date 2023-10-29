@@ -28,7 +28,7 @@
 #include "PriorData.hpp"
 
 
-#define DefaultSize 4000
+#define DefaultSize 1000
 
 
 using namespace std;
@@ -256,8 +256,24 @@ public:
     
     void newgroup(const PriorChunk* priorData)
     {
-        size_t newalloc_size = alloc_size;
-        
+	if (MAX(gnum, alloc_size) > DefaultSize)
+        {
+            size_t newalloc_size = gnum;
+            
+            norm_vec.reset(new FLOAT_T[newalloc_size]);
+            
+            norm_matrix.reset(new FLOAT_T[newalloc_size*newalloc_size]);
+            
+            coefs.reset(new FLOAT_T[newalloc_size]);
+            
+            residuels.reset(new FLOAT_T[newalloc_size]);
+            
+            results.reset(new int[newalloc_size]);
+            
+            alloc_size = newalloc_size;
+        }
+
+	/*
         if(  (  gnum > alloc_size &&
                (newalloc_size = gnum)
              )
@@ -280,7 +296,7 @@ public:
             
             alloc_size = newalloc_size;
         }
-        
+        */
         //memset(norm_matrix.get(), 0, sizeof (FLOAT_T) *  gnum * gnum);
         
         memcpy(norm_matrix.get(), priorData->prior_norm, sizeof (FLOAT_T) *  gnum * gnum);
@@ -377,7 +393,7 @@ private:
     
     ull totalbases = 0, totalreads = 0, totalbgs = 0;
     size_t gnum;
-    size_t alloc_size = 1000;
+    size_t alloc_size = DefaultSize;
     bool finishcounting = 0;
     vector<bool> finished_group;
     
