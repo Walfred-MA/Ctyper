@@ -269,7 +269,7 @@ void PriorData::LoadNorm(PriorChunk &Chunk)
     size_t& prior_norm_allocsize = Chunk.prior_norm_allocsize;
      
     
-    if (curr_genenum *curr_genenum > prior_norm_allocsize || 2 * curr_genenum *curr_genenum  < prior_norm_allocsize)
+    if (curr_genenum *curr_genenum != prior_norm_allocsize)
     {
         prior_norm = (FLOAT_T *) realloc(prior_norm, sizeof(FLOAT_T) * curr_genenum *curr_genenum  );
         
@@ -491,7 +491,7 @@ void PriorData::LoadMatrix(PriorChunk &Chunk, size_t new_kmer_matrix_allocsize)
     const size_t kmernum = Chunk.kmervec_size;
     size_t& kmer_matrix_size = Chunk.kmer_matrix_allocsize;
     
-    if (new_kmer_matrix_allocsize > kmer_matrix_size || 2 * new_kmer_matrix_allocsize < kmer_matrix_size)
+    if (new_kmer_matrix_allocsize != kmer_matrix_size )
     {
         kmer_matrix = (uint16 *) realloc(kmer_matrix, sizeof(uint16) * new_kmer_matrix_allocsize + 10 );
         
