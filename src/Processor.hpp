@@ -28,7 +28,7 @@
 #include "PriorData.hpp"
 
 
-#define DefaultSize 1000
+#define DefaultSize 2000
 
 
 using namespace std;
