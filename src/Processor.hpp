@@ -43,6 +43,7 @@ void try_allocate_unique(std::unique_ptr<T>& uptr, size_t size)
     {
         try
         {
+	    std::unique_ptr<T> temp_ptr(new T[size]); //require twice memory before proceed
             uptr.reset(new T[size]);
             
             return;
