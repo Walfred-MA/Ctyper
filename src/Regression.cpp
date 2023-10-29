@@ -414,19 +414,20 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     vector<size_t> grouptotalobs (groupnum + 1, 0);
     vector<FLOAT_T> grouptotalnums (groupnum + 1, 0.0);
     vector<vector<FLOAT_T>> allratios(groupnum + 1);
+    vector<size_t> groupkmermax (groupnum + 1, 1);
     
     FLOAT_T totalnum = 0.0;
     for (int i = 0; i < gnum; ++i)
     {
         totalnum += coefs[i];
         grouptotalnums[groups[i]] += coefs[i];
+        groupkmermax[groups[i]] = MAX(groupkmermax[groups[i]], kmercounts[i]);
     }
     grouptotalnums[groupnum] = MAX(totalnum, 1.0);
     
-    
     for (uint16 index = 0; index < groupnum;++index)
     {
-        if ( grouptotalnums[index] >= corrstartpoint) allratios[index].resize(10 * sufficient + kmercounts[index],0);
+        if ( grouptotalnums[index] >= corrstartpoint) allratios[index].resize(10 * sufficient + groupkmermax[index],0);
     }
     allratios[groupnum].resize(10 * sufficient + knum,0);
     
