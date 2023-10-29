@@ -35,7 +35,7 @@
 using namespace std;
 
 template<typename T>
-void try_allocate_unique(std::unique_ptr<T[]>& uptr, size_t size)
+void try_allocate_unique(std::unique_ptr<T>& uptr, size_t size)
 {
     int attemps = 200;
     
