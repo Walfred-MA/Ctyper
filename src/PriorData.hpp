@@ -42,6 +42,7 @@ struct PriorChunk
     
     vector<string> genenames;
     vector<uint16> genegroups;
+    vector<uint> groupkmernums;
     
     vector<uint> pathsizes;
     

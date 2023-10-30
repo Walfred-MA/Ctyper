@@ -381,6 +381,8 @@ void PriorData::LoadGroups(PriorChunk &Chunk)
         }
     }
     
+    Chunk.groupkmernums.resize(Chunk.numgroups, 0);;
+    
 }
 size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine, vector<uint> &pathsizes)
 {
@@ -482,6 +484,64 @@ size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine, vector
     
 }
 
+void GetGroupKmerNum(PriorChunk &Chunk, uint16* matrix, uint &ifingroup_counter, vector<bool> &ifingroup, size_t gnum)
+{
+    
+    
+    switch(matrix[0])
+    {
+        case '+':
+        {
+            for (int igroup = 0; igroup < Chunk.groupkmernums.size() ; ++igroup)
+            {
+                if (ifingroup[igroup]) Chunk.groupkmernums[igroup] += ifingroup_counter;
+            }
+            
+            std::fill(ifingroup.begin(), ifingroup.end(), 0);
+            
+            for (int igroup = 0; igroup <matrix[1] ; ++igroup)
+            {
+                ifingroup[   Chunk.genegroups[ matrix[FIXCOL + igroup] ]  ] = 1;
+            }
+            
+            ifingroup_counter = 1;
+        
+            break;
+            
+        }
+            
+        case '-':
+        {
+            for (int igroup = 0; igroup < Chunk.groupkmernums.size() ; ++igroup)
+            {
+                if (ifingroup[igroup]) Chunk.groupkmernums[igroup] += ifingroup_counter;
+            }
+            
+            std::fill(ifingroup.begin(), ifingroup.end(), 0);
+            
+            vector<bool> row_reverse (gnum, 1);
+            for (int igroup = 0; igroup <matrix[1]  ; ++igroup)
+            {
+                row_reverse[ matrix[FIXCOL + igroup] ] = 0;
+            }
+            
+            for (int igroup = 0; igroup < gnum; ++igroup)
+            {
+                if (row_reverse[igroup]) ifingroup[   Chunk.genegroups[ igroup]  ] = 1;
+            }
+            
+            ifingroup_counter = 1;
+            break;
+        }
+            
+        default:
+        {
+            ifingroup_counter ++;
+            break;
+        }
+    }
+}
+
 void PriorData::LoadMatrix(PriorChunk &Chunk, size_t new_kmer_matrix_allocsize)
 {
     string StrLine;
@@ -498,18 +558,31 @@ void PriorData::LoadMatrix(PriorChunk &Chunk, size_t new_kmer_matrix_allocsize)
         kmer_matrix_size = new_kmer_matrix_allocsize;
     }
     
+    Chunk.pathsizes.resize(0);
     
-    Chunk.pathsizes.resize(0);    
+    
+    vector<bool> ifingroup (Chunk.numgroups,0);
+    uint ifingroup_counter = 0;
+        
     uint16* matrix = kmer_matrix;
-    for (size_t rindex =0; rindex < kmernum; ++ rindex)
+    size_t rindex =0;
+    for (rindex =0; rindex < kmernum; ++ rindex)
     {
         uint16 rsize = LoadRow(matrix , rindex, StrLine, Chunk.pathsizes);
+        
+        GetGroupKmerNum(Chunk, matrix, ifingroup_counter, ifingroup, Chunk.genenum);
+        
         matrix = &matrix[rsize];
     }
+    
     matrix[0] = '+';
     matrix[1] = 0;
-
+    GetGroupKmerNum(Chunk, matrix,  ifingroup_counter, ifingroup, Chunk.genenum);
+    
           
+    
+    
+    cout << "check1"<<endl;
     /*
     size_t total2 = 0;
     for (size_t rindex =0; rindex < kmernum; ++ rindex)

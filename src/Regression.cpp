@@ -447,24 +447,22 @@ void resize_mul(vector<vector<FLOAT_T>> &allratios, const vector<uint> &groupkme
     allratios[groupnum].resize(10 * sufficient + knum,0);
 }
 
-void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kmermatrix, const uint *kmercounts, const uint16 gnum, const uint knum, const vector<uint16> &groups, const uint16 groupnum, vector<FLOAT_T> &corrections)
+void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kmermatrix, const vector<uint> &groupkmernums, const uint16 gnum, const uint knum, const vector<uint16> &groups, const uint16 groupnum, vector<FLOAT_T> &corrections)
 {
     
     vector<size_t> grouptotalobs (groupnum + 1, 0);
     vector<FLOAT_T> grouptotalnums (groupnum + 1, 0.0);
     vector<vector<FLOAT_T>> allratios(groupnum + 1);
-    vector<uint> groupkmermax (groupnum + 1, 1);
     
     FLOAT_T totalnum = 0.0;
     for (int i = 0; i < gnum; ++i)
     {
         totalnum += coefs[i];
         grouptotalnums[groups[i]] += coefs[i];
-        groupkmermax[groups[i]] = MAX(groupkmermax[groups[i]], kmercounts[i]);
     }
     grouptotalnums[groupnum] = MAX(totalnum, 1.0);
     
-    try_function_with_retries( [&]() { resize_mul(allratios, groupkmermax, grouptotalnums, knum,groupnum);} );
+    try_function_with_retries( [&]() { resize_mul(allratios, groupkmernums, grouptotalnums, knum,groupnum);} );
     
     
     if (!optioncorr)
@@ -726,7 +724,7 @@ FLOAT_T aggregateCorr(const FLOAT_T * coefs, const uint16* kmervec, const uint16
 }
 
 
-void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLOAT_T depth, const uint16 gnum, const uint knum, FLOAT_T* norm_vec, FLOAT_T* norm_matrix, FLOAT_T &total_lambda, const uint *kmercounts, FLOAT_T * coefs, FLOAT_T * residuels, const size_t numgroup, const vector<uint16> &groups)
+void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLOAT_T depth, const uint16 gnum, const uint knum, FLOAT_T* norm_vec, FLOAT_T* norm_matrix, FLOAT_T &total_lambda, const uint *kmercounts, FLOAT_T * coefs, FLOAT_T * residuels, const size_t numgroup, const vector<uint16> &groups, const vector<uint> &groupkmernums)
 {
     
     lawson_hanson_nnls(norm_vec, norm_matrix, gnum, coefs, residuels);
@@ -764,7 +762,7 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
     {
         vector<FLOAT_T> corrections(numgroup + 1, 0.0);
         
-        aggregateCorr_mul(coefs, kmervec, kmermatrix, kmercounts, gnum, knum, groups, numgroup, corrections);
+        aggregateCorr_mul(coefs, kmervec, kmermatrix, groupkmernums, gnum, knum, groups, numgroup, corrections);
         
         for (int index = 0; index < numgroup ; ++index)
         {

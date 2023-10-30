@@ -121,7 +121,7 @@ public:
                        norm_vec.get(), norm_matrix.get(), total_lambda);
         
         cout << "regressing to references for sample: " << inputfile<<endl;
-        regresser.Call(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size, norm_vec.get(), norm_matrix.get(),  total_lambda, priorData->gene_kmercounts, coefs.get(), residuels.get(), priorData->numgroups, priorData->genegroups);
+        regresser.Call(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size, norm_vec.get(), norm_matrix.get(),  total_lambda, priorData->gene_kmercounts, coefs.get(), residuels.get(), priorData->numgroups, priorData->genegroups,priorData->groupkmernums);
         
 
         cout << "rounding for sample: " << inputfile<<endl;
