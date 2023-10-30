@@ -271,8 +271,8 @@ void PriorData::LoadNorm(PriorChunk &Chunk)
     
     if (curr_genenum *curr_genenum != prior_norm_allocsize)
     {
-        prior_norm = (FLOAT_T *) realloc(prior_norm, sizeof(FLOAT_T) * curr_genenum *curr_genenum  );
-        
+	try_allocate(prior_norm, curr_genenum *curr_genenum );
+        //prior_norm = (FLOAT_T *) realloc(prior_norm, sizeof(FLOAT_T) * curr_genenum *curr_genenum  );
         prior_norm_allocsize = curr_genenum * curr_genenum  ;
     }
     
