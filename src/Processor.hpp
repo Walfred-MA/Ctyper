@@ -31,7 +31,10 @@
 
 #define DefaultSize 2000
 
+
 using namespace std;
+
+
 
 template <int ksize>
 class Genotyper
@@ -260,7 +263,7 @@ public:
         {
             norm_vec.reset(new FLOAT_T[newalloc_size]);
             
-            try_allocate_unique(norm_matrix, newalloc_size*newalloc_size);
+            try_allocate_unique(norm_matrix, newalloc_size*newalloc_size, newalloc_size*newalloc_size);
             
             coefs.reset(new FLOAT_T[newalloc_size]);
             
@@ -351,8 +354,18 @@ public:
         
         for (int i = 0; i < pnum; ++i)
         {
-                       
+            
+            auto begin = std::chrono::high_resolution_clock::now();
+                
+            
             PriorChunk* priorData = priordata_manager.getNextChunk(finished_group);
+
+            auto end = std::chrono::high_resolution_clock::now();
+                
+                auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+                    
+                cerr<<"finished loading "<< inputfile <<" at time: "<<elapsed.count()* 1e-9 <<endl;
+            
             
 	    cout << "running gene " << priorData->prefix << " for sample " << inputfile << endl ;
 

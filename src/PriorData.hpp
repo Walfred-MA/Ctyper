@@ -24,7 +24,7 @@
 using namespace std;
 
 template<typename T>
-void try_allocate(T* &ptr, size_t size)
+void try_allocate(T* &ptr, size_t size, size_t reserve = 0)
 {
     int attemps = 200;
     
@@ -32,6 +32,7 @@ void try_allocate(T* &ptr, size_t size)
     {
         try
         {
+            std::unique_ptr<T> temp_ptr(new T[reserve]);
             ptr = (T *) realloc(ptr, sizeof(T) * size  );
             
             return;
@@ -48,7 +49,7 @@ void try_allocate(T* &ptr, size_t size)
 }
 
 template<typename T>
-void try_allocate_unique(std::unique_ptr<T>& uptr, size_t size)
+void try_allocate_unique(std::unique_ptr<T>& uptr, size_t size, size_t reserve = 0)
 {
     int attemps = 200;
     
@@ -56,7 +57,7 @@ void try_allocate_unique(std::unique_ptr<T>& uptr, size_t size)
     {
         try
         {
-        std::unique_ptr<T> temp_ptr(new T[size]); //require twice memory before proceed
+            std::unique_ptr<T> temp_ptr(new T[size]); //require twice memory before proceed
             uptr.reset(new T[size]);
             
             return;

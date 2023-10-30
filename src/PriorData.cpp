@@ -271,8 +271,8 @@ void PriorData::LoadNorm(PriorChunk &Chunk)
     
     if (curr_genenum *curr_genenum != prior_norm_allocsize)
     {
-	try_allocate(prior_norm, curr_genenum *curr_genenum );
-        //prior_norm = (FLOAT_T *) realloc(prior_norm, sizeof(FLOAT_T) * curr_genenum *curr_genenum  );
+        try_allocate(prior_norm, curr_genenum *curr_genenum, curr_genenum *curr_genenum);
+        
         prior_norm_allocsize = curr_genenum * curr_genenum  ;
     }
     
@@ -579,10 +579,6 @@ void PriorData::LoadMatrix(PriorChunk &Chunk, size_t new_kmer_matrix_allocsize)
     matrix[1] = 0;
     GetGroupKmerNum(Chunk, matrix,  ifingroup_counter, ifingroup, Chunk.genenum);
     
-          
-    
-    
-    cout << "check1"<<endl;
     /*
     size_t total2 = 0;
     for (size_t rindex =0; rindex < kmernum; ++ rindex)
