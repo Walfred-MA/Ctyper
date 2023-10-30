@@ -23,6 +23,55 @@
 
 using namespace std;
 
+template<typename T>
+void try_allocate(T* &ptr, size_t size)
+{
+    int attemps = 200;
+    
+    while (attemps-- > 0)
+    {
+        try
+        {
+            ptr = (T *) realloc(ptr, sizeof(T) * size  );
+            
+            return;
+        }
+        catch (const std::bad_alloc&)
+        {
+            std::cerr << "Allocation retrying, Attemp: " << 200 - attemps << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(10));
+        }
+    }
+    
+    std::cerr << "Failed to allocate memory after 200 attempts. Exiting." << std::endl;
+    std::exit(EXIT_FAILURE);
+}
+
+template<typename T>
+void try_allocate_unique(std::unique_ptr<T>& uptr, size_t size)
+{
+    int attemps = 200;
+    
+    while (attemps-- > 0)
+    {
+        try
+        {
+        std::unique_ptr<T> temp_ptr(new T[size]); //require twice memory before proceed
+            uptr.reset(new T[size]);
+            
+            return;
+        }
+        catch (const std::bad_alloc&)
+        {
+            std::cerr << "Allocation retrying, Attemp: " << 200 - attemps << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(10));
+        }
+    }
+    
+    std::cerr << "Failed to allocate memory after 200 attempts. Exiting." << std::endl;
+    std::exit(EXIT_FAILURE);
+}
+
 struct PriorChunk
 {
     
