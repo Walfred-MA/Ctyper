@@ -10,12 +10,14 @@
 
 #include <stdio.h>
 #include <Eigen/Dense>
+#include <atomic>
 
 typedef unsigned int uint;
 typedef unsigned __int128 u128;
 typedef unsigned long long ull;
 typedef unsigned short  uint16;
 typedef unsigned char  uint8;
+typedef std::atomic<uint64_t> ull_atom;
 
 #define large_prime 2147483647
 #define prime10M 9999991

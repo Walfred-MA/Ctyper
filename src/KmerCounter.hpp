@@ -84,7 +84,7 @@ class KmerCounter
  
 public:
     
-    KmerCounter (size_t size): kmer_hash(2 * size)
+    KmerCounter (kmer_hash_type &hash, kmer_hash_type_mul &multi_hash, unordered_set<ull, Hash10M> &b): kmer_hash(hash), kmer_multi_hash(multi_hash), backgrounds(b)
     {};
     ~KmerCounter()
     {};
@@ -98,25 +98,29 @@ public:
     void load_backgrounds(const char * backfile);
         
     template <class typefile>
-    void count_kmer(typefile &file, uint16* samplevecs, ull &nBases, ull &nReads, ull &nBg);
+    void count_kmer_(typefile &file, uint16* samplevecs, ull_atom &nBases, ull_atom &nReads, ull_atom &nBg, const int nthreads);
     
-    template <class typefile>
-    void count_kmer_(typefile &file, uint16* samplevecs , ull &nBases, ull &nReads ,ull &nBg, const int nthreads);
+    //template <class typefile>
+    void count_kmer(CramReader &file, uint16* samplevecs , ull_atom &nBases, ull_atom &nReads ,ull_atom &nBg);
     
-    void count_kmer(FastaReader &file, uint16* samplevecs, ull &nBases, ull &nReads, ull &nBg);
-    
+    void count_kmer(FastaReader &file, uint16* samplevecs, ull_atom &nBases, ull_atom &nReads, ull_atom &nBg);
+   
+    void count_kmer(FastqReader &file, uint16* samplevecs , ull_atom &nBases, ull_atom &nReads ,ull_atom &nBg);
+ 
     void read_files(std::vector<std::string>& inputfiles, std::vector<std::string>& outputfiles, std::vector<std::string>& prefixes,std::vector<float>& deps,int numthread);
     
-    void Call(const char* infile, uint16* samplevecs, ull &nBases, ull &nReads, ull &nBg, const int nthreads);
+    void Call(const char* infile, uint16* samplevecs, ull_atom &nBases, ull_atom &nReads, ull_atom &nBg, const int nthreads);
     
-    kmer_hash_type kmer_hash;
-    kmer_hash_type_mul kmer_multi_hash;
-    unordered_set<ull, Hash10M> backgrounds;
+    kmer_hash_type& kmer_hash;
+    kmer_hash_type_mul& kmer_multi_hash;
+    unordered_set<ull, Hash10M>& backgrounds;
     
     uint totalkmers = 0;
     std::vector<char *> regions;
     
     const int klen = 31;
+    
+    std::mutex counting_lock;
 
 };
 
@@ -171,7 +175,7 @@ static void initiate_counter_mul(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_
 
 
 template <typename T1, typename T2, typename T3>
-static void update_counter(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_kmer, uint16* vec)
+static void update_counter(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_kmer, uint16* vec, mutex &lock)
 {
     auto map_find = kmer_hash.find(larger_kmer);
 
@@ -181,7 +185,9 @@ static void update_counter(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_kmer, 
         
         if (index < UINT_MAX )
         {
+            lock.lock();
             if ( vec[index] < MAX_UINT16 - 1) vec[index] ++;
+            lock.unlock();
         }
         else
         {
@@ -189,10 +195,12 @@ static void update_counter(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_kmer, 
             
             uint num_num = data[0];
             
+            lock.lock();
             for (uint i = 1 ; i < num_num + 1; ++i)
             {
                 if ( vec[data[i]] < MAX_UINT16 - 1 )  vec[data[i] ] ++;
             }
+            lock.unlock();
         }
     }
 }
@@ -412,7 +420,7 @@ ull KmerCounter<dictsize>::read_target(const char* inputfile)
 
 
 template <int dictsize>
-void KmerCounter<dictsize>::count_kmer(FastaReader &file, uint16* samplevecs, ull &nBases, ull &nReads, ull &nBg)
+void KmerCounter<dictsize>::count_kmer(FastaReader &file, uint16* samplevecs, ull_atom &nBases, ull_atom &nReads, ull_atom &nBg)
 {
     std::size_t current_size = 0;
     
@@ -453,8 +461,8 @@ void KmerCounter<dictsize>::count_kmer(FastaReader &file, uint16* samplevecs, ul
             
             nBg += backgrounds.count(larger_kmer);
             
-            update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs);
-
+            update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs, counting_lock);
+            
         }
         
     //nBases+=MAX(0, StrLine.length() - klen + 1);
@@ -471,8 +479,7 @@ void KmerCounter<dictsize>::count_kmer(FastaReader &file, uint16* samplevecs, ul
 
 
 template <int dictsize>
-template <class typefile>
-void KmerCounter<dictsize>::count_kmer(typefile &file, uint16* samplevecs, ull &nBases, ull &nReads, ull &nBg)
+void KmerCounter<dictsize>::count_kmer(FastqReader &file, uint16* samplevecs, ull_atom &nBases, ull_atom &nReads, ull_atom &nBg)
 {
     std::size_t current_size = 0;
     
@@ -481,22 +488,76 @@ void KmerCounter<dictsize>::count_kmer(typefile &file, uint16* samplevecs, ull &
     
     //uint64_t ifmasked = 0;
     //int num_masked = 0 ;
-    std::string StrLine;
     std::string Header;
 
-    while (file.nextLine(StrLine))
+    size_t rlen = 0;
+    const char *StrLine = NULL;
+    
+    while (file.nextLine_prt(StrLine, rlen))
     {
-        for (auto base: StrLine)
+        for (int pos = 0; pos < rlen; ++pos)
         {
+            char base = StrLine[pos];
+            
+            if (base=='\n') break;
+            
             kmer_read_31(base, current_size, current_kmer, reverse_kmer);
             
             if (++current_size < klen) continue;
             
             auto larger_kmer = (current_kmer >= reverse_kmer) ? current_kmer:reverse_kmer;
 
-	    nBg += backgrounds.count(larger_kmer);
+            nBg += backgrounds.count(larger_kmer);
             
-            update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs);
+            update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs, counting_lock);
+
+        }
+        
+        //nBases+=MAX(0, StrLine.length() - klen + 1);
+    nReads+=1;
+    if (nReads % 10000000 == 0) {
+      cerr << "processed " << nReads / 1000000 << "M reads." << endl;
+    }
+    }
+        
+    return ;
+};
+
+
+template <int dictsize>
+void KmerCounter<dictsize>::count_kmer(CramReader &file, uint16* samplevecs, ull_atom &nBases, ull_atom &nReads, ull_atom &nBg)
+{
+    std::size_t current_size = 0;
+    
+    kmer_int current_kmer = 0;
+    kmer_int reverse_kmer = 0;
+    
+    //uint64_t ifmasked = 0;
+    //int num_masked = 0 ;
+    std::string Header;
+
+    size_t rlen = 0;
+    uint8_t *StrLine = NULL;
+   
+    char base; 
+    while (file.nextLine_prt(StrLine, rlen))
+    {
+        for (int pos = 0; pos < rlen; ++pos)
+        {
+           
+	    base = seq_nt16_str[bam_seqi(StrLine,pos)];
+
+            if (base=='\n') break;
+            
+            kmer_read_31(base, current_size, current_kmer, reverse_kmer);
+            
+            if (++current_size < klen) continue;
+            
+            auto larger_kmer = (current_kmer >= reverse_kmer) ? current_kmer:reverse_kmer;
+
+            nBg += backgrounds.count(larger_kmer);
+            
+            update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs, counting_lock);
 
         }
         
@@ -513,7 +574,7 @@ void KmerCounter<dictsize>::count_kmer(typefile &file, uint16* samplevecs, ull &
 
 template <int dictsize>
 template <class typefile>
-void KmerCounter<dictsize>::count_kmer_(typefile &file, uint16* samplevecs, ull &nBases, ull &nReads, ull &nBg, const int nthreads)
+void KmerCounter<dictsize>::count_kmer_(typefile &file, uint16* samplevecs, ull_atom &nBases, ull_atom &nReads, ull_atom &nBg, const int nthreads)
 {
     
     std::vector<std::thread> threads;
@@ -522,7 +583,7 @@ void KmerCounter<dictsize>::count_kmer_(typefile &file, uint16* samplevecs, ull 
     {
         threads.push_back(std::thread([this, &file, &samplevecs, &nBases, &nReads, &nBg]()
         {
-            this->count_kmer<typefile>(file, samplevecs, nBases, nReads, nBg);
+            this->count_kmer(file, samplevecs, nBases, nReads, nBg);
         }));
     }
     
@@ -534,7 +595,7 @@ void KmerCounter<dictsize>::count_kmer_(typefile &file, uint16* samplevecs, ull 
 };
 
 template <int dictsize>
-void KmerCounter<dictsize>::Call(const char* inputfile, uint16* samplevecs, ull &nBases, ull &nReads, ull &nBg, const int nthreads)
+void KmerCounter<dictsize>::Call(const char* inputfile, uint16* samplevecs, ull_atom &nBases, ull_atom &nReads, ull_atom &nBg, const int nthreads)
 {
     
     vector<string> files;
@@ -561,6 +622,7 @@ void KmerCounter<dictsize>::Call(const char* inputfile, uint16* samplevecs, ull 
         
         if ( pathlen > 2 && strcmp(file+(pathlen-3),".gz") == 0 )
         {
+            
             FastqReader readsfile(file);
             count_kmer_(readsfile, samplevecs, nBases, nReads, nBg, nthreads);
             readsfile.Close();

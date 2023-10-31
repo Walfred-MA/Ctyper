@@ -10,6 +10,8 @@
 void FastqReader::Load()
 {
     
+    buffer.resize(MAX_LINE);
+    
     if (strlen(filepath)<2) return;
     
     fafile = gzopen(filepath, "rb");
@@ -22,65 +24,73 @@ void FastqReader::Load()
     
 }
 
-bool FastqReader::nextLine(std::string &StrLine)
+bool FastqReader:: nextLine_prt(const char* &StrLine, size_t &rlen)
 {
-    if (StrLine.size() < 501) {StrLine.resize(501);}
-        
-    int bytes_read = gzread(fafile, &StrLine[0], 500);
+    lock_guard<mutex> IO(IO_lock);
     
-    if (bytes_read <= 0) return -1;
-        
-    StrLine[bytes_read] = '\0';
-
-    std::string line;
+    //if (buffer.size() < 501) {buffer.resize(501);}
     
-    size_t pos_read = 0;
-    while (1)
+    if (buffer.size() - bytes_read < 2000000)
     {
-        if (pos_read == bytes_read)
-        {
-            int new_bytes_read = gzread(fafile, &StrLine[0], 500);
-            
-            if (new_bytes_read <= 0 ) return -1;
-            
-            bytes_read += new_bytes_read;
-        }
-        ++pos_read;
-        if (StrLine[pos_read-1] == '\n') break;
+        gzseek(fafile, - bytes_read + pos_read, SEEK_CUR);
+        
+        bytes_read = gzread(fafile, &buffer[0], 1000000);
+        
+        if (bytes_read <= 0) return 0;
+        
+        pos_read = 0;
     }
     
+    
     while (1)
     {
         if (pos_read == bytes_read)
         {
-            int new_bytes_read = gzread(fafile, &StrLine[0], 500);
+            int new_bytes_read = gzread(fafile, &buffer[bytes_read], 1000000);
             
-            if (new_bytes_read <= 0 ) return -1;
+            if (new_bytes_read <= 0 ) return 0;
             
             bytes_read += new_bytes_read;
         }
         ++pos_read;
-        if (StrLine[pos_read-1] == '\n') break;
+        if (buffer[pos_read-1] == '\n') break;
     }
     
     size_t start = pos_read;
+    
     while (1)
     {
         if (pos_read == bytes_read)
         {
-            int new_bytes_read = gzread(fafile, &StrLine[0], 500);
+            int new_bytes_read = gzread(fafile, &buffer[bytes_read], 1000000);
             
-            if (new_bytes_read <= 0 ) return -1;
+            if (new_bytes_read <= 0 ) return 0;
             
             bytes_read += new_bytes_read;
         }
         ++pos_read;
-        if (StrLine[pos_read-1] == '\n') break;
+        if (buffer[pos_read-1] == '\n') break;
     }
     
-    StrLine = StrLine.substr(start, pos_read - start - 1);
+    rlen = pos_read - start;
     
-    gzseek(fafile, - bytes_read + pos_read, SEEK_CUR);
+    while (1)
+    {
+        if (pos_read == bytes_read)
+        {
+            int new_bytes_read = gzread(fafile, &buffer[bytes_read], 1000000);
+            
+            if (new_bytes_read <= 0 ) return 1;
+            
+            bytes_read += new_bytes_read;
+        }
+        ++pos_read;
+        if (buffer[pos_read-1] == '\n') break;
+    }
+    
+    StrLine =  &buffer[start];
+    
+    //gzseek(fafile, - bytes_read + pos_read, SEEK_CUR);
     
     return 1;
 }

@@ -58,9 +58,14 @@ struct uint40
 class Kmer32_hash
 {
 public:
-    Kmer32_hash(int size): modsize(MAX(MAX_UINT24,size))
+    Kmer32_hash(){};
+    
+    void initiate(int size)
     {
-         memset(key_sizes, 0 , modsize);
+        modsize = MAX(MAX_UINT24,size);
+        items = new item40_t*[modsize];
+        key_sizes = new uint[modsize];
+        memset(key_sizes, 0 , modsize);
     };
     
     ~Kmer32_hash()
@@ -77,25 +82,27 @@ public:
     
     uint* add(const ull kmer_int, const uint index);
     uint* find(const ull kmer_int);
-
+    size_t modsize=100000000;
 private:
-    const size_t modsize;
-    item40_t** items = new item40_t*[modsize];
-    uint* key_sizes = new uint[modsize];
+    item40_t** items = NULL;
+    uint* key_sizes = NULL;
 };
 
 
 class Kmer64_hash
 {
 public:
-    Kmer64_hash(int size): modsize(size)
+    Kmer64_hash()
     {};
-    
+    void initiate(int size)
+    {
+        modsize = size;
+    };
     uint* add(const u128 kmer_int, const uint index);
     uint* find(const u128 kmer_int);
     
 private:
-    const size_t modsize;
+    size_t modsize=100000000;
     kmer64_dict data;
     
 };

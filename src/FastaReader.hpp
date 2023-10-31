@@ -21,6 +21,7 @@ public:
     FastaReader(const char* inputfile, int index = -1):FileReader(inputfile){Load();};
     
     bool nextLine(std::string &StrLine);
+    bool nextLine_prt(const char* &StrLine, size_t &rlen){return 0;};
     
     void Load();
         

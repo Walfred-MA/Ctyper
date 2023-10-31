@@ -8,6 +8,8 @@
 
 #include "CramReader.hpp"
 #include <string>
+#include <chrono>
+#include <thread>
 
 using namespace std;
 void CramReader::LoadRegion(std::vector<char *>& bedregions)
@@ -19,17 +21,22 @@ void CramReader::LoadRegion(std::vector<char *>& bedregions)
     
     std::string indexpath = std::string(filepath)+".crai";
             
-    samfile = hts_open(filepath, "r");
-                
-    if (!samfile) {
+    int attemp = 200;
+    do
+    {
+        samfile = hts_open(filepath, "r");
         
-        std::cerr << "ERROR: Could not open " << filepath << " for reading.\n" << std::endl;
-        std::_Exit(EXIT_FAILURE);
+        indexdata = sam_index_load2(samfile, filepath, indexpath.c_str());
         
-        return;
-    }
+        if (!samfile || !indexdata)
+        {
+            std::cerr << "ERROR: Could not open " << filepath << " for reading:  attemp: "<< attemp <<" \n" << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(10));
+        }
+        
+    } while ( (!samfile || !indexdata) && attemp-- > 0) ;
 
-        
+       
     indexdata = sam_index_load2(samfile, filepath, indexpath.c_str());
     
     header = sam_hdr_read(samfile);
@@ -49,8 +56,9 @@ void CramReader::LoadRegion(std::vector<char *>& bedregions)
     
 }
  
-bool CramReader::nextLine(std::string &StrLine)
+bool CramReader::nextLine_prt(uint8_t * &StrLine, size_t &rlen)
 {
+    lock_guard<mutex> IO(IO_lock);
 
     if (ifindex)
     {
@@ -65,12 +73,18 @@ bool CramReader::nextLine(std::string &StrLine)
 
 
     }
-    int readLength= SRread->core.l_qseq;
-    if (StrLine.size() <= readLength ) StrLine.resize(readLength+1);
-    uint8_t *q = bam_get_seq(SRread);
 
-    for (int i=0; i < readLength; i++) {StrLine[i]=seq_nt16_str[bam_seqi(q,i)];	}
-    StrLine[readLength] = '\0';
+    rlen = SRread->core.l_qseq;
+
+
+    //if (StrLine.size() <= readLength ) StrLine.resize(readLength+1);
+    //uint8_t *q = bam_get_seq(SRread);
+
+    //for (int i=0; i < readLength; i++) {StrLine[i]=seq_nt16_str[bam_seqi(q,i)];	}
+
+    //StrLine[readLength] = '\0';
+    StrLine = bam_get_seq(SRread);
+
     return true;
 }
 

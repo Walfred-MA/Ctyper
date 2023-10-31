@@ -40,7 +40,8 @@ template <int ksize>
 class Genotyper
 {
     using kmer_int = typename std::conditional<(ksize>32), u128, ull>::type;
-    using kmer_hash_type = typename std::conditional<(ksize>32), kmer64_dict, kmer32_dict>::type;
+    using kmer_hash_type = typename std::conditional<(ksize>32), Kmer64_hash, Kmer32_hash>::type;
+    using kmer_hash_type_mul = typename std::conditional<(ksize>32), kmer64_dict_mul, kmer32_dict_mul>::type;
     
 public:
     
@@ -51,11 +52,11 @@ public:
     const size_t knum, pnum;
     const uint window;
     const int Nsubthreads;
-    Genotyper(size_t k, size_t p, KmerCounter<ksize> &c, PriorData &priordata, const int w, const int N):
+    Genotyper(size_t k, size_t p, kmer_hash_type &hash, kmer_hash_type_mul &multi_hash, unordered_set<ull, Hash10M> &b, PriorData &priordata, const int w, const int N):
     knum(k),
     pnum(p),
     window(w),
-    counter(c),
+    counter(hash, multi_hash, b),
     priordata_manager(priordata),
     kmer_counts(new uint16[k+1]),
     Nsubthreads(N),
@@ -74,11 +75,17 @@ public:
     void counting(const std::string& inputfile)
     {
 
-	cerr << "counting kmers for sample: " << inputfile<<endl;
+        cerr << "counting kmers for sample: " << inputfile<<endl;
 
-	auto begin = std::chrono::high_resolution_clock::now();
+        auto begin = std::chrono::high_resolution_clock::now();
+        
+        ull_atom totalbases_atom = 0, totalreads_atom = 0, totalbgs_atom = 0;
 		
-        counter.Call(inputfile.c_str(), kmer_counts.get(), totalbases, totalreads, totalbgs, Nsubthreads);
+        counter.Call(inputfile.c_str(), kmer_counts.get(), totalbases_atom, totalreads_atom, totalbgs_atom, Nsubthreads);
+        
+        totalbases= totalbases_atom ;
+        totalreads = totalreads_atom ;
+        totalbgs = totalbgs_atom ;
 
         finishcounting = 1;
 
@@ -356,16 +363,8 @@ public:
         {
             
             auto begin = std::chrono::high_resolution_clock::now();
-                
             
             PriorChunk* priorData = priordata_manager.getNextChunk(finished_group);
-
-            auto end = std::chrono::high_resolution_clock::now();
-                
-                auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
-                    
-                cerr<<"finished loading "<< inputfile <<" at time: "<<elapsed.count()* 1e-9 <<endl;
-            
             
 	    cout << "running gene " << priorData->prefix << " for sample " << inputfile << endl ;
 
@@ -378,8 +377,12 @@ public:
             finished_group[priorData->index] = 1;
             
             priordata_manager.FinishChunk(priorData);
+
+            auto end = std::chrono::high_resolution_clock::now();
+
+	    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
             
-	    cout<<"finished sample:" << inputfile << "for gene:"<< priorData->prefix <<endl;
+	    cout<<"finished sample:" << inputfile << "for gene:"<< priorData->prefix << " for :" << elapsed.count()* 1e-9 <<endl;
         }
 
 	cerr<<"finished sample: "<<inputfile << endl;
@@ -397,7 +400,7 @@ private:
     ull total_exp = 0, total_obs = 0;
     
     PriorData &priordata_manager;
-    KmerCounter<ksize> &counter;
+    KmerCounter<ksize> counter;
     KmerMatrix matrix;
     Regression regresser;
     TreeRound tree;
@@ -414,9 +417,13 @@ private:
 template <int ksize>
 class Processor
 {
+    using kmer_int = typename std::conditional<(ksize>32), u128, ull>::type;
+    using kmer_hash_type = typename std::conditional<(ksize>32), Kmer64_hash, Kmer32_hash>::type;
+    using kmer_hash_type_mul = typename std::conditional<(ksize>32), kmer64_dict_mul, kmer32_dict_mul>::type;
     
 public:
-    Processor(
+    Processor
+    (
               std::vector<std::string>& infiles,
               std::vector<std::string>& outfiles,
               std::vector<float> &d,
@@ -427,7 +434,7 @@ public:
               const int w,
               const int n,
               const int N
-              ):
+    ):
     inputfiles(infiles),
     outputfiles(outfiles),
     depths(d),
@@ -463,7 +470,9 @@ private:
     std::mutex Threads_lock;
     std::mutex Threads_lock2;
     
-    KmerCounter<ksize> *Counter =NULL;
+    kmer_hash_type kmer_hash;
+    kmer_hash_type_mul kmer_multi_hash;
+    unordered_set<ull, Hash10M> backgroud;
     PriorData priordata_manager;
 };
 
@@ -482,12 +491,14 @@ void Processor<ksize>::Run()
     }
    
 	cout<<"reading all kmer targets"<<endl;
+    
+    kmer_hash.initiate(4 * priordata_manager.totalkmers);
  
-    Counter = new KmerCounter<ksize>(2 * priordata_manager.totalkmers);
-    if (backgroundfile.length() > 0) Counter->load_backgrounds(backgroundfile.c_str());
+    KmerCounter<ksize> Counter(kmer_hash, kmer_multi_hash, backgroud);
+    if (backgroundfile.length() > 0) Counter.load_backgrounds(backgroundfile.c_str());
         
     //Counter->LoadRegion(regions);
-    totalkmers = Counter->read_target(matrixfile.c_str());
+    totalkmers = Counter.read_target(matrixfile.c_str());
     
     
 	cout<<"finishing reading targets, start genotyping"<<endl;
@@ -514,7 +525,7 @@ template <int ksize>
 void Processor<ksize>::Onethread()
 {
     
-    unique_ptr<Genotyper<ksize>> genotyper = unique_ptr<Genotyper<ksize>>(new Genotyper<ksize>(totalkmers, totalgroups, *Counter,  priordata_manager, window, Nsubthreads));
+    unique_ptr<Genotyper<ksize>> genotyper = unique_ptr<Genotyper<ksize>>(new Genotyper<ksize>(totalkmers, totalgroups, kmer_hash, kmer_multi_hash, backgroud, priordata_manager, window, Nsubthreads));
     
     
     while (restfileindex < inputfiles.size() )
