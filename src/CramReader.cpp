@@ -24,9 +24,17 @@ void CramReader::LoadRegion(std::vector<char *>& bedregions)
     int attemp = 200;
     do
     {
-        samfile = hts_open(filepath, "r");
+	try
+	{
+	     samfile = hts_open(filepath, "r");
+	     indexdata = sam_index_load2(samfile, filepath, indexpath.c_str());
+	}
+        catch (const std::bad_alloc&)
+	{
+	     samfile = NULL;
+	     indexdata = NULL;
+	}
         
-        indexdata = sam_index_load2(samfile, filepath, indexpath.c_str());
         
         if (!samfile || !indexdata)
         {
