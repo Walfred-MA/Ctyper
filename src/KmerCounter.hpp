@@ -499,7 +499,7 @@ void KmerCounter<dictsize>::count_kmer(FastqReader &file, uint16* samplevecs, ul
         {
             char base = StrLine[pos];
             
-            if (base=='\n') break;
+            //if (base=='\n') break;
             
             kmer_read_31(base, current_size, current_kmer, reverse_kmer);
             
