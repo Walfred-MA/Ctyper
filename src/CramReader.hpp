@@ -48,17 +48,17 @@ public:
 
 private:
     
-    htsFile *samfile;
+    htsFile *samfile = NULL;
     
-    bam1_t * SRread;
+    bam1_t * SRread = NULL;
     
-    kstring_t* kstring;
+    kstring_t* kstring = NULL;
     
-    hts_itr_t * iter;
+    hts_itr_t * iter = NULL;
     
-    sam_hdr_t *header;
+    sam_hdr_t *header = NULL;
     
-    hts_idx_t *indexdata;
+    hts_idx_t *indexdata = NULL;
     
     std::vector<char*>* workregions;
 
