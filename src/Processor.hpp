@@ -52,11 +52,11 @@ public:
     const size_t knum, pnum;
     const uint window;
     const int Nsubthreads;
-    Genotyper(size_t k, size_t p, kmer_hash_type &hash, kmer_hash_type_mul &multi_hash, unordered_set<ull, Hash10M> &b, PriorData &priordata, const int w, const int N):
+    Genotyper(size_t k, size_t p, KmerCounter<ksize> &c ,PriorData &priordata, const int w, const int N):
     knum(k),
     pnum(p),
     window(w),
-    counter(hash, multi_hash, b),
+    counter(c),
     priordata_manager(priordata),
     kmer_counts(new uint16[k+1]),
     Nsubthreads(N),
@@ -79,13 +79,13 @@ public:
 
         auto begin = std::chrono::high_resolution_clock::now();
         
-        ull_atom totalbases_atom = 0, totalreads_atom = 0, totalbgs_atom = 0;
+        //ull_atom totalbases_atom = 0, totalreads_atom = 0, totalbgs_atom = 0;
 		
-        counter.Call(inputfile.c_str(), kmer_counts.get(), totalbases_atom, totalreads_atom, totalbgs_atom, Nsubthreads);
+        counter.Call(inputfile.c_str(), kmer_counts.get(), totalbases, totalreads, totalbgs, Nsubthreads);
         
-        totalbases= totalbases_atom ;
-        totalreads = totalreads_atom ;
-        totalbgs = totalbgs_atom ;
+        //totalbases= totalbases_atom ;
+        //totalreads = totalreads_atom ;
+        //totalbgs = totalbgs_atom ;
 
         finishcounting = 1;
 
@@ -400,7 +400,7 @@ private:
     ull total_exp = 0, total_obs = 0;
     
     PriorData &priordata_manager;
-    KmerCounter<ksize> counter;
+    KmerCounter<ksize> &counter;
     KmerMatrix matrix;
     Regression regresser;
     TreeRound tree;
@@ -470,9 +470,10 @@ private:
     std::mutex Threads_lock;
     std::mutex Threads_lock2;
     
-    kmer_hash_type kmer_hash;
-    kmer_hash_type_mul kmer_multi_hash;
-    unordered_set<ull, Hash10M> backgroud;
+    //kmer_hash_type kmer_hash;
+    //kmer_hash_type_mul kmer_multi_hash;
+    //unordered_set<ull, Hash10M> backgroud;
+    KmerCounter<ksize> *Counter =NULL;
     PriorData priordata_manager;
 };
 
@@ -492,16 +493,15 @@ void Processor<ksize>::Run()
    
 	cout<<"reading all kmer targets"<<endl;
     
-    kmer_hash.initiate(4 * priordata_manager.totalkmers);
+    //kmer_hash.initiate(4 * priordata_manager.totalkmers);
  
-    KmerCounter<ksize> Counter(kmer_hash, kmer_multi_hash, backgroud);
+    Counter = new KmerCounter<ksize>(2 * priordata_manager.totalkmers);
     if (backgroundfile.length() > 0) Counter.load_backgrounds(backgroundfile.c_str());
         
     //Counter->LoadRegion(regions);
     totalkmers = Counter.read_target(matrixfile.c_str());
     
-    
-	cout<<"finishing reading targets, start genotyping"<<endl;
+    cout<<"finishing reading targets, start genotyping"<<endl;
 
     std::vector<std::unique_ptr<std::thread>> threads;
     
@@ -525,7 +525,7 @@ template <int ksize>
 void Processor<ksize>::Onethread()
 {
     
-    unique_ptr<Genotyper<ksize>> genotyper = unique_ptr<Genotyper<ksize>>(new Genotyper<ksize>(totalkmers, totalgroups, kmer_hash, kmer_multi_hash, backgroud, priordata_manager, window, Nsubthreads));
+    unique_ptr<Genotyper<ksize>> genotyper = unique_ptr<Genotyper<ksize>>(new Genotyper<ksize>(totalkmers, totalgroups,  Counter, priordata_manager, window, Nsubthreads));
     
     
     while (restfileindex < inputfiles.size() )
