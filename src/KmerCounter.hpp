@@ -84,7 +84,7 @@ class KmerCounter
  
 public:
     
-    KmerCounter (kmer_hash_type &hash, kmer_hash_type_mul &multi_hash, unordered_set<ull, Hash10M> &b): kmer_hash(hash), kmer_multi_hash(multi_hash), backgrounds(b)
+    KmerCounter (size_t size): kmer_hash(4*size)
     {};
     ~KmerCounter()
     {};
@@ -111,9 +111,9 @@ public:
     
     void Call(const char* infile, uint16* samplevecs, ull_atom &nBases, ull_atom &nReads, ull_atom &nBg, const int nthreads);
     
-    kmer_hash_type& kmer_hash;
-    kmer_hash_type_mul& kmer_multi_hash;
-    unordered_set<ull, Hash10M>& backgrounds;
+    kmer_hash_type kmer_hash;
+    kmer_hash_type_mul kmer_multi_hash;
+    unordered_set<ull, Hash10M> backgrounds;
     
     uint totalkmers = 0;
     std::vector<char *> regions;
