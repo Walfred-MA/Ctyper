@@ -496,10 +496,10 @@ void Processor<ksize>::Run()
     //kmer_hash.initiate(4 * priordata_manager.totalkmers);
  
     Counter = new KmerCounter<ksize>(2 * priordata_manager.totalkmers);
-    if (backgroundfile.length() > 0) Counter.load_backgrounds(backgroundfile.c_str());
+    if (backgroundfile.length() > 0) Counter->load_backgrounds(backgroundfile.c_str());
         
     //Counter->LoadRegion(regions);
-    totalkmers = Counter.read_target(matrixfile.c_str());
+    totalkmers = Counter->read_target(matrixfile.c_str());
     
     cout<<"finishing reading targets, start genotyping"<<endl;
 
@@ -525,7 +525,7 @@ template <int ksize>
 void Processor<ksize>::Onethread()
 {
     
-    unique_ptr<Genotyper<ksize>> genotyper = unique_ptr<Genotyper<ksize>>(new Genotyper<ksize>(totalkmers, totalgroups,  Counter, priordata_manager, window, Nsubthreads));
+    unique_ptr<Genotyper<ksize>> genotyper = unique_ptr<Genotyper<ksize>>(new Genotyper<ksize>(totalkmers, totalgroups,  *Counter, priordata_manager, window, Nsubthreads));
     
     
     while (restfileindex < inputfiles.size() )
