@@ -544,11 +544,8 @@ void KmerCounter<dictsize>::count_kmer(CramReader &file, uint16* samplevecs, ull
     {
         for (int pos = 0; pos < rlen; ++pos)
         {
-           
 	    base = seq_nt16_str[bam_seqi(StrLine,pos)];
-
-            if (base=='\n') break;
-            
+            //if (base=='\n') break;
             kmer_read_31(base, current_size, current_kmer, reverse_kmer);
             
             if (++current_size < klen) continue;
