@@ -20,7 +20,7 @@ static int CompareItem40(const void *a, const void *b)
     return 0;
 }
 
-static int Search(const item40_t *arr, const uint size, const uint40 x) 
+static int BSearch(const item40_t *arr, const uint size, const uint40 x) 
 {
     item40_t *item = bsearch(&x, arr, size, sizeof(item40_t), CompareItem40);
     if (item != NULL) {
