@@ -198,7 +198,7 @@ static void update_counter(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_kmer, 
             uint num_num = data[0];
             
             //lock.lock();
-            for (index = 1 ; i < num_num + 1; ++i)
+            for (index = 1 ; index < num_num + 1; ++index)
             {
                 temp = vec[data[index]] + 1;
 	        vec[data[index]] = temp & -(temp < MAX_UINT16);
