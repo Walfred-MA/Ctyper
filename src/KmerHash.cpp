@@ -18,8 +18,7 @@ static int CompareItem40(const item40_t *a, const item40_t *b) {
 }
 
 static int Search(const item40_t *arr, const uint size, const uint40 x) {
-    item40_t key = { .first = { .first = x.first, .second = x.second } };
-    item40_t *item = bsearch(&key, arr, size, sizeof(item40_t), CompareItem40);
+    item40_t *item = bsearch(&x, arr, size, sizeof(item40_t), CompareItem40);
     if (item != NULL) {
         return (int)(item - arr); // The index is the difference between pointers
     }
