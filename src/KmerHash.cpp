@@ -9,17 +9,19 @@
 #define uint unsigned int
 
 
-static int CompareItem40(const uint40 *a, const item40_t *itemB) 
+static int CompareItem40(const void *a, const void *b) 
 {
-    uint40 b = itemB->first;
-    if (a->first != b->first)
-        return (a->first > b->first) ? 1 : -1;
-    if (a->second != b->second)
-        return (a->second > b->second) ? 1 : -1;
+    const uint40 *key = (const uint40 *)a;
+    const item40_t *item = (const item40_t *)b;
+    if (key->first != item->first.first)
+        return (key->first > item->first.first) ? 1 : -1;
+    if (key->second != item->first.second)
+        return (key->second > item->first.second) ? 1 : -1;
     return 0;
 }
 
-static int Search(const item40_t *arr, const uint size, const uint40 x) {
+static int Search(const item40_t *arr, const uint size, const uint40 x) 
+{
     item40_t *item = bsearch(&x, arr, size, sizeof(item40_t), CompareItem40);
     if (item != NULL) {
         return (int)(item - arr); // The index is the difference between pointers
