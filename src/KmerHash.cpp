@@ -9,10 +9,8 @@
 #define uint unsigned int
 
 
-static int CompareItem40(const void *a, const void *b) {
-    const item40_t *itemA = (const item40_t *)a;
-    const item40_t *itemB = (const item40_t *)b;
-    if (itemA->first.first != itemB->first.first)
+static int CompareItem40(const item40_t *a, const item40_t *b) {
+    if (a->first.first != itemB->first.first)
         return (itemA->first.first > itemB->first.first) ? 1 : -1;
     if (itemA->first.second != itemB->first.second)
         return (itemA->first.second > itemB->first.second) ? 1 : -1;
