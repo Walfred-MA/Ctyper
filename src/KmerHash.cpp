@@ -10,10 +10,10 @@
 
 
 static int CompareItem40(const item40_t *a, const item40_t *b) {
-    if (a->first.first != itemB->first.first)
-        return (itemA->first.first > itemB->first.first) ? 1 : -1;
-    if (itemA->first.second != itemB->first.second)
-        return (itemA->first.second > itemB->first.second) ? 1 : -1;
+    if (a->first != b->first)
+        return (a->first > b->first) ? 1 : -1;
+    if (a->second != b->second)
+        return (a->second > b->second) ? 1 : -1;
     return 0;
 }
 
