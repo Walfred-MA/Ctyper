@@ -185,8 +185,8 @@ static void update_counter(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_kmer, 
         
         if (index < UINT_MAX )
         {
-	    temp = vec[data[index]] + 1;
-	    vec[data[index]] = temp & -(temp < MAX_UINT16);
+	    temp = vec[index] + 1;
+	    vec[index] = temp & -(temp < MAX_UINT16);
             //lock.lock();
             //if ( vec[index] < MAX_UINT16 - 1) vec[index] ++;
             //lock.unlock();
