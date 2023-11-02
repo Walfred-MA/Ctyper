@@ -8,7 +8,7 @@
 #include "KmerHash.hpp"
 #define uint unsigned int
 
-
+/*
 static int CompareItem40(const void *a, const void *b) 
 {
     const uint40 *key = (const uint40 *)a;
@@ -28,7 +28,7 @@ static int BSearch(const item40_t *arr, const uint size, const uint40 x)
     }
     return -1;
 }
-
+*/
 static int Search(const item40_t *arr, const uint size, const uint40 x)
 {
     for (uint i = 0 ; i < size; ++i)
