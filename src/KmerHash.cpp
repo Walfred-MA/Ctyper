@@ -8,6 +8,26 @@
 #include "KmerHash.hpp"
 #define uint unsigned int
 
+
+static int CompareItem40(const void *a, const void *b) {
+    const item40_t *itemA = (const item40_t *)a;
+    const item40_t *itemB = (const item40_t *)b;
+    if (itemA->first.first != itemB->first.first)
+        return (itemA->first.first > itemB->first.first) ? 1 : -1;
+    if (itemA->first.second != itemB->first.second)
+        return (itemA->first.second > itemB->first.second) ? 1 : -1;
+    return 0;
+}
+
+static int Search(const item40_t *arr, const uint size, const uint40 x) {
+    item40_t key = { .first = { .first = x.first, .second = x.second } };
+    item40_t *item = bsearch(&key, arr, size, sizeof(item40_t), CompareItem40);
+    if (item != NULL) {
+        return (int)(item - arr); // The index is the difference between pointers
+    }
+    return -1;
+}
+
 static int Search(const item40_t *arr, const uint size, const uint40 x)
 {
     for (uint i = 0 ; i < size; ++i)
