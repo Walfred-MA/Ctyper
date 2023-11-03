@@ -56,24 +56,6 @@ inline pair<const node*, float> reproject(pair<const node*, float>& left, pair<c
     FLOAT_T new_reminder_right = - norm_dot_residuel_right / norm_value_right;
 
     
-    //calculate the left coeficients as sources after reprojection
-    norm_dot_residuel_left = 0.0; norm_dot_residuel_right = 0.0; residuel = 0.0 ;
-    
-    for (int i =0; i < size; ++i)
-    {
-        residuel = residuels[i] + rounding_residuels[i] +  (new_reminder_right - reminder_right) * weightnorm[size*i+index_right] ;
-        
-        norm_dot_residuel_left += residuel * weightnorm[size*i+index_left];
-        
-        residuel = residuels[i] + rounding_residuels[i] +  (new_reminder_left - reminder_left) * weightnorm[size*i+index_left] ;
-        
-        norm_dot_residuel_right += residuel * weightnorm[size*i+index_right];
-    }
-    
-    FLOAT_T legacy_reminder_left = - norm_dot_residuel_left / norm_value_left;
-    
-    FLOAT_T legacy_reminder_right = - norm_dot_residuel_right / norm_value_right;
-    
     
     //calculate residuel after reprojection
     FLOAT_T residuel_left = 0.0, residuel_right = 0.0;
@@ -112,12 +94,32 @@ inline pair<const node*, float> reproject(pair<const node*, float>& left, pair<c
         
         new_reminder_right = norm_dot_residuel_right / norm_value_right + reminder_right;
         
+        
+        
         /*
         for (int i =0; i < size; ++i)
         {
             rounding_residuels[i] += (new_reminder_right - reminder_right) * weightnorm[size*i+index_right] - reminder_left * weightnorm[size*i+index_left]  ;
         }
         */
+        
+        //calculate the left coeficients as sources after reprojection
+        norm_dot_residuel_left = 0.0; norm_dot_residuel_right = 0.0; residuel = 0.0 ;
+        
+        for (int i =0; i < size; ++i)
+        {
+            residuel = residuels[i] + rounding_residuels[i] +  (new_reminder_right - reminder_right) * weightnorm[size*i+index_right] ;
+            
+            norm_dot_residuel_left += residuel * weightnorm[size*i+index_left];
+            
+            residuel = residuels[i] + rounding_residuels[i] +  (new_reminder_left - reminder_left) * weightnorm[size*i+index_left] ;
+            
+            norm_dot_residuel_right += residuel * weightnorm[size*i+index_right];
+        }
+        
+        FLOAT_T legacy_reminder_left = - norm_dot_residuel_left / norm_value_left;
+        
+        
         
         reminders[left.first->index] = legacy_reminder_left;
         
@@ -157,6 +159,24 @@ inline pair<const node*, float> reproject(pair<const node*, float>& left, pair<c
             //rounding_residuels[i] += (new_reminder_left - reminder_left) * weightnorm[size*i+index_left] - reminder_right * weightnorm[size*i+index_right] ;
         }
         */
+        
+        //calculate the left coeficients as sources after reprojection
+        norm_dot_residuel_left = 0.0; norm_dot_residuel_right = 0.0; residuel = 0.0 ;
+        
+        for (int i =0; i < size; ++i)
+        {
+            residuel = residuels[i] + rounding_residuels[i] +  (new_reminder_right - reminder_right) * weightnorm[size*i+index_right] ;
+            
+            norm_dot_residuel_left += residuel * weightnorm[size*i+index_left];
+            
+            residuel = residuels[i] + rounding_residuels[i] +  (new_reminder_left - reminder_left) * weightnorm[size*i+index_left] ;
+            
+            norm_dot_residuel_right += residuel * weightnorm[size*i+index_right];
+        }
+        
+        //FLOAT_T legacy_reminder_left = - norm_dot_residuel_left / norm_value_left;
+        
+        FLOAT_T legacy_reminder_right = - norm_dot_residuel_right / norm_value_right;
         
         reminders[right.first->index] = legacy_reminder_right;
         
