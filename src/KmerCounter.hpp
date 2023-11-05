@@ -52,19 +52,19 @@ string int_to_kmer(T1 value, int size = 31)
 
 static inline bool base_to_int(const char base, int &converted)
 {
-
+    
     switch (base)
     {
-        case 'A' : case 'a':
+        case 'A' :
             converted=0b00;
             break;
-        case 'C' : case 'c':
+        case 'C' :
             converted=0b01;
             break;
-        case 'G' : case 'g':
+        case 'G' :
             converted=0b10;
             break;
-        case 'T' : case 't':
+        case 'T' :
             converted=0b11;
             break;
         default:
@@ -85,7 +85,7 @@ class KmerCounter
 public:
     
     KmerCounter (size_t size):kmer_hash(4*size)
-    {};
+    {ifbackgrounds.resize(4*size);};
     ~KmerCounter()
     {};
     
@@ -100,7 +100,6 @@ public:
     template <class typefile>
     void count_kmer_(typefile &file, uint16* samplevecs, ull_atom &nBases, ull_atom &nReads, ull_atom &nBg, const int nthreads);
     
-    //template <class typefile>
     void count_kmer(CramReader &file, uint16* samplevecs , ull_atom &nBases, ull_atom &nReads ,ull_atom &nBg);
     
     void count_kmer(FastaReader &file, uint16* samplevecs, ull_atom &nBases, ull_atom &nReads, ull_atom &nBg);
@@ -113,6 +112,8 @@ public:
     
     kmer_hash_type kmer_hash;
     kmer_hash_type_mul kmer_multi_hash;
+    
+    vector<bool> ifbackgrounds;
     unordered_set<ull, Hash10M> backgrounds;
     
     uint totalkmers = 0;
@@ -175,20 +176,23 @@ static void initiate_counter_mul(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_
 
 
 template <typename T1, typename T2, typename T3>
-static void update_counter(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_kmer, uint16* vec, mutex &lock)
+static void update_counter(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_kmer, uint16* vec, uint &hash_ , mutex &lock)
 {
-    auto map_find = kmer_hash.find(larger_kmer);
-    uint16 temp;
+    auto map_find = kmer_hash.find(larger_kmer, hash_);
+    
     if (map_find != NULL)
     {
         uint index = *map_find;
         
         if (index < UINT_MAX )
         {
-	    temp = vec[index] + 1;
-	    vec[index] = temp & -(temp < MAX_UINT16);
+            //temp = vec[index] + 1;
+            //vec[index] = temp & -(temp < MAX_UINT16);
             //lock.lock();
-            //if ( vec[index] < MAX_UINT16 - 1) vec[index] ++;
+            if ( __builtin_expect(vec[index] < MAX_UINT16 - 1, 0) )
+            {
+                vec[index] ++;
+            }
             //lock.unlock();
         }
         else
@@ -200,9 +204,15 @@ static void update_counter(T2 &kmer_hash, T3 &kmer_multi_hash, T1 &larger_kmer, 
             //lock.lock();
             for (index = 1 ; index < num_num + 1; ++index)
             {
-                temp = vec[data[index]] + 1;
-	        vec[data[index]] = temp & -(temp < MAX_UINT16);
-		//if ( vec[data[index]] < MAX_UINT16 - 1 )  vec[data[index] ] ++;
+                
+                if ( __builtin_expect(vec[data[index]] < MAX_UINT16 - 1, 0) )
+                {
+                    vec[data[index] ] ++;
+                }
+                
+                //temp = vec[data[index]] + 1;
+                //vec[data[index]] = temp & -(temp < MAX_UINT16);
+
             }
             //lock.unlock();
         }
@@ -237,19 +247,17 @@ static void kmer_read_31(char base,  std::size_t &current_size, T &current_kmer,
     T reverse_converted;
     const int klen = 31;
     
-    if (base == '\n' || base == ' ') return;
+    const T mask = ((T)1 << (klen*2)) - 1;
+    const int shift = 2*klen - 2;
+    
+    //if (base == '\n' || base == ' ') return;
     
     if (base_to_int(base, converted))
     {
         
-        current_kmer <<= 2;
-        current_kmer &= (((T)1 << klen*2) - 1);
-        current_kmer += converted;
-        
-        reverse_kmer >>= 2;
-        reverse_converted = 0b11-converted;
-        reverse_converted <<= (2*klen-2);
-        reverse_kmer += reverse_converted;
+        current_kmer = ((current_kmer << 2) & mask) | converted;
+
+        reverse_kmer = (reverse_kmer >> 2) | ((T)(0b11 ^ converted) << shift);
         
     }
     
@@ -279,9 +287,9 @@ void KmerCounter<dictsize>::load_backgrounds(const char * backgroudfile)
     kmer_int current_kmer = 0;
     kmer_int reverse_kmer = 0;
         
+    std::hash<std::uint64_t> hasher;
     std::string StrLine;
     StrLine.resize(MAX_LINE);
-    
     while (fastafile.nextLine(StrLine))
     {
         switch (StrLine[0])
@@ -308,6 +316,11 @@ void KmerCounter<dictsize>::load_backgrounds(const char * backgroudfile)
             auto larger_kmer = (current_kmer >= reverse_kmer) ? current_kmer : reverse_kmer;
             
             backgrounds.insert(larger_kmer);
+            
+            ull key = hasher(larger_kmer);
+            uint hash_ = key % kmer_hash.modsize;
+            
+            ifbackgrounds[hash_] = 1;
                 
         }
     }
@@ -328,7 +341,8 @@ ull KmerCounter<dictsize>::read_target(FastaReader &fastafile)
         
     std::string StrLine;
     StrLine.resize(MAX_LINE);
-    
+   
+    uint hash_; 
     while (fastafile.nextLine(StrLine))
     {
         switch (StrLine[0])
@@ -433,6 +447,7 @@ void KmerCounter<dictsize>::count_kmer(FastaReader &file, uint16* samplevecs, ul
     
     //uint64_t ifmasked = 0;
     //int num_masked = 0 ;
+    uint hash_;
     std::string StrLine;
     std::string Header;
     
@@ -463,9 +478,15 @@ void KmerCounter<dictsize>::count_kmer(FastaReader &file, uint16* samplevecs, ul
             
             auto larger_kmer = (current_kmer >= reverse_kmer) ? current_kmer:reverse_kmer;
             
-            nBg += backgrounds.count(larger_kmer);
+            update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs, hash_,counting_lock);
             
-            update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs, counting_lock);
+            if ( __builtin_expect(ifbackgrounds[hash_] == 0, 1) )
+            {
+                if ( __builtin_expect(backgrounds.find(larger_kmer) != backgrounds.end(), 0) )
+                {
+                    nBg ++;
+                }
+            }
             
         }
         
@@ -494,6 +515,7 @@ void KmerCounter<dictsize>::count_kmer(FastqReader &file, uint16* samplevecs, ul
     //int num_masked = 0 ;
     std::string Header;
 
+    uint hash_ = 0;
     size_t rlen = 0;
     const char *StrLine = NULL;
     
@@ -510,11 +532,16 @@ void KmerCounter<dictsize>::count_kmer(FastqReader &file, uint16* samplevecs, ul
             if (++current_size < klen) continue;
             
             auto larger_kmer = (current_kmer >= reverse_kmer) ? current_kmer:reverse_kmer;
-
-            nBg += backgrounds.count(larger_kmer);
             
-            update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs, counting_lock);
-
+            update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs, hash_, counting_lock);
+            
+            if ( __builtin_expect(ifbackgrounds[hash_] == 0, 1) )
+            {
+                if ( __builtin_expect(backgrounds.find(larger_kmer) != backgrounds.end(), 0) )
+                {
+                    nBg ++;
+                }
+            }
         }
         
         //nBases+=MAX(0, StrLine.length() - klen + 1);
@@ -527,7 +554,6 @@ void KmerCounter<dictsize>::count_kmer(FastqReader &file, uint16* samplevecs, ul
     return ;
 };
 
-
 template <int dictsize>
 void KmerCounter<dictsize>::count_kmer(CramReader &file, uint16* samplevecs, ull_atom &nBases, ull_atom &nReads, ull_atom &nBg)
 {
@@ -539,10 +565,11 @@ void KmerCounter<dictsize>::count_kmer(CramReader &file, uint16* samplevecs, ull
     //uint64_t ifmasked = 0;
     //int num_masked = 0 ;
     std::string Header;
-
+    
+    uint hash_ ;
     size_t rlen = 0;
     uint8_t *StrLine = NULL;
-   
+    bool ifbackground = 0;
     char base; 
     while (file.nextLine_prt(StrLine, rlen))
     {
@@ -556,9 +583,16 @@ void KmerCounter<dictsize>::count_kmer(CramReader &file, uint16* samplevecs, ull
             
             auto larger_kmer = (current_kmer >= reverse_kmer) ? current_kmer:reverse_kmer;
 
-            nBg += backgrounds.count(larger_kmer);
-            
-            update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs, counting_lock);
+            update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs, hash_, counting_lock);
+           
+            continue; 
+            if ( __builtin_expect(ifbackgrounds[hash_] == 0, 1) )
+            {
+                if ( __builtin_expect(backgrounds.find(larger_kmer) != backgrounds.end(), 0) )
+                {
+                    nBg ++;
+                }
+            }
 
         }
         

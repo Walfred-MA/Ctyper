@@ -61,7 +61,7 @@ void CramReader::LoadRegion(std::vector<char *>& bedregions)
     
     //hts_reglist_t * reglist = hts_reglist_create_cram(regions, 1, &rcount, indexdata);
     
-    
+        
 }
  
 bool CramReader::nextLine_prt(uint8_t * &StrLine, size_t &rlen)

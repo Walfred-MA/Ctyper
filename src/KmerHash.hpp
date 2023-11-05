@@ -77,9 +77,10 @@ public:
     
     uint* add(const ull kmer_int, const uint index);
     uint* find(const ull kmer_int);
+    uint* find(const ull kmer_int, uint &hash_);
+    const size_t modsize;
 
 private:
-    const size_t modsize;
     item40_t** items = new item40_t*[modsize];
     uint* key_sizes = new uint[modsize];
 };
