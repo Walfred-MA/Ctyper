@@ -85,7 +85,7 @@ class KmerCounter
 public:
     
     KmerCounter (size_t size):kmer_hash(4*size)
-    {ifbackgrounds.resize(kmer_hash.modsize);};
+    {ifbackgrounds.resize(kmer_hash.modsize, 0);};
     ~KmerCounter()
     {};
     
