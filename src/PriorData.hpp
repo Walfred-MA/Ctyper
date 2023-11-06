@@ -40,7 +40,7 @@ void try_allocate(T*& ptr, size_t size, size_t reserve = 0)
             std::exit(EXIT_FAILURE);
         }
     }
-    int attempts = 200;
+    attempts = 200;
     T* new_ptr = nullptr;
 
     while (attempts-- > 0)
