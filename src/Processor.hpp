@@ -61,7 +61,7 @@ public:
     kmer_counts(new uint16[k+1]),
     Nsubthreads(N),
     
-    norm_vec(new FLOAT_T[DefaultSize]),
+    norm_vec(new FLOAT_T[MAX_UINT16]),
     norm_matrix(new FLOAT_T[DefaultSize*DefaultSize]),
     
     coefs(new FLOAT_T[MAX_UINT16]),
@@ -268,15 +268,15 @@ public:
 	
 	if (MAX(newalloc_size, alloc_size) > DefaultSize)
         {
-            norm_vec.reset(new FLOAT_T[newalloc_size]);
+            //norm_vec.reset(new FLOAT_T[newalloc_size]);
             
             try_allocate_unique(norm_matrix, newalloc_size*newalloc_size, newalloc_size*newalloc_size);
             
-            coefs.reset(new FLOAT_T[newalloc_size]);
+            //coefs.reset(new FLOAT_T[newalloc_size]);
             
-            residuels.reset(new FLOAT_T[newalloc_size]);
+            //residuels.reset(new FLOAT_T[newalloc_size]);
             
-            results.reset(new int[newalloc_size]);
+            //results.reset(new int[newalloc_size]);
             
             alloc_size = newalloc_size;
         }
