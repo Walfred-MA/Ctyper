@@ -313,7 +313,9 @@ void aggregateCorr_mul(FLOAT_T * coefs, const uint16* kmervec, const uint16* kme
     }
     grouptotalnums[groupnum] = MAX(totalnum, 1.0);
     
-    try_function_with_retries( [&]() { resize_mul(allratios, groupkmernums, grouptotalnums, knum,groupnum);} );
+    //try_function_with_retries( [&]() { resize_mul(allratios, groupkmernums, grouptotalnums, knum,groupnum);} );
+
+    resize_mul(allratios, groupkmernums, grouptotalnums, knum,groupnum);
     
     GetMedianNofil_mul(coefs, kmervec,kmermatrix,knum, totalnum,grouptotalnums,groups, groupnum, grouptotalobs, allratios);
     
