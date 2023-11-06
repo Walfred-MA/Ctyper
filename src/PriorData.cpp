@@ -571,7 +571,7 @@ void PriorData::LoadMatrix(PriorChunk &Chunk, size_t new_kmer_matrix_allocsize)
         uint16 rsize = LoadRow(matrix , rindex, StrLine, Chunk.pathsizes);
         
         GetGroupKmerNum(Chunk, matrix, ifingroup_counter, ifingroup, Chunk.genenum);
-        
+
         matrix = &matrix[rsize];
     }
     
