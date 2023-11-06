@@ -271,6 +271,9 @@ void PriorData::LoadNorm(PriorChunk &Chunk)
     
     if (curr_genenum *curr_genenum != prior_norm_allocsize)
     {
+
+	assert(curr_genenum < MAX_UINT16);
+	    
         try_allocate(prior_norm, curr_genenum *curr_genenum, curr_genenum *curr_genenum);
         
         prior_norm_allocsize = curr_genenum * curr_genenum  ;
