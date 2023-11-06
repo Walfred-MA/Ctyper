@@ -269,7 +269,7 @@ public:
 	if (MAX(newalloc_size, alloc_size) > DefaultSize)
         {
             //norm_vec.reset(new FLOAT_T[newalloc_size]);
-            
+            assert(newalloc_size < MAX_UINT16);
             try_allocate_unique(norm_matrix, newalloc_size*newalloc_size, newalloc_size*newalloc_size);
             
             //coefs.reset(new FLOAT_T[newalloc_size]);
