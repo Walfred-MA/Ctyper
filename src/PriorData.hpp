@@ -24,26 +24,25 @@
 using namespace std;
 
 template<typename T>
-void try_allocate(T* &ptr, size_t size, size_t reserve = 0)
+void try_allocate(T*& ptr, size_t size, size_t reserve = 0)
 {
-    int attemps = 200;
-    
-    while (attemps-- > 0)
+    std::unique_ptr<T> temp_ptr(new T[reserve]); //require free memory before proceed
+
+    int attempts = 200;
+    T* new_ptr = nullptr;
+
+    while (attempts-- > 0)
     {
-        try
-        {
-            std::unique_ptr<T> temp_ptr(new T[reserve]);
-            ptr = (T *) realloc(ptr, sizeof(T) * size  );
-            
+        new_ptr = (T*)realloc(ptr, sizeof(T) * size);
+        if (new_ptr != nullptr) {
+            ptr = new_ptr;
             return;
         }
-        catch (const std::bad_alloc&)
-        {
-            std::cerr << "Allocation retrying, Attemp: " << 200 - attemps << std::endl;
-            std::this_thread::sleep_for(std::chrono::seconds(10));
-        }
+
+        std::cerr << "Allocation retrying, Attempt: " << 200 - attempts << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(10));
     }
-    
+
     std::cerr << "Failed to allocate memory after 200 attempts. Exiting." << std::endl;
     std::exit(EXIT_FAILURE);
 }
@@ -57,7 +56,7 @@ void try_allocate_unique(std::unique_ptr<T>& uptr, size_t size, size_t reserve =
     {
         try
         {
-            std::unique_ptr<T> temp_ptr(new T[size]); //require twice memory before proceed
+            std::unique_ptr<T> temp_ptr(new T[reserve]); //require twice memory before proceed
             uptr.reset(new T[size]);
             
             return;
