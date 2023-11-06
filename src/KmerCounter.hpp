@@ -85,7 +85,7 @@ class KmerCounter
 public:
     
     KmerCounter (size_t size):kmer_hash(4*size)
-    {ifbackgrounds.resize(4*size);};
+    {ifbackgrounds.resize(kmer_hash.modsize);};
     ~KmerCounter()
     {};
     
@@ -480,12 +480,9 @@ void KmerCounter<dictsize>::count_kmer(FastaReader &file, uint16* samplevecs, ul
             
             update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs, hash_,counting_lock);
             
-            if ( __builtin_expect(ifbackgrounds[hash_] == 0, 1) )
-            {
-                if ( __builtin_expect(backgrounds.find(larger_kmer) != backgrounds.end(), 0) )
-                {
-                    nBg ++;
-                }
+	    if ( __builtin_expect( ifbackgrounds[hash_], 0 ) &&  __builtin_expect(backgrounds.find(larger_kmer)!=backgrounds.end() , 1)  )
+	    {
+		nBg ++;
             }
             
         }
@@ -535,12 +532,9 @@ void KmerCounter<dictsize>::count_kmer(FastqReader &file, uint16* samplevecs, ul
             
             update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs, hash_, counting_lock);
             
-            if ( __builtin_expect(ifbackgrounds[hash_] == 0, 1) )
+	    if ( __builtin_expect( ifbackgrounds[hash_], 0 ) &&  __builtin_expect(backgrounds.find(larger_kmer)!=backgrounds.end() , 1)  )
             {
-                if ( __builtin_expect(backgrounds.find(larger_kmer) != backgrounds.end(), 0) )
-                {
-                    nBg ++;
-                }
+            	nBg ++;
             }
         }
         
@@ -585,13 +579,9 @@ void KmerCounter<dictsize>::count_kmer(CramReader &file, uint16* samplevecs, ull
 
             update_counter(kmer_hash, kmer_multi_hash, larger_kmer, samplevecs, hash_, counting_lock);
            
-            continue; 
-            if ( __builtin_expect(ifbackgrounds[hash_] == 0, 1) )
+            if ( __builtin_expect( ifbackgrounds[hash_], 0 ) &&  __builtin_expect(backgrounds.find(larger_kmer)!=backgrounds.end() , 1)  )
             {
-                if ( __builtin_expect(backgrounds.find(larger_kmer) != backgrounds.end(), 0) )
-                {
-                    nBg ++;
-                }
+                nBg ++;
             }
 
         }

@@ -333,7 +333,7 @@ pair<const node*, float> node::leaveto_root(FLOAT_T* reminders ,int * rounds, ve
 
 void TreeRound::Run(const node* nodes, FLOAT_T* unround_coefs, size_t size, int * round_coefs, FLOAT_T * reminder_coefs, const FLOAT_T *residuels, const FLOAT_T *weightnorm)
 {
-    memcpy(reminder_coefs, unround_coefs, sizeof (FLOAT_T) *  size+10);
+    memcpy(reminder_coefs, unround_coefs, sizeof (FLOAT_T) *  size);
     
     const node& root = nodes[0];
     
