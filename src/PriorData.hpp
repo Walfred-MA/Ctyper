@@ -26,8 +26,20 @@ using namespace std;
 template<typename T>
 void try_allocate(T*& ptr, size_t size, size_t reserve = 0)
 {
-    std::unique_ptr<T> temp_ptr(new T[reserve]); //require free memory before proceed
-
+    std::unique_ptr<T> temp_ptr; //require free memory before proceed
+    int attempts = 200;
+    while (attempts-- > 0) 
+    {
+        try 
+	{
+            temp_ptr.reset(new T[reserve]);
+        } 
+	catch (const std::bad_alloc&) 
+	{
+            std::cerr << "Initial memory reservation failed. " << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
+    }
     int attempts = 200;
     T* new_ptr = nullptr;
 
