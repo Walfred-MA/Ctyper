@@ -363,6 +363,7 @@ void PriorData::LoadGroups(PriorChunk &Chunk)
     string StrLine;
     
     Chunk.genegroups.resize(curr_genenum, 0);
+    std::fill(Chunk.genegroups.begin(), Chunk.genegroups.end(), 0);
     Chunk.numgroups = 0;
     StrLine.resize(MAX_LINE);
     for ( int i = 0 ; i < curr_genenum ; ++i)
@@ -385,7 +386,7 @@ void PriorData::LoadGroups(PriorChunk &Chunk)
     }
     
     Chunk.groupkmernums.resize(Chunk.numgroups, 0);;
-    
+    std::fill(Chunk.groupkmernums.begin(), Chunk.groupkmernums.end(), 0);
 }
 size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine, vector<uint> &pathsizes)
 {
