@@ -46,6 +46,8 @@ public:
     }
     
     void WindowCovers(const uint16* kmervec, const uint16* kmermatrix, const FLOAT_T depth, const uint16 gnum, const uint knum, const int genenum, const int* results, ull &total_obs, ull &total_exp);
+
+    void PartialCopy(vector<vector<tuple<int, int, float>>>& results, const float depth);
     
     vector<vector<tuple<int,int,int>>> windowcovers;
     

@@ -1,0 +1,187 @@
+[DEBUG Sep 17 09:50:47.061268317, defaults.go:273] Args: [/home1/wangfeim/.local/ActiveState/StateTool/release/bin/state-svc foreground]
+[DEBUG Sep 17 09:50:47.087007682, locale.go:38] Init
+[DEBUG Sep 17 09:51:35.301465936, errs.go:68] Created error: File could not be found
+[DEBUG Sep 17 09:51:35.310879190, errs.go:68] Created error: Not Recognized
+[DEBUG Sep 17 09:51:35.346119159, errs.go:68] Created error: Secret not found
+[DEBUG Sep 17 09:51:35.346255705, errs.go:68] Created error: Could not save keypair
+[DEBUG Sep 17 09:51:35.346546097, errs.go:68] Created error: Build responded with error
+[DEBUG Sep 17 09:51:35.346643018, errs.go:68] Created error: Unknown build type
+[DEBUG Sep 17 09:51:35.347001518, errors.go:86] Wrapped localized error: <nil> -- with: The installed version of the State Tool Service does not match that of the client.
+Please stop the service with [ACTIONABLE]state-svc stop[/RESET] and try your command again.
+If this issue persists please reinstall the State Tool.
+
+[DEBUG Sep 17 09:51:35.347027444, errs.go:68] Created error: no data
+[DEBUG Sep 17 09:51:35.347075376, errs.go:68] Created error: member not found
+[DEBUG Sep 17 09:51:35.347105581, errs.go:68] Created error: Commit count is unknowable
+[DEBUG Sep 17 09:51:35.347192060, errs.go:68] Created error: No merge required
+[DEBUG Sep 17 09:51:35.347247331, errs.go:68] Created error: Can't merge commit thats already in target commits history
+[DEBUG Sep 17 09:51:35.347312739, errs.go:68] Created error: Bad expander name
+[DEBUG Sep 17 09:51:35.347402996, errs.go:68] Created error: Expander has no handler
+[DEBUG Sep 17 09:51:35.349108724, errs.go:68] Created error: Service is already running
+[DEBUG Sep 17 09:51:35.423382649, secrets.go:35] Gcloud Secretmanager failed to initialize (ignore if you're not trying to use gcloud): google: could not find default credentials. See https://developers.google.com/accounts/docs/application-default-credentials for more information.
+[DEBUG Sep 17 09:51:35.429200375, output.go:53] Requested outputer for 
+[DEBUG Sep 17 09:51:35.429305176, output.go:58] Using Plain outputer
+[DEBUG Sep 17 09:51:35.429500475, termutils.go:17] Cannot get terminal size: inappropriate ioctl for device
+[DEBUG Sep 17 09:51:35.429763991, main.go:137] Running CmdForeground
+[DEBUG Sep 17 09:51:35.429787169, main.go:147] Running in Foreground
+[DEBUG Sep 17 09:51:35.429855742, client.go:128] Reporting event to 2 reporters: run-command, state-svc foreground, 
+[DEBUG Sep 17 09:51:35.430218969, service.go:30] service:Start
+[DEBUG Sep 17 09:52:35.431478552, errs.go:75] Wrapped error: Post "https://www.google-analytics.com/collect": dial tcp 142.250.217.142:443: i/o timeout -- with: Could not send GA Event
+[DEBUG Sep 17 09:52:35.431706549, errs.go:75] Wrapped error: <nil> -- with: Could not send GA Event: Post "https://www.google-analytics.com/collect": dial tcp 142.250.217.142:443: i/o timeout: dial tcp 142.250.217.142:443: i/o timeout: i/o timeout
+[DEBUG Sep 17 09:52:35.431753578, client.go:132] Reporter failed: GaCLIReporter, category: run-command, action: state-svc foreground, error: Could not send GA Event: Post "https://www.google-analytics.com/collect": dial tcp 142.250.217.142:443: i/o timeout: dial tcp 142.250.217.142:443: i/o timeout: i/o timeout
+[DEBUG Sep 17 09:52:35.446166249, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 09:53:05.432348912, errs.go:75] Wrapped error: Head "https://state-tool.s3.amazonaws.com/pixel?x-action=state-svc+foreground&x-category=run-command&x-custom10=&x-custom11=1764303594.1646711654_pdli01&x-custom12=2ac5f1f9-ed86-4e7a-9237-575eed08bfc4&x-custom13=&x-custom14=&x-custom16=&x-custom17=&x-custom18=&x-custom19=&x-custom2=0.32.2-SHAc8bfd50&x-custom3=release&x-custom4=&x-custom5=&x-custom6=Linux&x-custom7=3.10.0-1160.71.1.el7.x86_64&x-custom8=install.sh&x-custom9=693b92b47cf943859ca5362259631999&x-label=": dial tcp 3.5.25.38:443: i/o timeout -- with: Could not download S3 pixel
+[DEBUG Sep 17 09:53:05.432515948, errs.go:75] Wrapped error: <nil> -- with: Could not download S3 pixel: Head "https://state-tool.s3.amazonaws.com/pixel?x-action=state-svc+foreground&x-category=run-command&x-custom10=&x-custom11=1764303594.1646711654_pdli01&x-custom12=2ac5f1f9-ed86-4e7a-9237-575eed08bfc4&x-custom13=&x-custom14=&x-custom16=&x-custom17=&x-custom18=&x-custom19=&x-custom2=0.32.2-SHAc8bfd50&x-custom3=release&x-custom4=&x-custom5=&x-custom6=Linux&x-custom7=3.10.0-1160.71.1.el7.x86_64&x-custom8=install.sh&x-custom9=693b92b47cf943859ca5362259631999&x-label=": dial tcp 3.5.25.38:443: i/o timeout: dial tcp 3.5.25.38:443: i/o timeout: i/o timeout
+[DEBUG Sep 17 09:53:05.432576354, client.go:132] Reporter failed: PixelReporter, category: run-command, action: state-svc foreground, error: Could not download S3 pixel: Head "https://state-tool.s3.amazonaws.com/pixel?x-action=state-svc+foreground&x-category=run-command&x-custom10=&x-custom11=1764303594.1646711654_pdli01&x-custom12=2ac5f1f9-ed86-4e7a-9237-575eed08bfc4&x-custom13=&x-custom14=&x-custom16=&x-custom17=&x-custom18=&x-custom19=&x-custom2=0.32.2-SHAc8bfd50&x-custom3=release&x-custom4=&x-custom5=&x-custom6=Linux&x-custom7=3.10.0-1160.71.1.el7.x86_64&x-custom8=install.sh&x-custom9=693b92b47cf943859ca5362259631999&x-label=": dial tcp 3.5.25.38:443: i/o timeout: dial tcp 3.5.25.38:443: i/o timeout: i/o timeout
+[DEBUG Sep 17 09:53:35.450532858, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 09:54:35.446396898, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 09:55:20.842077708, service.go:42] Server starting on port: 35434
+[DEBUG Sep 17 09:55:20.842499219, client.go:128] Reporting event to 2 reporters: state-svc, start, 
+[DEBUG Sep 17 09:55:35.446184364, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 09:55:50.847471806, errs.go:75] Wrapped error: Post "https://www.google-analytics.com/collect": dial tcp 142.250.188.238:443: i/o timeout -- with: Could not send GA Event
+[DEBUG Sep 17 09:55:50.847609601, errs.go:75] Wrapped error: <nil> -- with: Could not send GA Event: Post "https://www.google-analytics.com/collect": dial tcp 142.250.188.238:443: i/o timeout: dial tcp 142.250.188.238:443: i/o timeout: i/o timeout
+[DEBUG Sep 17 09:55:50.847644211, client.go:132] Reporter failed: GaCLIReporter, category: state-svc, action: start, error: Could not send GA Event: Post "https://www.google-analytics.com/collect": dial tcp 142.250.188.238:443: i/o timeout: dial tcp 142.250.188.238:443: i/o timeout: i/o timeout
+[DEBUG Sep 17 09:56:20.851356066, errs.go:75] Wrapped error: Head "https://state-tool.s3.amazonaws.com/pixel?x-action=start&x-category=state-svc&x-custom10=&x-custom11=1764303594.1646711654_pdli01&x-custom12=2ac5f1f9-ed86-4e7a-9237-575eed08bfc4&x-custom13=&x-custom14=&x-custom16=&x-custom17=&x-custom18=&x-custom19=&x-custom2=0.32.2-SHAc8bfd50&x-custom3=release&x-custom4=&x-custom5=&x-custom6=Linux&x-custom7=3.10.0-1160.71.1.el7.x86_64&x-custom8=install.sh&x-custom9=693b92b47cf943859ca5362259631999&x-label=": dial tcp 3.5.17.171:443: i/o timeout -- with: Could not download S3 pixel
+[DEBUG Sep 17 09:56:20.851497724, errs.go:75] Wrapped error: <nil> -- with: Could not download S3 pixel: Head "https://state-tool.s3.amazonaws.com/pixel?x-action=start&x-category=state-svc&x-custom10=&x-custom11=1764303594.1646711654_pdli01&x-custom12=2ac5f1f9-ed86-4e7a-9237-575eed08bfc4&x-custom13=&x-custom14=&x-custom16=&x-custom17=&x-custom18=&x-custom19=&x-custom2=0.32.2-SHAc8bfd50&x-custom3=release&x-custom4=&x-custom5=&x-custom6=Linux&x-custom7=3.10.0-1160.71.1.el7.x86_64&x-custom8=install.sh&x-custom9=693b92b47cf943859ca5362259631999&x-label=": dial tcp 3.5.17.171:443: i/o timeout: dial tcp 3.5.17.171:443: i/o timeout: i/o timeout
+[DEBUG Sep 17 09:56:20.851536385, client.go:132] Reporter failed: PixelReporter, category: state-svc, action: start, error: Could not download S3 pixel: Head "https://state-tool.s3.amazonaws.com/pixel?x-action=start&x-category=state-svc&x-custom10=&x-custom11=1764303594.1646711654_pdli01&x-custom12=2ac5f1f9-ed86-4e7a-9237-575eed08bfc4&x-custom13=&x-custom14=&x-custom16=&x-custom17=&x-custom18=&x-custom19=&x-custom2=0.32.2-SHAc8bfd50&x-custom3=release&x-custom4=&x-custom5=&x-custom6=Linux&x-custom7=3.10.0-1160.71.1.el7.x86_64&x-custom8=install.sh&x-custom9=693b92b47cf943859ca5362259631999&x-label=": dial tcp 3.5.17.171:443: i/o timeout: dial tcp 3.5.17.171:443: i/o timeout: i/o timeout
+[DEBUG Sep 17 09:56:35.446488569, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 09:57:35.446411732, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 09:58:35.446922675, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 09:59:35.446889223, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:00:35.447204191, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:01:35.446723411, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:02:35.446556180, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:03:35.446662578, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:04:35.447075153, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:05:35.447051861, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:06:35.447135652, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:07:35.446640641, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:08:35.446305176, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:09:35.447121905, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:10:35.446390834, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:11:35.446516253, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:12:35.446826831, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:13:35.446865121, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:14:35.446669721, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:15:35.446632012, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:16:35.446884438, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:17:35.446704374, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:18:35.446839834, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:19:35.446691956, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:20:35.446624680, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:21:35.446572156, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:22:35.447071702, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:23:35.446349402, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:24:35.446572981, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:25:35.446172211, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:26:35.447060414, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:27:35.446705105, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:28:35.446814447, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:29:35.446843166, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:30:35.446494623, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:31:35.446553473, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:32:35.446605902, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:33:35.446616556, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:34:35.446739680, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:35:35.446251936, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:36:35.446873763, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:37:35.446688294, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:38:35.446476417, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:39:35.446753737, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:40:35.446368325, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:41:35.446736956, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:42:35.446554360, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:43:35.446990283, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:44:35.446830070, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:45:35.446627290, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:46:35.447019737, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:47:35.446902600, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:48:35.446952736, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:49:35.446722165, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:50:35.446585891, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:51:35.446627428, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:52:35.446838380, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:53:35.446394886, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:54:35.446676130, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:55:35.446172570, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:56:35.446944706, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:57:35.446677646, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:58:35.446552536, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 10:59:35.446994159, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:00:35.447085030, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:01:35.447023616, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:02:35.446716851, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:03:35.446670053, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:04:35.446778894, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:05:35.447164186, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:06:35.446901417, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:07:35.446503475, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:08:35.446232936, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:09:35.446616923, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:10:35.446203417, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:11:35.446468493, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:12:35.446618488, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:13:35.446638934, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:14:35.446896180, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:15:35.446632822, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:16:35.446865449, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:17:35.446972648, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:18:35.446678645, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:19:35.446789721, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:20:35.446590180, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:21:35.446936866, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:22:35.446817506, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:23:35.446310682, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:24:35.446841297, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:25:35.446266973, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:26:35.446766290, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:27:35.446648779, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:28:35.446492817, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:29:35.446595618, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:30:35.446534091, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:31:35.446603002, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:32:35.446615371, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:33:35.446736516, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:34:35.446515466, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:35:35.446893186, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:36:35.446877411, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:37:35.446954583, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:38:35.446172588, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:39:35.446780359, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:40:35.446284323, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:41:35.447146386, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:42:35.446845200, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:43:35.446658749, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:44:35.446641029, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:45:35.446862574, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:46:35.446645383, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:47:35.446827901, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:48:35.446925074, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:49:35.446539196, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:50:35.446483632, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:51:35.446560553, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:52:35.446576442, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:53:35.446194274, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:54:35.446646559, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:55:35.446181455, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:56:35.447076184, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:57:35.446736332, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:58:35.446489151, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:59:35.446488086, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:00:35.446164515, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:01:35.446985234, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:02:35.446946477, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:03:35.446805993, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:04:35.447012554, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:05:35.446707200, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:06:35.447117280, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:07:35.446960709, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:08:35.446287027, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:09:35.446936658, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:10:35.446176031, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:11:35.446533480, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:12:35.446728023, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:13:35.446525581, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:14:35.446484404, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:15:35.446982069, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:16:35.446970987, watcher.go:72] Checking for runtime processes

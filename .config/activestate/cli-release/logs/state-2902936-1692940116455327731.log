@@ -1,0 +1,48 @@
+[DEBUG Aug 24 22:08:36.456190374, defaults.go:273] Args: [/home1/wangfeim/.local/ActiveState/StateTool/release/bin/state exec --path /home1/wangfeim/packages/perl/Perl-5.34.0-Windows -- perl ./configure]
+[DEBUG Aug 24 22:08:36.467464285, locale.go:38] Init
+[DEBUG Aug 24 22:08:36.500779084, errs.go:68] Created error: File could not be found
+[DEBUG Aug 24 22:08:36.502974638, errs.go:68] Created error: Not Recognized
+[DEBUG Aug 24 22:08:36.521643428, errors.go:86] Wrapped localized error: <nil> -- with: The installed version of the State Tool Service does not match that of the client.
+Please stop the service with [ACTIONABLE]state-svc stop[/RESET] and try your command again.
+If this issue persists please reinstall the State Tool.
+
+[DEBUG Aug 24 22:08:36.521770136, errs.go:68] Created error: Build responded with error
+[DEBUG Aug 24 22:08:36.521792683, errs.go:68] Created error: Unknown build type
+[DEBUG Aug 24 22:08:36.521861170, errs.go:68] Created error: no data
+[DEBUG Aug 24 22:08:36.521880020, errs.go:68] Created error: member not found
+[DEBUG Aug 24 22:08:36.521896951, errs.go:68] Created error: Commit count is unknowable
+[DEBUG Aug 24 22:08:36.521911124, errs.go:68] Created error: No merge required
+[DEBUG Aug 24 22:08:36.521925053, errs.go:68] Created error: Can't merge commit thats already in target commits history
+[DEBUG Aug 24 22:08:36.526943399, errs.go:68] Created error: Secret not found
+[DEBUG Aug 24 22:08:36.526978475, errs.go:68] Created error: Could not save keypair
+[DEBUG Aug 24 22:08:36.526999373, errs.go:68] Created error: Bad expander name
+[DEBUG Aug 24 22:08:36.527018423, errs.go:68] Created error: Expander has no handler
+[DEBUG Aug 24 22:08:36.527145121, errs.go:68] Created error: camel runtime is currently being built
+[DEBUG Aug 24 22:08:36.527215273, errs.go:68] Created error: Runtime is not completely installed.
+[DEBUG Aug 24 22:08:36.558855751, output.go:53] Requested outputer for 
+[DEBUG Aug 24 22:08:36.558873258, output.go:58] Using Plain outputer
+[DEBUG Aug 24 22:08:36.561601892, main.go:143] ConfigPath: /home1/wangfeim/.config/activestate/cli-release
+[DEBUG Aug 24 22:08:36.561622674, main.go:144] CachePath: /home1/wangfeim/.cache/activestate
+[DEBUG Aug 24 22:08:36.561713331, exeutils.go:149] Executing: /home1/wangfeim/.local/ActiveState/StateTool/release/bin/state-svc [start]
+[DEBUG Aug 24 22:08:36.564474486, errors.go:86] Wrapped localized error: File could not be found -- with: could not find file=[NOTICE]activestate.yaml[/RESET] in path=[NOTICE]/scratch1/wangfeim/Tools/repeatmasker/RepeatMasker-master[/RESET]
+[DEBUG Aug 24 22:08:36.568344189, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Aug 24 22:08:36.593238947, secrets.go:35] Gcloud Secretmanager failed to initialize (ignore if you're not trying to use gcloud): google: could not find default credentials. See https://developers.google.com/accounts/docs/application-default-credentials for more information.
+[DEBUG Aug 24 22:08:36.596731374, subshell.go:102] Detected SHELL: bash
+[DEBUG Aug 24 22:08:36.596747986, subshell.go:134] Using binary: /usr/bin/bash
+[DEBUG Aug 24 22:08:36.599872062, errors.go:86] Wrapped localized error: File could not be found -- with: could not find file=[NOTICE]activestate.yaml[/RESET] in path=[NOTICE]/scratch1/wangfeim/Tools/repeatmasker/RepeatMasker-master[/RESET]
+[DEBUG Aug 24 22:08:36.602753508, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Aug 24 22:08:36.608803582, secrets.go:61] secrets-api scheme=https host=platform.activestate.com base_path=/api/secrets/v1
+[DEBUG Aug 24 22:08:36.610833094, errors.go:86] Wrapped localized error: File could not be found -- with: could not find file=[NOTICE]activestate.yaml[/RESET] in path=[NOTICE]/scratch1/wangfeim/Tools/repeatmasker/RepeatMasker-master[/RESET]
+[DEBUG Aug 24 22:08:36.614425519, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Aug 24 22:08:36.621293535, secrets.go:61] secrets-api scheme=https host=platform.activestate.com base_path=/api/secrets/v1
+[DEBUG Aug 24 22:08:36.623064478, cmdcall.go:50] cmdcall
+[DEBUG Aug 24 22:08:36.623074969, svcmanager.go:57] Waiting for state-svc
+[DEBUG Aug 24 22:08:36.623224785, svcmanager.go:59] Attempt 1
+[DEBUG Aug 24 22:08:36.624178691, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Aug 24 22:08:36.632649274, target.go:141] In newStore: resolved project dir is: /home1/wangfeim/packages/perl/Perl-5.34.0-Windows
+[DEBUG Aug 24 22:08:36.633620112, runtime.go:126] Getting runtime env, inherit: true, useExec: false
+[DEBUG Aug 24 22:08:36.634748649, target.go:141] In newStore: resolved project dir is: /home1/wangfeim/packages/perl/Perl-5.34.0-Windows
+[DEBUG Aug 24 22:08:36.635025028, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Aug 24 22:08:36.642426425, exec.go:135] Trying to exec perl on PATH=/home1/wangfeim/.cache/activestate/a862ff9f/site/bin:/home1/wangfeim/.cache/activestate/a862ff9f/site/bin:/home1/wangfeim/.cache/activestate/a862ff9f/bin:/home1/wangfeim/.cache/activestate/a862ff9f/bin:/spack/compilers/nvhpc/22.11/Linux_x86_64/22.11/compilers/extras/qd/bin:/spack/compilers/nvhpc/22.11/Linux_x86_64/22.11/compilers/extras/qd/bin:/spack/compilers/nvhpc/22.11/Linux_x86_64/22.11/comm_libs/mpi/bin:/spack/compilers/nvhpc/22.11/Linux_x86_64/22.11/comm_libs/mpi/bin:/spack/compilers/nvhpc/22.11/Linux_x86_64/22.11/compilers/bin:/spack/compilers/nvhpc/22.11/Linux_x86_64/22.11/compilers/bin:/spack/compilers/nvhpc/22.11/Linux_x86_64/22.11/cuda/11.0/bin:/spack/compilers/nvhpc/22.11/Linux_x86_64/22.11/cuda/11.0/bin:/spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/cuda-11.6.2-4rjgy23/bin:/spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/cuda-11.6.2-4rjgy23/bin:/spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/pmix-3.2.3-o4owkss/bin:/spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/pmix-3.2.3-o4owkss/bin:/spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/openmpi-4.1.4-4w23jca/bin:/spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/openmpi-4.1.4-4w23jca/bin:/spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/openblas-0.3.21-afcoykn/bin:/spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/openblas-0.3.21-afcoykn/bin:/spack/apps/gcc/11.3.0/bin:/spack/apps/gcc/11.3.0/bin:/spack/apps/gcc/8.3.0/bin:/spack/apps/gcc/8.3.0/bin:/home1/wangfeim/.cache/activestate/bin:/home1/wangfeim/.local/ActiveState/StateTool/release:/home1/wangfeim/.local/ActiveState/StateTool/release:/home1/wangfeim/miniconda3/envs/repeatmasker/bin:/home1/wangfeim/miniconda3/envs/repeatmasker/bin:/home1/wangfeim/bin/bin:/home1/wangfeim/bin/bin:/home1/wangfeim/bin:/home1/wangfeim/bin:/spack/utilities:/spack/utilities:/home1/wangfeim/miniconda3/bin:/home1/wangfeim/miniconda3/bin:/home1/wangfeim/miniconda3/condabin:/home1/wangfeim/miniconda3/condabin:/usr/local/bin:/usr/local/bin:/usr/bin:/usr/bin:/usr/local/sbin:/usr/local/sbin:/usr/sbin:/usr/sbin:/home1/wangfeim/usr/local/bin/openssl/bin:/home1/wangfeim/usr/local/bin/openssl/bin:/home1/wangfeim/Tools/emboss/EMBOSS-6.6.0/emboss:/home1/wangfeim/Tools/emboss/EMBOSS-6.6.0/emboss:/home1/wangfeim/usr/local:/home1/wangfeim/usr/local:/home1/wangfeim/usr/local/share:/home1/wangfeim/usr/local/share:/home1/wangfeim/usr/local/include:/home1/wangfeim/usr/local/include:/home1/wangfeim/usr/local/bin:/home1/wangfeim/usr/local/bin:/home1/wangfeim/usr/local/bin/openssl:/home1/wangfeim/usr/local/bin/openssl:/home1/wangfeim/tools/HMMMER/hmmer-3.3.2/src:/home1/wangfeim/tools/HMMMER/hmmer-3.3.2/src:/home1/wangfeim/usr/local/include/ncurses:/home1/wangfeim/usr/local/include/ncurses:/home1/wangfeim/usr/local/lib:/home1/wangfeim/usr/local/lib:/home1/wangfeim/usr/local/lib64:/home1/wangfeim/usr/local/lib64:/home1/wangfeim/Tools/java/jdk-16.0.2/bin:/home1/wangfeim/Tools/java/jdk-16.0.2/bin:/home1/wangfeim/bin/gcc/bin:/home1/wangfeim/bin/gcc/bin:/home1/wangfeim:/home1/wangfeim:/home1/wangfeim/.pyenv/bin:/home1/wangfeim/.pyenv/bin:/home1/wangfeim/.local/bin:/home1/wangfeim/.local/bin
+[DEBUG Aug 24 22:08:36.660243017, sscommon.go:170] Running command: bash -c /tmp/state-exec388428453.sh "./configure"
+[DEBUG Aug 24 22:08:37.575649524, errors.go:99] Suppressing silent failure: exit status 2 (wrapped)

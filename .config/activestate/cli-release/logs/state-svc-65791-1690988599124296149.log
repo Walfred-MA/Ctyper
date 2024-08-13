@@ -1,0 +1,33 @@
+[DEBUG Aug  2 08:03:19.124656696, defaults.go:273] Args: [/home1/wangfeim/.local/ActiveState/StateTool/release/bin/state-svc start]
+[DEBUG Aug  2 08:03:19.139078552, locale.go:38] Init
+[DEBUG Aug  2 08:03:19.210260661, errs.go:68] Created error: File could not be found
+[DEBUG Aug  2 08:03:19.213046907, errs.go:68] Created error: Not Recognized
+[DEBUG Aug  2 08:03:19.235172759, errs.go:68] Created error: Secret not found
+[DEBUG Aug  2 08:03:19.235231015, errs.go:68] Created error: Could not save keypair
+[DEBUG Aug  2 08:03:19.235418790, errs.go:68] Created error: Build responded with error
+[DEBUG Aug  2 08:03:19.235447700, errs.go:68] Created error: Unknown build type
+[DEBUG Aug  2 08:03:19.235592034, errors.go:86] Wrapped localized error: <nil> -- with: The installed version of the State Tool Service does not match that of the client.
+Please stop the service with [ACTIONABLE]state-svc stop[/RESET] and try your command again.
+If this issue persists please reinstall the State Tool.
+
+[DEBUG Aug  2 08:03:19.235614592, errs.go:68] Created error: no data
+[DEBUG Aug  2 08:03:19.235641296, errs.go:68] Created error: member not found
+[DEBUG Aug  2 08:03:19.235672535, errs.go:68] Created error: Commit count is unknowable
+[DEBUG Aug  2 08:03:19.235696360, errs.go:68] Created error: No merge required
+[DEBUG Aug  2 08:03:19.235720381, errs.go:68] Created error: Can't merge commit thats already in target commits history
+[DEBUG Aug  2 08:03:19.235744892, errs.go:68] Created error: Bad expander name
+[DEBUG Aug  2 08:03:19.235768512, errs.go:68] Created error: Expander has no handler
+[DEBUG Aug  2 08:03:19.237130918, errs.go:68] Created error: Service is already running
+[DEBUG Aug  2 08:03:19.288422976, secrets.go:35] Gcloud Secretmanager failed to initialize (ignore if you're not trying to use gcloud): google: could not find default credentials. See https://developers.google.com/accounts/docs/application-default-credentials for more information.
+[DEBUG Aug  2 08:03:19.291740675, output.go:53] Requested outputer for 
+[DEBUG Aug  2 08:03:19.291764188, output.go:58] Using Plain outputer
+[DEBUG Aug  2 08:03:19.291843076, termutils.go:17] Cannot get terminal size: inappropriate ioctl for device
+[DEBUG Aug  2 08:03:19.291934881, client.go:128] Reporting event to 2 reporters: run-command, state-svc start, 
+[DEBUG Aug  2 08:03:19.292001551, main.go:107] Running CmdStart
+[DEBUG Aug  2 08:03:19.297839745, errs.go:75] Wrapped error: Service is already running -- with: valueF failed
+[DEBUG Aug  2 08:03:19.297902130, errs.go:75] Wrapped error: valueF failed -- with: Could not store pid
+[DEBUG Aug  2 08:03:19.297986952, errors.go:113] Wrapped input error: Could not store pid -- with: A State Service instance is already running in the background.
+[DEBUG Aug  2 08:03:19.298003516, errs.go:75] Wrapped error: A State Service instance is already running in the background. -- with: Could not start serviceManager
+[DEBUG Aug  2 08:03:19.298098634, client.go:128] Reporting event to 2 reporters: command-exit, state-svc start, 1
+[DEBUG Aug  2 08:03:19.621641561, errs.go:75] Wrapped error: <nil> -- with: Could not start serviceManager: A State Service instance is already running in the background.: Could not store pid: valueF failed: Service is already running
+[DEBUG Aug  2 08:03:19.621712375, main.go:61] state-svc errored out due to input: Could not start serviceManager: A State Service instance is already running in the background.: Could not store pid: valueF failed: Service is already running

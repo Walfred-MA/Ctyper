@@ -1,0 +1,89 @@
+[DEBUG Sep 20 17:13:37.166091625, defaults.go:273] Args: [/home1/wangfeim/.local/ActiveState/StateTool/release/bin/state exec --path /home1/wangfeim/packages/perl/Perl-5.34.0-Windows -- perl -pe s/\+\n/\>\n+/g]
+[DEBUG Sep 20 17:13:37.181253284, locale.go:38] Init
+[DEBUG Sep 20 17:13:37.231526678, errs.go:68] Created error: File could not be found
+[DEBUG Sep 20 17:13:37.234697124, errs.go:68] Created error: Not Recognized
+[DEBUG Sep 20 17:13:37.250857986, errors.go:86] Wrapped localized error: <nil> -- with: The installed version of the State Tool Service does not match that of the client.
+Please stop the service with [ACTIONABLE]state-svc stop[/RESET] and try your command again.
+If this issue persists please reinstall the State Tool.
+
+[DEBUG Sep 20 17:13:37.251016050, errs.go:68] Created error: Build responded with error
+[DEBUG Sep 20 17:13:37.251043859, errs.go:68] Created error: Unknown build type
+[DEBUG Sep 20 17:13:37.251129239, errs.go:68] Created error: no data
+[DEBUG Sep 20 17:13:37.251152057, errs.go:68] Created error: member not found
+[DEBUG Sep 20 17:13:37.251175410, errs.go:68] Created error: Commit count is unknowable
+[DEBUG Sep 20 17:13:37.251195386, errs.go:68] Created error: No merge required
+[DEBUG Sep 20 17:13:37.251215915, errs.go:68] Created error: Can't merge commit thats already in target commits history
+[DEBUG Sep 20 17:13:37.259527869, errs.go:68] Created error: Secret not found
+[DEBUG Sep 20 17:13:37.259577121, errs.go:68] Created error: Could not save keypair
+[DEBUG Sep 20 17:13:37.259604931, errs.go:68] Created error: Bad expander name
+[DEBUG Sep 20 17:13:37.259629694, errs.go:68] Created error: Expander has no handler
+[DEBUG Sep 20 17:13:37.259814379, errs.go:68] Created error: camel runtime is currently being built
+[DEBUG Sep 20 17:13:37.259904046, errs.go:68] Created error: Runtime is not completely installed.
+[DEBUG Sep 20 17:13:37.298534028, output.go:53] Requested outputer for 
+[DEBUG Sep 20 17:13:37.298553268, output.go:58] Using Plain outputer
+[DEBUG Sep 20 17:13:37.301629802, main.go:143] ConfigPath: /home1/wangfeim/.config/activestate/cli-release
+[DEBUG Sep 20 17:13:37.301656192, main.go:144] CachePath: /home1/wangfeim/.cache/activestate
+[DEBUG Sep 20 17:13:37.301930965, exeutils.go:149] Executing: /home1/wangfeim/.local/ActiveState/StateTool/release/bin/state-svc [start]
+[DEBUG Sep 20 17:13:37.305604805, errors.go:86] Wrapped localized error: File could not be found -- with: could not find file=[NOTICE]activestate.yaml[/RESET] in path=[NOTICE]/scratch2/wangfeim/ctyper[/RESET]
+[DEBUG Sep 20 17:13:37.311929234, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Sep 20 17:13:37.348378190, secrets.go:35] Gcloud Secretmanager failed to initialize (ignore if you're not trying to use gcloud): google: could not find default credentials. See https://developers.google.com/accounts/docs/application-default-credentials for more information.
+[DEBUG Sep 20 17:13:37.352583208, subshell.go:102] Detected SHELL: bash
+[DEBUG Sep 20 17:13:37.352606184, subshell.go:134] Using binary: /usr/bin/bash
+[DEBUG Sep 20 17:13:37.357379980, errors.go:86] Wrapped localized error: File could not be found -- with: could not find file=[NOTICE]activestate.yaml[/RESET] in path=[NOTICE]/scratch2/wangfeim/ctyper[/RESET]
+[DEBUG Sep 20 17:13:37.361145109, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Sep 20 17:13:37.368824984, secrets.go:61] secrets-api scheme=https host=platform.activestate.com base_path=/api/secrets/v1
+[DEBUG Sep 20 17:13:37.371663383, errors.go:86] Wrapped localized error: File could not be found -- with: could not find file=[NOTICE]activestate.yaml[/RESET] in path=[NOTICE]/scratch2/wangfeim/ctyper[/RESET]
+[DEBUG Sep 20 17:13:37.375764441, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Sep 20 17:13:37.383282922, secrets.go:61] secrets-api scheme=https host=platform.activestate.com base_path=/api/secrets/v1
+[DEBUG Sep 20 17:13:37.385699874, cmdcall.go:50] cmdcall
+[DEBUG Sep 20 17:13:37.385733953, svcmanager.go:57] Waiting for state-svc
+[DEBUG Sep 20 17:13:37.385761104, svcmanager.go:59] Attempt 1
+[DEBUG Sep 20 17:13:37.386759334, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Sep 20 17:13:37.388305555, errs.go:75] Wrapped error: <nil> -- with: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.388353826, svcmanager.go:97] Ping failed, assuming we're not ready: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.395531993, svcmanager.go:57] Waiting for state-svc
+[DEBUG Sep 20 17:13:37.395553186, svcmanager.go:59] Attempt 1
+[DEBUG Sep 20 17:13:37.395538629, target.go:141] In newStore: resolved project dir is: /home1/wangfeim/packages/perl/Perl-5.34.0-Windows
+[DEBUG Sep 20 17:13:37.397549893, runtime.go:126] Getting runtime env, inherit: true, useExec: false
+[DEBUG Sep 20 17:13:37.397630005, svcmanager.go:57] Waiting for state-svc
+[DEBUG Sep 20 17:13:37.397652128, svcmanager.go:59] Attempt 1
+[DEBUG Sep 20 17:13:37.398035833, errs.go:75] Wrapped error: <nil> -- with: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.398079137, svcmanager.go:97] Ping failed, assuming we're not ready: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.399346037, svcmanager.go:57] Waiting for state-svc
+[DEBUG Sep 20 17:13:37.399360915, svcmanager.go:59] Attempt 1
+[DEBUG Sep 20 17:13:37.399349207, target.go:141] In newStore: resolved project dir is: /home1/wangfeim/packages/perl/Perl-5.34.0-Windows
+[DEBUG Sep 20 17:13:37.399705413, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Sep 20 17:13:37.400691844, errs.go:75] Wrapped error: <nil> -- with: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.400729055, svcmanager.go:97] Ping failed, assuming we're not ready: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.401641704, errs.go:75] Wrapped error: <nil> -- with: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.401682559, svcmanager.go:97] Ping failed, assuming we're not ready: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.408652195, exec.go:135] Trying to exec perl on PATH=/home1/wangfeim/.cache/activestate/a862ff9f/site/bin:/home1/wangfeim/.cache/activestate/a862ff9f/site/bin:/home1/wangfeim/.cache/activestate/a862ff9f/bin:/home1/wangfeim/.cache/activestate/a862ff9f/bin:/home1/wangfeim/.cache/activestate/bin:/home1/wangfeim/.local/ActiveState/StateTool/release:/home1/wangfeim/.local/ActiveState/StateTool/release:/spack/apps/gcc/8.3.0/bin/:/spack/apps/gcc/8.3.0/bin/:/home1/wangfeim/miniconda3/bin:/home1/wangfeim/miniconda3/bin:/home1/wangfeim/bin/bin:/home1/wangfeim/bin/bin:/home1/wangfeim/bin:/home1/wangfeim/bin:/spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/pmix-3.2.3-o4owkss/bin:/spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/pmix-3.2.3-o4owkss/bin:/spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/openmpi-4.1.4-4w23jca/bin:/spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/openmpi-4.1.4-4w23jca/bin:/spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/openblas-0.3.21-afcoykn/bin:/spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/openblas-0.3.21-afcoykn/bin:/spack/apps/gcc/11.3.0/bin:/spack/apps/gcc/11.3.0/bin:/spack/utilities:/spack/utilities:/home1/wangfeim/.cache/activestate/bin:/home1/wangfeim/.local/ActiveState/StateTool/release:/home1/wangfeim/.local/ActiveState/StateTool/release:/spack/apps/gcc/8.3.0/bin:/spack/apps/gcc/8.3.0/bin:/home1/wangfeim/miniconda3/bin:/home1/wangfeim/miniconda3/bin:/home1/wangfeim/miniconda3/condabin:/home1/wangfeim/miniconda3/condabin:/home1/wangfeim/bin/bin:/home1/wangfeim/bin/bin:/home1/wangfeim/bin:/home1/wangfeim/bin:/usr/local/bin:/usr/local/bin:/usr/bin:/usr/bin:/usr/local/sbin:/usr/local/sbin:/usr/sbin:/usr/sbin:/home1/wangfeim/usr/local/bin/openssl/bin:/home1/wangfeim/usr/local/bin/openssl/bin:/home1/wangfeim/Tools/emboss/EMBOSS-6.6.0/emboss:/home1/wangfeim/Tools/emboss/EMBOSS-6.6.0/emboss:/home1/wangfeim/usr/local:/home1/wangfeim/usr/local:/home1/wangfeim/usr/local/share:/home1/wangfeim/usr/local/share:/home1/wangfeim/usr/local/include:/home1/wangfeim/usr/local/include:/home1/wangfeim/usr/local/bin:/home1/wangfeim/usr/local/bin:/home1/wangfeim/usr/local/bin/openssl:/home1/wangfeim/usr/local/bin/openssl:/home1/wangfeim/tools/HMMMER/hmmer-3.3.2/src:/home1/wangfeim/tools/HMMMER/hmmer-3.3.2/src:/home1/wangfeim/usr/local/include/ncurses:/home1/wangfeim/usr/local/include/ncurses:/home1/wangfeim/usr/local/lib:/home1/wangfeim/usr/local/lib:/home1/wangfeim/usr/local/lib64:/home1/wangfeim/usr/local/lib64:/home1/wangfeim/Tools/java/jdk-16.0.2/bin:/home1/wangfeim/Tools/java/jdk-16.0.2/bin:/home1/wangfeim/bin/gcc/bin:/home1/wangfeim/bin/gcc/bin:/home1/wangfeim:/home1/wangfeim:/home1/wangfeim/.pyenv/bin:/home1/wangfeim/.pyenv/bin:/home1/wangfeim/.local/bin:/home1/wangfeim/.local/bin:/home1/wangfeim/usr/local/bin/openssl/bin:/home1/wangfeim/usr/local/bin/openssl/bin:/home1/wangfeim/Tools/emboss/EMBOSS-6.6.0/emboss:/home1/wangfeim/Tools/emboss/EMBOSS-6.6.0/emboss:/home1/wangfeim/usr/local:/home1/wangfeim/usr/local:/home1/wangfeim/usr/local/share:/home1/wangfeim/usr/local/share:/home1/wangfeim/usr/local/include:/home1/wangfeim/usr/local/include:/home1/wangfeim/usr/local/bin:/home1/wangfeim/usr/local/bin:/home1/wangfeim/usr/local/bin/openssl:/home1/wangfeim/usr/local/bin/openssl:/home1/wangfeim/tools/HMMMER/hmmer-3.3.2/src:/home1/wangfeim/tools/HMMMER/hmmer-3.3.2/src:/home1/wangfeim/usr/local/include/ncurses:/home1/wangfeim/usr/local/include/ncurses:/home1/wangfeim/usr/local/lib:/home1/wangfeim/usr/local/lib:/home1/wangfeim/usr/local/lib64:/home1/wangfeim/usr/local/lib64:/home1/wangfeim/Tools/java/jdk-16.0.2/bin:/home1/wangfeim/Tools/java/jdk-16.0.2/bin:/home1/wangfeim/bin/gcc/bin:/home1/wangfeim/bin/gcc/bin:/home1/wangfeim:/home1/wangfeim:/home1/wangfeim/.pyenv/bin:/home1/wangfeim/.pyenv/bin
+[DEBUG Sep 20 17:13:37.443439556, sscommon.go:170] Running command: bash -c /tmp/state-exec457202758.sh "-pe" "s/\\+\\n/\\>\\n+/g"
+[DEBUG Sep 20 17:13:37.638618404, svcmanager.go:59] Attempt 2
+[DEBUG Sep 20 17:13:37.642660378, errs.go:75] Wrapped error: <nil> -- with: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.642721414, svcmanager.go:97] Ping failed, assuming we're not ready: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.648763642, svcmanager.go:59] Attempt 2
+[DEBUG Sep 20 17:13:37.650895378, svcmanager.go:59] Attempt 2
+[DEBUG Sep 20 17:13:37.651074993, errs.go:75] Wrapped error: <nil> -- with: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.651137922, svcmanager.go:97] Ping failed, assuming we're not ready: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.652078569, svcmanager.go:59] Attempt 2
+[DEBUG Sep 20 17:13:37.653191203, errs.go:75] Wrapped error: <nil> -- with: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.653240073, svcmanager.go:97] Ping failed, assuming we're not ready: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.654347094, errs.go:75] Wrapped error: <nil> -- with: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.654389536, svcmanager.go:97] Ping failed, assuming we're not ready: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.893667390, svcmanager.go:59] Attempt 3
+[DEBUG Sep 20 17:13:37.896300501, errs.go:75] Wrapped error: <nil> -- with: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.896389884, svcmanager.go:97] Ping failed, assuming we're not ready: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.901402734, svcmanager.go:59] Attempt 3
+[DEBUG Sep 20 17:13:37.903514620, svcmanager.go:59] Attempt 3
+[DEBUG Sep 20 17:13:37.903623357, errs.go:75] Wrapped error: <nil> -- with: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.903668416, svcmanager.go:97] Ping failed, assuming we're not ready: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.904655944, svcmanager.go:59] Attempt 3
+[DEBUG Sep 20 17:13:37.905650935, errs.go:75] Wrapped error: <nil> -- with: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.905696819, svcmanager.go:97] Ping failed, assuming we're not ready: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.906840966, errs.go:75] Wrapped error: <nil> -- with: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:37.906883800, svcmanager.go:97] Ping failed, assuming we're not ready: Post "http://127.0.0.1:34849/query": dial tcp 127.0.0.1:34849: connect: connection refused: dial tcp 127.0.0.1:34849: connect: connection refused: connect: connection refused: connection refused
+[DEBUG Sep 20 17:13:38.147154104, svcmanager.go:59] Attempt 4
+[DEBUG Sep 20 17:13:38.154496012, svcmanager.go:59] Attempt 4
+[DEBUG Sep 20 17:13:38.156475023, svcmanager.go:59] Attempt 4
+[DEBUG Sep 20 17:13:38.156939571, svcmanager.go:59] Attempt 4

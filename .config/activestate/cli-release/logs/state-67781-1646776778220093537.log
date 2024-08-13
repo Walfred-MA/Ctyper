@@ -1,0 +1,48 @@
+[DEBUG Mar  8 13:59:38.220460564, defaults.go:273] Args: [/home1/wangfeim/.local/ActiveState/StateTool/release/bin/state exec --path /home1/wangfeim/packages/perl/Perl-5.34.0-Windows -- perl -MPOSIX -e print POSIX::strftime('%Y-%m-%d', gmtime('1638821058'));]
+[DEBUG Mar  8 13:59:38.234070084, locale.go:38] Init
+[DEBUG Mar  8 13:59:38.273754118, errs.go:68] Created error: File could not be found
+[DEBUG Mar  8 13:59:38.276549360, errs.go:68] Created error: Not Recognized
+[DEBUG Mar  8 13:59:38.290696576, errors.go:86] Wrapped localized error: <nil> -- with: The installed version of the State Tool Service does not match that of the client.
+Please stop the service with [ACTIONABLE]state-svc stop[/RESET] and try your command again.
+If this issue persists please reinstall the State Tool.
+
+[DEBUG Mar  8 13:59:38.290846422, errs.go:68] Created error: Build responded with error
+[DEBUG Mar  8 13:59:38.290878367, errs.go:68] Created error: Unknown build type
+[DEBUG Mar  8 13:59:38.290965745, errs.go:68] Created error: no data
+[DEBUG Mar  8 13:59:38.290994918, errs.go:68] Created error: member not found
+[DEBUG Mar  8 13:59:38.291012947, errs.go:68] Created error: Commit count is unknowable
+[DEBUG Mar  8 13:59:38.291045831, errs.go:68] Created error: No merge required
+[DEBUG Mar  8 13:59:38.291064963, errs.go:68] Created error: Can't merge commit thats already in target commits history
+[DEBUG Mar  8 13:59:38.297354642, errs.go:68] Created error: Secret not found
+[DEBUG Mar  8 13:59:38.297402180, errs.go:68] Created error: Could not save keypair
+[DEBUG Mar  8 13:59:38.297426885, errs.go:68] Created error: Bad expander name
+[DEBUG Mar  8 13:59:38.297448845, errs.go:68] Created error: Expander has no handler
+[DEBUG Mar  8 13:59:38.297620654, errs.go:68] Created error: camel runtime is currently being built
+[DEBUG Mar  8 13:59:38.297687771, errs.go:68] Created error: Runtime is not completely installed.
+[DEBUG Mar  8 13:59:38.336931222, output.go:53] Requested outputer for 
+[DEBUG Mar  8 13:59:38.336952336, output.go:58] Using Plain outputer
+[DEBUG Mar  8 13:59:38.339501619, main.go:143] ConfigPath: /home1/wangfeim/.config/activestate/cli-release
+[DEBUG Mar  8 13:59:38.339524395, main.go:144] CachePath: /home1/wangfeim/.cache/activestate
+[DEBUG Mar  8 13:59:38.339627920, exeutils.go:149] Executing: /home1/wangfeim/.local/ActiveState/StateTool/release/bin/state-svc [start]
+[DEBUG Mar  8 13:59:38.342019914, errors.go:86] Wrapped localized error: File could not be found -- with: could not find file=[NOTICE]activestate.yaml[/RESET] in path=[NOTICE]/home1/wangfeim/packages/dpkg/new/dpkg-1.21.1[/RESET]
+[DEBUG Mar  8 13:59:38.345478904, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Mar  8 13:59:38.373709066, secrets.go:35] Gcloud Secretmanager failed to initialize (ignore if you're not trying to use gcloud): google: could not find default credentials. See https://developers.google.com/accounts/docs/application-default-credentials for more information.
+[DEBUG Mar  8 13:59:38.377243667, subshell.go:102] Detected SHELL: bash
+[DEBUG Mar  8 13:59:38.377262340, subshell.go:134] Using binary: /usr/bin/bash
+[DEBUG Mar  8 13:59:38.379559138, errors.go:86] Wrapped localized error: File could not be found -- with: could not find file=[NOTICE]activestate.yaml[/RESET] in path=[NOTICE]/home1/wangfeim/packages/dpkg/new/dpkg-1.21.1[/RESET]
+[DEBUG Mar  8 13:59:38.383566810, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Mar  8 13:59:38.390342636, secrets.go:61] secrets-api scheme=https host=platform.activestate.com base_path=/api/secrets/v1
+[DEBUG Mar  8 13:59:38.392770122, errors.go:86] Wrapped localized error: File could not be found -- with: could not find file=[NOTICE]activestate.yaml[/RESET] in path=[NOTICE]/home1/wangfeim/packages/dpkg/new/dpkg-1.21.1[/RESET]
+[DEBUG Mar  8 13:59:38.396484615, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Mar  8 13:59:38.402809028, secrets.go:61] secrets-api scheme=https host=platform.activestate.com base_path=/api/secrets/v1
+[DEBUG Mar  8 13:59:38.405074052, cmdcall.go:50] cmdcall
+[DEBUG Mar  8 13:59:38.405107777, svcmanager.go:57] Waiting for state-svc
+[DEBUG Mar  8 13:59:38.405144588, svcmanager.go:59] Attempt 1
+[DEBUG Mar  8 13:59:38.406114072, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Mar  8 13:59:38.412989572, target.go:141] In newStore: resolved project dir is: /home1/wangfeim/packages/perl/Perl-5.34.0-Windows
+[DEBUG Mar  8 13:59:38.413378381, runtime.go:126] Getting runtime env, inherit: true, useExec: false
+[DEBUG Mar  8 13:59:38.414342499, target.go:141] In newStore: resolved project dir is: /home1/wangfeim/packages/perl/Perl-5.34.0-Windows
+[DEBUG Mar  8 13:59:38.414564677, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Mar  8 13:59:38.420817692, exec.go:135] Trying to exec perl on PATH=/home1/wangfeim/.cache/activestate/a862ff9f/site/bin:/home1/wangfeim/.cache/activestate/a862ff9f/site/bin:/home1/wangfeim/.cache/activestate/a862ff9f/bin:/home1/wangfeim/.cache/activestate/a862ff9f/bin:/home1/wangfeim/.cache/activestate/bin:/home1/wangfeim/.local/ActiveState/StateTool/release:/home1/wangfeim/.local/ActiveState/StateTool/release:/spack/apps/linux-centos7-x86_64/gcc-8.3.0/pmix-3.1.3-3sm6emyqaxapunh7rwbjvtaqoqe2e5z3/bin:/spack/apps/linux-centos7-x86_64/gcc-8.3.0/pmix-3.1.3-3sm6emyqaxapunh7rwbjvtaqoqe2e5z3/bin:/spack/apps/linux-centos7-x86_64/gcc-8.3.0/openmpi-4.0.2-ipm3dnvlbtxawpi4ifz7jma6jgr7mexq/bin:/spack/apps/linux-centos7-x86_64/gcc-8.3.0/openmpi-4.0.2-ipm3dnvlbtxawpi4ifz7jma6jgr7mexq/bin:/spack/apps/linux-centos7-x86_64/gcc-8.3.0/openblas-0.3.8-2no6mfziiclwxb7lstxoos335gnhjpes/bin:/spack/apps/linux-centos7-x86_64/gcc-8.3.0/openblas-0.3.8-2no6mfziiclwxb7lstxoos335gnhjpes/bin:/spack/apps/gcc/8.3.0/bin:/spack/apps/gcc/8.3.0/bin:/home1/wangfeim/.cache/activestate/bin:/home1/wangfeim/.local/ActiveState/StateTool/release:/home1/wangfeim/.local/ActiveState/StateTool/release:/home1/wangfeim/miniconda3/bin:/home1/wangfeim/miniconda3/bin:/home1/wangfeim/miniconda3/condabin:/home1/wangfeim/miniconda3/condabin:/usr/local/bin:/usr/local/bin:/usr/bin:/usr/bin:/usr/local/sbin:/usr/local/sbin:/usr/sbin:/usr/sbin:/home1/wangfeim/usr/local/bin/openssl/bin:/home1/wangfeim/usr/local/bin/openssl/bin:/home1/wangfeim/bin:/home1/wangfeim/bin:/home1/wangfeim/Tools/emboss/EMBOSS-6.6.0/emboss:/home1/wangfeim/Tools/emboss/EMBOSS-6.6.0/emboss:/home1/wangfeim/usr/local:/home1/wangfeim/usr/local:/home1/wangfeim/usr/local/share:/home1/wangfeim/usr/local/share:/home1/wangfeim/usr/local/include:/home1/wangfeim/usr/local/include:/home1/wangfeim/usr/local/bin:/home1/wangfeim/usr/local/bin:/home1/wangfeim/usr/local/bin/openssl:/home1/wangfeim/usr/local/bin/openssl:/home1/wangfeim/tools/HMMMER/hmmer-3.3.2/src:/home1/wangfeim/tools/HMMMER/hmmer-3.3.2/src:/home1/wangfeim/usr/local/include/ncurses:/home1/wangfeim/usr/local/include/ncurses:/home1/wangfeim/usr/local/lib:/home1/wangfeim/usr/local/lib:/home1/wangfeim/usr/local/lib64:/home1/wangfeim/usr/local/lib64:/home1/wangfeim/Tools/java/jdk-16.0.2/bin:/home1/wangfeim/Tools/java/jdk-16.0.2/bin:/home1/wangfeim/bin/gcc/bin:/home1/wangfeim/bin/gcc/bin:/home1/wangfeim:/home1/wangfeim:/home1/wangfeim/.pyenv/bin:/home1/wangfeim/.pyenv/bin:/home1/wangfeim/.local/bin:/home1/wangfeim/.local/bin:/home1/wangfeim/usr/local/bin/openssl/bin:/home1/wangfeim/usr/local/bin/openssl/bin:/home1/wangfeim/bin:/home1/wangfeim/bin:/home1/wangfeim/Tools/emboss/EMBOSS-6.6.0/emboss:/home1/wangfeim/Tools/emboss/EMBOSS-6.6.0/emboss:/home1/wangfeim/usr/local/:/home1/wangfeim/usr/local/:/home1/wangfeim/usr/local/share:/home1/wangfeim/usr/local/share:/home1/wangfeim/usr/local/include:/home1/wangfeim/usr/local/include:/home1/wangfeim/usr/local/bin:/home1/wangfeim/usr/local/bin:/home1/wangfeim/usr/local/bin/openssl:/home1/wangfeim/usr/local/bin/openssl:/home1/wangfeim/tools/HMMMER/hmmer-3.3.2/src:/home1/wangfeim/tools/HMMMER/hmmer-3.3.2/src:/home1/wangfeim/usr/local/include/ncurses:/home1/wangfeim/usr/local/include/ncurses:/home1/wangfeim/usr/local/lib:/home1/wangfeim/usr/local/lib:/home1/wangfeim/usr/local/lib64:/home1/wangfeim/usr/local/lib64:/home1/wangfeim/Tools/java/jdk-16.0.2/bin:/home1/wangfeim/Tools/java/jdk-16.0.2/bin:/home1/wangfeim/bin/gcc/bin:/home1/wangfeim/bin/gcc/bin:/home1/wangfeim/:/home1/wangfeim/:/home1/wangfeim/.pyenv/bin:/home1/wangfeim/.pyenv/bin
+[DEBUG Mar  8 13:59:38.436676390, sscommon.go:170] Running command: bash -c /tmp/state-exec547207438.sh "-MPOSIX" "-e" "print POSIX::strftime('%Y-%m-%d', gmtime('1638821058'));"
+[DEBUG Mar  8 13:59:38.464135734, cmdcall.go:50] cmdcall

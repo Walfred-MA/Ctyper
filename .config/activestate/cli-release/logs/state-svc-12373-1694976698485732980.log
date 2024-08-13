@@ -1,0 +1,71 @@
+[DEBUG Sep 17 11:51:38.486844858, defaults.go:273] Args: [/home1/wangfeim/.local/ActiveState/StateTool/release/bin/state-svc foreground]
+[DEBUG Sep 17 11:51:38.530124073, locale.go:38] Init
+[DEBUG Sep 17 11:51:46.652151528, errs.go:68] Created error: File could not be found
+[DEBUG Sep 17 11:51:46.656436033, errs.go:68] Created error: Not Recognized
+[DEBUG Sep 17 11:51:46.703501175, errs.go:68] Created error: Secret not found
+[DEBUG Sep 17 11:51:46.703567826, errs.go:68] Created error: Could not save keypair
+[DEBUG Sep 17 11:51:46.703724365, errs.go:68] Created error: Build responded with error
+[DEBUG Sep 17 11:51:46.703754611, errs.go:68] Created error: Unknown build type
+[DEBUG Sep 17 11:51:46.703860102, errors.go:86] Wrapped localized error: <nil> -- with: The installed version of the State Tool Service does not match that of the client.
+Please stop the service with [ACTIONABLE]state-svc stop[/RESET] and try your command again.
+If this issue persists please reinstall the State Tool.
+
+[DEBUG Sep 17 11:51:46.703876456, errs.go:68] Created error: no data
+[DEBUG Sep 17 11:51:46.703896044, errs.go:68] Created error: member not found
+[DEBUG Sep 17 11:51:46.703914362, errs.go:68] Created error: Commit count is unknowable
+[DEBUG Sep 17 11:51:46.703933099, errs.go:68] Created error: No merge required
+[DEBUG Sep 17 11:51:46.703951702, errs.go:68] Created error: Can't merge commit thats already in target commits history
+[DEBUG Sep 17 11:51:46.703980407, errs.go:68] Created error: Bad expander name
+[DEBUG Sep 17 11:51:46.704000323, errs.go:68] Created error: Expander has no handler
+[DEBUG Sep 17 11:51:46.704637743, errs.go:68] Created error: Service is already running
+[DEBUG Sep 17 11:51:46.760165092, secrets.go:35] Gcloud Secretmanager failed to initialize (ignore if you're not trying to use gcloud): google: could not find default credentials. See https://developers.google.com/accounts/docs/application-default-credentials for more information.
+[DEBUG Sep 17 11:51:46.767919658, output.go:53] Requested outputer for 
+[DEBUG Sep 17 11:51:46.768046717, output.go:58] Using Plain outputer
+[DEBUG Sep 17 11:51:46.768247417, termutils.go:17] Cannot get terminal size: inappropriate ioctl for device
+[DEBUG Sep 17 11:51:46.769415249, client.go:128] Reporting event to 2 reporters: run-command, state-svc foreground, 
+[DEBUG Sep 17 11:51:46.769874135, main.go:137] Running CmdForeground
+[DEBUG Sep 17 11:51:46.769906245, main.go:147] Running in Foreground
+[DEBUG Sep 17 11:51:46.770046592, service.go:30] service:Start
+[DEBUG Sep 17 11:51:46.915777306, service.go:42] Server starting on port: 44376
+[DEBUG Sep 17 11:51:46.915942299, client.go:128] Reporting event to 2 reporters: state-svc, start, 
+[DEBUG Sep 17 11:51:46.977183068, resolver.go:57] Version resolver
+[DEBUG Sep 17 11:51:46.977447059, client.go:128] Reporting event to 2 reporters: state-svc, endpoint, Version
+[DEBUG Sep 17 11:51:47.028063943, resolver.go:57] Version resolver
+[DEBUG Sep 17 11:51:47.028230599, client.go:128] Reporting event to 2 reporters: state-svc, endpoint, Version
+[DEBUG Sep 17 11:51:47.028620314, resolver.go:121] Analytics event resolver
+[DEBUG Sep 17 11:51:47.028818059, client.go:128] Reporting event to 2 reporters: runtime, start, 
+[DEBUG Sep 17 11:51:47.028965123, resolver.go:57] Version resolver
+[DEBUG Sep 17 11:51:47.029074605, client.go:128] Reporting event to 2 reporters: state-svc, endpoint, Version
+[DEBUG Sep 17 11:51:47.031371415, resolver.go:121] Analytics event resolver
+[DEBUG Sep 17 11:51:47.031506179, client.go:128] Reporting event to 2 reporters: runtime, cache, 
+[DEBUG Sep 17 11:51:47.032002313, resolver.go:121] Analytics event resolver
+[DEBUG Sep 17 11:51:47.032116250, client.go:128] Reporting event to 2 reporters: runtime, success, 
+[DEBUG Sep 17 11:51:47.164625063, resolver.go:57] Version resolver
+[DEBUG Sep 17 11:51:47.164855199, client.go:128] Reporting event to 2 reporters: state-svc, endpoint, Version
+[DEBUG Sep 17 11:51:47.166681589, resolver.go:121] Analytics event resolver
+[DEBUG Sep 17 11:51:47.166812351, client.go:128] Reporting event to 2 reporters: run-command, exec, 
+[DEBUG Sep 17 11:52:46.795259306, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:53:46.795236491, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:54:46.795303044, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:55:46.795317652, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:56:46.795398828, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:57:46.795702653, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:58:46.795346797, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 11:59:46.795289660, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:00:46.795655937, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:01:46.795590590, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:02:46.795252355, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:03:46.795432348, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:04:46.794803461, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:05:46.795715379, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:06:46.794775397, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:07:46.795309140, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:08:46.795508564, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:09:46.795593122, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:10:46.795555013, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:11:46.795257513, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:12:46.795231477, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:13:46.795662339, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:14:46.795612800, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:15:46.795384274, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 12:16:46.795290875, watcher.go:72] Checking for runtime processes

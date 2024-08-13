@@ -218,6 +218,7 @@ void PriorData::LoadAlleles(PriorChunk &Chunk)
     
     const size_t& curr_genenum = Chunk.genenum;
     vector<string>& genenames = Chunk.genenames;
+    vector<string>& pathnames = Chunk.pathnames;
     
     if (curr_genenum > genenames.size() || 2 * curr_genenum  < genenames.size())
     {
@@ -227,21 +228,27 @@ void PriorData::LoadAlleles(PriorChunk &Chunk)
     string StrLine;
     StrLine.resize(MAX_LINE);
     
+    pathnames.clear();
+    pathnames.push_back("");
+    while (file.nextLine_start(StrLine, '+'))
+    {
+        pathnames.push_back(StrLine.substr(StrLine.find_last_of('\t') + 1, StrLine.find('\n') - StrLine.find_last_of('\t') - 2));
+    }
+    
     int index = 0;
     for (int i =0 ; i<  curr_genenum ; ++i)
     {
-        if (!file.nextLine_genename(StrLine))
+        if (!file.nextLine_start(StrLine, '>'))
         {
             std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
             std::_Exit(EXIT_FAILURE);
             return;
         }
-        
         genenames[index++] =  StrLine.substr(1,StrLine.find('\t', 0)-1);
     }
 
-    
 }
+
 
 void PriorData::LoadNorm(PriorChunk &Chunk)
 {

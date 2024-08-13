@@ -117,13 +117,17 @@ public:
 	KmerWindow kmerwindow(window);
 	kmerwindow.resize(priorData->pathsizes);
         kmerwindow.WindowCovers(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size, priorData->genenum, &results.get()[0], total_obs, total_exp);
-                
-        write(priorData, outputfile, inputfile, priorData->prefix, priorData->genenames, kmerwindow.windowcovers, depth, Threads_lock);
+               
+	vector<vector<tuple<int, int, float>>> PatialCopies(priorData->pathnames.size()+1);
+        kmerwindow.PartialCopy(PatialCopies, depth);
+ 
+        write(priorData, outputfile, inputfile, priorData->prefix, priorData->genenames, PatialCopies, kmerwindow.windowcovers, depth, Threads_lock);
 
 	cout<<"finish run"<<endl;
     };
     
-    void write(const PriorChunk* priorData, const std::string& outputfile, const string &sample, const string &prefix, const vector<string>&genenames, const vector<vector<tuple<int,int,int>>>& windowcovers, const float depth, std::mutex& Threads_lock)
+	void write(const PriorChunk* priorData, const std::string& outputfile, const string &sample, const string &prefix, const vector<string>&genenames, const vector<vector<tuple<int, int, float>>>& PatialCopies, const vector<vector<tuple<int,int,int>>>& windowcovers, const float depth, std::mutex& Threads_lock)
+
     {
         std::unique_lock<std::mutex> lck(Threads_lock);
         
