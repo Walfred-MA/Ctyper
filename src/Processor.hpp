@@ -1,577 +1,878 @@
 //
-//  Processor.hpp
+//  PriorData.cpp
 //  CTyper
 //
-//  Created by Wangfei MA on 2/13/23.
+//  Created by Wangfei MA on 3/8/23.
 //
 
-#ifndef Processor_hpp
-#define Processor_hpp
-
-#include <atomic>
-#include <mutex>
-#include <thread>
-#include <atomic>
-#include <memory>
-#include <stdio.h>
-#include <string>
-#include <vector>
-#include <chrono>
-
-#include "config.hpp"
-#include "FastaReader.hpp"
-#include "FastqReader.hpp"
-#include "KtableReader.hpp"
-#include "KmerMatrix.hpp"
-#include "KmerCounter.hpp"
-#include "KmerWindow.hpp"
-#include "Regression.hpp"
 #include "PriorData.hpp"
-
-
-#define DefaultSize 2000
-
 
 using namespace std;
 
-
-
-template <int ksize>
-class Genotyper
+void findalltitles(const string& line, vector<string>& substrings)
 {
-    using kmer_int = typename std::conditional<(ksize>32), u128, ull>::type;
-    using kmer_hash_type = typename std::conditional<(ksize>32), Kmer64_hash, Kmer32_hash>::type;
-    using kmer_hash_type_mul = typename std::conditional<(ksize>32), kmer64_dict_mul, kmer32_dict_mul>::type;
-    
-public:
-    
-    unique_ptr<int> results;
-    unique_ptr<FLOAT_T> reminders;
-    unique_ptr<FLOAT_T> coefs;
-    unique_ptr<FLOAT_T> residuels;
-    const size_t knum, pnum;
-    const uint window;
-    const int Nsubthreads;
-    Genotyper(size_t k, size_t p, KmerCounter<ksize> &c ,PriorData &priordata, const int w, const int N):
-    knum(k),
-    pnum(p),
-    window(w),
-    counter(c),
-    priordata_manager(priordata),
-    kmer_counts(new uint16[k+1]),
-    Nsubthreads(N),
-    
-    norm_vec(new FLOAT_T[MAX_UINT16]),
-    norm_matrix(new FLOAT_T[DefaultSize*DefaultSize]),
-    
-    coefs(new FLOAT_T[MAX_UINT16]),
-    residuels(new FLOAT_T[MAX_UINT16]),
-    reminders(new FLOAT_T[MAX_UINT16]),
-    results(new int[MAX_UINT16]),
-    
-    finished_group(p)
-    {};
-    
-    void counting(const std::string& inputfile)
+    size_t startPos = 0;
+    while ((startPos = line.find('>', startPos)) != std::string::npos)
     {
-
-        cerr << "counting kmers for sample: " << inputfile<<endl;
-
-        auto begin = std::chrono::high_resolution_clock::now();
+        size_t endPosTab = line.find('\t', startPos);
+        size_t endPosSpace = line.find(' ', startPos);
         
-        //ull_atom totalbases_atom = 0, totalreads_atom = 0, totalbgs_atom = 0;
-		
-        counter.Call(inputfile.c_str(), kmer_counts.get(), totalbases, totalreads, totalbgs, Nsubthreads);
-        
-        //totalbases= totalbases_atom ;
-        //totalreads = totalreads_atom ;
-        //totalbgs = totalbgs_atom ;
-
-        finishcounting = 1;
-
-	auto end = std::chrono::high_resolution_clock::now();
-        
-        auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
-            
-        cerr<<"finished counting "<< inputfile <<" at time: "<<elapsed.count()* 1e-9 <<endl;
-        
-    };
-    
-    void runOneGroup(const PriorChunk* priorData, const std::string& inputfile, const std::string& outputfile, const float depth, std::mutex& Threads_lock)
-    {
-        
-        cout << "generating kmer matrix for sample: " << inputfile<<endl;
-        matrix.getNorm(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size,
-                       norm_vec.get(), norm_matrix.get(), total_lambda);
-        
-        cout << "regressing to references for sample: " << inputfile<<endl;
-        regresser.Call(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size, norm_vec.get(), norm_matrix.get(),  total_lambda, priorData->gene_kmercounts, coefs.get(), residuels.get(), priorData->numgroups, priorData->genegroups,priorData->groupkmernums);
-        
-
-        cout << "rounding for sample: " << inputfile<<endl;
-        
-        tree.Run(priorData->phylo_tree, coefs.get(), gnum, &results.get()[0], &reminders.get()[0], residuels.get(), norm_matrix.get());
-
-        cout << "determine window residuels: " << inputfile<<endl;
-
-	KmerWindow kmerwindow(window);
-	kmerwindow.resize(priorData->pathsizes);
-        kmerwindow.WindowCovers(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size, priorData->genenum, &results.get()[0], total_obs, total_exp);
-               
-	vector<vector<tuple<int, int, float>>> PatialCopies(priorData->pathnames.size()+1);
-        kmerwindow.PartialCopy(PatialCopies, depth);
- 
-        write(priorData, outputfile, inputfile, priorData->prefix, priorData->genenames, PatialCopies, kmerwindow.windowcovers, depth, Threads_lock);
-
-	cout<<"finish run"<<endl;
-    };
-    
-	void write(const PriorChunk* priorData, const std::string& outputfile, const string &sample, const string &prefix, const vector<string>&genenames, const vector<vector<tuple<int, int, float>>>& PatialCopies, const vector<vector<tuple<int,int,int>>>& windowcovers, const float depth, std::mutex& Threads_lock)
-
-    {
-        std::unique_lock<std::mutex> lck(Threads_lock);
-        
-        
-        FILE *fwrite;
-        
-        if (outputfile != "stdout")
+        size_t endPos = std::string::npos;
+        if (endPosTab != std::string::npos && endPosSpace != std::string::npos)
         {
-            fwrite=fopen(outputfile.c_str(), "a");
+            endPos = std::min(endPosTab, endPosSpace);
         }
-        else
+        else if (endPosTab != std::string::npos)
         {
-            fwrite=stdout;
+            endPos = endPosTab;
         }
-        
-        if (fwrite==NULL)
+        else if (endPosSpace != std::string::npos)
         {
-            std::cerr << "ERROR: Cannot write file: " << outputfile << endl;
+            endPos = endPosSpace;
+        }
+
+        if (endPos == std::string::npos) break;
+
+        size_t len = endPos - startPos - 1;
+        substrings.push_back(line.substr(startPos + 1, len));
+        startPos = endPos + 1;
+    }
+}
+void strsplit(string& str, vector<uint16>& eles, char deli, string::size_type start = 0 )
+{
+    size_t end = str.find(",");
+    size_t len = strlen(str.c_str());
+    
+    while (end != std::string::npos && end < len)
+    {
+        eles.push_back(std::stoi(str.substr(start, end - start)));
+        start = end + 1;
+        end = str.find(",", start);
+    }
+}
+
+void strsplit(string& str, vector<string>& eles, char deli)
+{
+    string::size_type start = 0 , end = 0 ;
+    size_t len = strlen(str.c_str());
+    while (start < len)
+    {
+        end = str.find(deli, start);
+        if (end == std::string::npos) end = len ;
+        eles.push_back(str.substr(start, end - start));
+        start = end + 1;
+    }
+}
+
+
+size_t PriorData::LoadIndex(const unordered_set<string>& geneset)
+{
+    std::ifstream pathfile(datapath + ".index");
+
+    if(!pathfile)
+    {
+        std::cout<<"Error opening index file"<<std::endl;
+        return 0;
+    }
+    std::string line;
+    
+    totalkmers = 0 ;
+    while (std::getline(pathfile, line))
+    {
+        string::size_type pos = line.find('\t');
+        
+        string genename = line.substr(0, pos);
+        
+        if (geneset.size() == 0 or geneset.find(genename) != geneset.end())
+        {
+            vector<string> eles;
             
+            strsplit(line, eles, '\t');
+            
+            prefixes.push_back(eles[0]);
+
+            file_pos.push_back(make_pair(stol(eles[1]), stol(eles[2])));
+            
+            kmervec_pos.push_back(make_pair(totalkmers , totalkmers  + stol(eles[3])));
+            
+            indexed_matrix_sizes.push_back(stol(eles[4]));
+            
+            totalkmers += stol(eles[3]);
+        }
+    }
+    
+    return file_pos.size();
+}
+
+size_t PriorData::LoadIndex()
+{
+    
+    std::ifstream pathfile(datapath + ".index");
+
+    if(!pathfile)
+    {
+        std::cout<<"Error opening index file"<<std::endl;
+        return 0;
+    }
+    std::string line;
+    
+    totalkmers = 0 ;
+    while ( std::getline(pathfile, line) )
+    {
+        string::size_type pos = line.find('\t');
+        
+        string genename = line.substr(0, pos);
+        
+        vector<string> eles;
+        
+        strsplit(line, eles, '\t');
+        
+        prefixes.push_back(eles[0]);
+
+        file_pos.push_back(make_pair(stol(eles[1]), stol(eles[2])));
+        
+        kmervec_pos.push_back(make_pair(totalkmers , totalkmers  + stol(eles[3])));
+        
+        indexed_matrix_sizes.push_back(stol(eles[4]));
+        
+        totalkmers += stol(eles[3]);
+        
+    }
+    
+    return file_pos.size();
+}
+
+void PriorData::LoadHeader(PriorChunk &Chunk)
+{
+    string StrLine;
+    StrLine.resize(MAX_LINE);
+    
+    if (!file.nextLine(StrLine))
+    {
+        std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
+        std::_Exit(EXIT_FAILURE);
+        return;
+    }
+    
+    const size_t len = strlen(StrLine.c_str());
+    
+    tuple<string,size_t,uint16> curr_info;
+        
+    int startpos = 0;
+    char c;
+    for (; startpos < len ; ++startpos)
+    {
+        if (StrLine[startpos] == '\t') break;
+    }
+        
+    Chunk.prefix = StrLine.substr(0, startpos);
+    
+    auto &curr_genenum = Chunk.genenum;
+    auto &curr_kmernum = Chunk.kmervec_size;
+    
+    curr_kmernum = 0;
+    for (startpos = startpos + 1; startpos < len ; ++startpos)
+    {
+        c = StrLine[startpos];
+        if (c == '\t' || c=='\0' || c =='\n') break;
+        
+        curr_kmernum *= 10;
+        curr_kmernum += c - '0';
+    }
+    
+    curr_genenum = 0;
+    for (startpos = startpos + 1; startpos < len ; ++startpos)
+    {
+        c = StrLine[startpos];
+        if (c == '\t') break;
+        
+        curr_genenum *= 10;
+        curr_genenum += c - '0';
+    }
+    
+    
+    
+}
+
+void PriorData::LoadSizes(PriorChunk &Chunk)
+{
+    string StrLine;
+    StrLine.resize(MAX_LINE);
+    
+    if (!file.nextLine(StrLine))
+    {
+        std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
+        std::_Exit(EXIT_FAILURE);
+        return;
+    }
+    
+    uint* &gene_kmercounts = Chunk.gene_kmercounts;
+    auto &curr_genenum = Chunk.genenum;
+    auto &allocsize = Chunk.gene_kmercounts_allocsize;
+    
+    if (curr_genenum > allocsize || 2 * curr_genenum < allocsize)
+    {
+        gene_kmercounts = (uint *) realloc(gene_kmercounts, sizeof(uint) * curr_genenum  );
+        
+        allocsize = curr_genenum  ;
+    }
+    
+    const size_t len = strlen(StrLine.c_str());
+    
+    int index =0;
+    int ele = 0;
+    char c;
+    for (int startpos = 1; startpos < len; ++startpos)
+    {
+        c = StrLine[startpos];
+        switch (c)
+        {
+            case ' ': case '\n':
+                gene_kmercounts[index++] = ele;
+                ele = 0;
+                break;
+            default:
+                ele *= 10;
+                ele += c - '0';
+        }
+    }
+    
+    if (ele) gene_kmercounts[index++] = ele;
+        
+}
+
+
+void PriorData::LoadAlleles(PriorChunk &Chunk)
+{
+    
+    const size_t& curr_genenum = Chunk.genenum;
+    vector<string>& genenames = Chunk.genenames;
+    vector<string>& pathnames = Chunk.pathnames;
+    
+    if (curr_genenum > genenames.size() || 2 * curr_genenum  < genenames.size())
+    {
+        genenames.resize(curr_genenum);
+    }
+    
+    string StrLine;
+    StrLine.resize(MAX_LINE);
+    
+    pathnames.clear();
+    pathnames.push_back("");
+    while (file.nextLine_start(StrLine, '+'))
+    {
+        string line = StrLine.substr(1, StrLine.find('\n') - 1);
+        size_t second_underscore = line.find('_', line.find('_') + 1);
+        if (second_underscore != std::string::npos) line = line.substr(second_underscore + 1);
+        
+        size_t first_tab = line.find('\t');
+        size_t second_tab = line.find('\t', first_tab + 1);
+
+        if (first_tab != std::string::npos && second_tab != std::string::npos)
+        {
+            for (size_t i = first_tab + 1; i < second_tab; ++i) 
+            {
+                if (line[i] == '-') line[i] = '_';
+            }
+            line[first_tab] = '_';
+        }
+
+        //pathnames.push_back(StrLine.substr(StrLine.find_last_of('\t') + 1, StrLine.find('\n') - StrLine.find_last_of('\t') - 1));
+        pathnames.push_back(line);
+    }
+    
+    int index = 0;
+    for (int i =0 ; i<  curr_genenum ; ++i)
+    {
+        if (!file.nextLine_start(StrLine, '>'))
+        {
+            std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
             std::_Exit(EXIT_FAILURE);
+            return;
         }
         
-        fprintf(fwrite,">%s\t%s\n", prefix.c_str(), sample.c_str());
-        //fprintf(fwrite,"rsdl: %.4lf\n", regress.first);
-        fprintf(fwrite,"lambda: %llu/%llu\n",total_obs, total_exp);
+        genenames[index++] =  StrLine.substr(1,MIN( StrLine.find('\n', 0)-1  , StrLine.find(';', 0) -1) );
+    }
+
+}
+
+void PriorData::LoadNorm(PriorChunk &Chunk)
+{
+    /*
+    size_t& curr_genenum = Chunk.genenum;
+    string StrLine;
+    for ( int i = 0 ; i < curr_genenum ; ++i)
+    {
         
-        fprintf(fwrite,"regress: ");
-        const float cutoff = 0.5 / (gnum + 1);
-        for (int i = 0; i < gnum; ++i)
+        if (!file.nextLine_norm(StrLine))
         {
-            if (coefs.get()[i] > cutoff) fprintf(fwrite,"%s:%.2lf,", genenames[i].c_str(),coefs.get()[i]);
+            std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
+            std::_Exit(EXIT_FAILURE);
+            return;
         }
-        fprintf(fwrite,"\n");
+    }
+    
+    return;
+    */
+    
+    size_t& curr_genenum = Chunk.genenum;
+    
+    
+    FLOAT_T*& prior_norm = Chunk.prior_norm;
+    size_t& prior_norm_allocsize = Chunk.prior_norm_allocsize;
+     
+    
+    if (curr_genenum *curr_genenum != prior_norm_allocsize)
+    {
+        try_allocate(prior_norm, curr_genenum *curr_genenum, curr_genenum *curr_genenum);
         
-        fprintf(fwrite,"reproject: ");
-        for (int i = 0; i < gnum; ++i)
+        prior_norm_allocsize = curr_genenum * curr_genenum  ;
+    }
+    
+    
+    float element = 0.0;
+    float decimal = 1.0;
+    bool ifdecimal = 0;
+    uint16 rowindex = 0, colindex = 0;
+    
+    string StrLine;
+    
+    
+    for ( int i = 0 ; i < curr_genenum ; ++i)
+    {
+        
+        if (!file.nextLine_norm(StrLine))
         {
-            auto total =reminders.get()[i] + results.get()[i];
-            
-            string info = "";
-            if (priorData->gene_kmercounts[i] < 1000) info = "(aux)";
-            
-            if ( total > 0.01) fprintf(fwrite,"%s:%.2lf%s,", genenames[i].c_str(),total, info.c_str());
+            std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
+            std::_Exit(EXIT_FAILURE);
+            return;
         }
-        fprintf(fwrite,"\n");
         
-        fprintf(fwrite,"round: ");
-        for (int i = 0; i < gnum; ++i)
-        {
-            int result = results.get()[i];
-            
-            if (result > 0)
-            {
+        size_t len = strlen(StrLine.c_str());
                 
-                for (int j = 0 ; j < result  ; ++j)
-                {
-                    string info = "";
-                    if (priorData->gene_kmercounts[i] < 1000) info = "(aux)";
-        
-                    fprintf(fwrite,"%s%s,", genenames[i].c_str(), info.c_str());
-                }
-            }
-        }
-        fprintf(fwrite,"\n");
-        
-        fprintf(fwrite,"result: ");
-        for (int i = 0; i < gnum; ++i)
+        int norm_c = 0;
+        char c;
+        for (int startpos = 1; startpos < len; ++startpos)
         {
-            int result = results.get()[i];
-            
-            if (result  > 0)
+            c = StrLine[startpos];
+            switch (c)
             {
-                for (int j = 0 ; j < result ; ++j)
-                {
-                    if (priorData->gene_kmercounts[i] >= 1000) fprintf(fwrite,"%s,", genenames[i].c_str());
-                }
-            }
-        }
-        fprintf(fwrite,"\n");
-        
-        
-        for (int path = 1; path < windowcovers.size(); ++path )
-        {
-            auto &windowcover = windowcovers[path];
-            
-            ull totalwindow = 0;
-            for (auto &thepair: windowcover)
-            {
-                totalwindow += get<1>(thepair);
-            }
-            if (totalwindow < 100) continue;
-            
-            fprintf(fwrite,"windows size %u at path %d: ", window,path);
-            
-            int lastcpnum = -1;
-            for (auto &thepair: windowcover)
-            {
-                int query = get<0>(thepair);
-                int ref = get<1>(thepair);
-                int cpnum = get<2>(thepair);
-                
-                if (ref > 0)
-                {
-                    if (cpnum != lastcpnum)
-                    {
-                        fprintf(fwrite,"%d|", cpnum);
-                        lastcpnum = cpnum;
-                    }
-                }
-                
-                if (query > 0 or ref >0)
-                {
+                case '\t': case ' ': case '\n':
+                    prior_norm[curr_genenum * rowindex + colindex ] = element;
+                    prior_norm[curr_genenum * colindex + rowindex ] = element;
+                    ifdecimal = 0;
+                    element = 0.0;
+                    decimal = 1.0;
+                    norm_c++;
                     
-                    fprintf(fwrite,"%d/%d,", query, ref);
-                }
-                else
-                {
-                    fprintf(fwrite,",", query, ref);
-                }
+                    if (++colindex >= curr_genenum )
+                    {
+                        rowindex++;
+                        colindex = rowindex;
+                    }
+                    break;
+                case '.':
+                    ifdecimal = 1;
+                    break;
+                default:
+                    if (ifdecimal)
+                    {
+                        decimal *= 0.1;
+                        element += (c - '0') * decimal;
+                    }
+                    else
+                    {
+                        element *= 10;
+                        element += c - '0';
+                    }
             }
-            fprintf(fwrite,"\n");
         }
-        
-        fclose(fwrite);
-        
-        return ;
-    };
-
-    void newsample()
-    {
-        memset(kmer_counts.get(), 0, sizeof(uint16) * knum);
-        finished_group.assign(pnum , 0);
-        finishcounting = 0;
-        totalbases = 0;
-        totalreads = 0;
-        totalbgs = 0;
     }
     
-    void newgroup(const PriorChunk* priorData)
+    
+    
+    node*& phylo_tree = Chunk.phylo_tree;
+    
+    int leaveindex = 0;
+    for (size_t index =0; index < Chunk.nodenum ; ++index)
     {
-	size_t newalloc_size = MAX( DefaultSize, gnum + 10 );
-	
-	if (MAX(newalloc_size, alloc_size) > DefaultSize)
+        if (phylo_tree[index].numchildren == 0)
         {
-            //norm_vec.reset(new FLOAT_T[newalloc_size]);
-            assert(newalloc_size < MAX_UINT16);
-            try_allocate_unique(norm_matrix, newalloc_size*newalloc_size, newalloc_size*newalloc_size);
-            
-            //coefs.reset(new FLOAT_T[newalloc_size]);
-            
-            //residuels.reset(new FLOAT_T[newalloc_size]);
-            
-            //results.reset(new int[newalloc_size]);
-            
-            alloc_size = newalloc_size;
+            int leaveindex_ = leaveindex++;
+            phylo_tree[index].size = prior_norm[curr_genenum*leaveindex_+leaveindex_];
         }
+    }
+    
+}
 
-	/*
-        if(  (  gnum > alloc_size &&
-               (newalloc_size = gnum)
-             )
-           ||
-             ( alloc_size > DefaultSize &&
-               gnum <= MIN(alloc_size/2, DefaultSize) &&
-               ( newalloc_size = MAX(DefaultSize , gnum) )
-             )
-          )
-        {
-            norm_vec.reset(new FLOAT_T[newalloc_size]),
-            
-            norm_matrix.reset(new FLOAT_T[newalloc_size*newalloc_size]),
-            
-            coefs.reset(new FLOAT_T[newalloc_size]),
-            
-            residuels.reset(new FLOAT_T[newalloc_size]),
-            
-            results.reset(new int[newalloc_size]),
-            
-            alloc_size = newalloc_size;
-        }
-        */
-        //memset(norm_matrix.get(), 0, sizeof (FLOAT_T) *  gnum * gnum);
-        
-        memcpy(norm_matrix.get(), priorData->prior_norm, sizeof (FLOAT_T) *  gnum * gnum);
-                        
-        memset(norm_vec.get(), 0, sizeof (FLOAT_T) * gnum );
-        
-        memset(coefs.get(), 0, sizeof(FLOAT_T) * gnum);
-        
-        memset(residuels.get(), 0, sizeof(FLOAT_T) * gnum);
-        
-        memset(results.get(), 0, sizeof(int) * gnum);
-        
-        //kmerwindow.resize(priorData->pathsizes);
-                        
-        total_lambda = 0;
-        total_obs = 0;
-        total_exp = 0;
-                
-    };
-    
-    void run(const std::string& inputfile, const std::string& outputfile, float depth,std::mutex& Threads_lock)
-    {
-	cerr<<"running for sample: "<<inputfile << endl;
 
-        newsample();
-        
-        counting(inputfile);
-        
-        if (depth <= 0)
-        {
-            depth = ( 0.5 * totalbgs )/counter.backgrounds.size();
-        }
-        
-        FILE *fwrite;
-        
-        if (outputfile != "stdout")
-        {
-            fwrite=fopen(outputfile.c_str(), "a");
-        }
-        else
-        {
-            fwrite=stdout;
-        }
-        
-        if (fwrite==NULL)
-        {
-            std::cerr << "ERROR: Cannot write file: " << outputfile << endl;
-            std::_Exit(EXIT_FAILURE);
-        }
-                
-        fprintf(fwrite,"@totalreads: %llu, totalbackgrounds: %llu/%llu \n", totalreads, totalbgs, counter.backgrounds.size());
-        
-        fclose(fwrite);
-        
-        for (int i = 0; i < pnum; ++i)
-        {
-            
-            auto begin = std::chrono::high_resolution_clock::now();
-            
-            PriorChunk* priorData = priordata_manager.getNextChunk(finished_group);
-            
-	    cout << "running gene " << priorData->prefix << " for sample " << inputfile << endl ;
-
-            gnum = priorData->genenum;
-            
-            newgroup(priorData);
-                        
-            runOneGroup (priorData, inputfile, outputfile, depth, Threads_lock);
-    
-            finished_group[priorData->index] = 1;
-            
-            priordata_manager.FinishChunk(priorData);
-
-            auto end = std::chrono::high_resolution_clock::now();
-
-	    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
-            
-	    cout<<"finished sample:" << inputfile << "for gene:"<< priorData->prefix << " for :" << elapsed.count()* 1e-9 <<endl;
-        }
-
-	cerr<<"finished sample: "<<inputfile << endl;
-    };
-    
-    
-
-private:
-    
-    unique_ptr<uint16> kmer_counts;
-    unique_ptr<FLOAT_T> norm_vec;
-    unique_ptr<FLOAT_T> norm_matrix;
-    
-    FLOAT_T total_lambda =0;
-    ull total_exp = 0, total_obs = 0;
-    
-    PriorData &priordata_manager;
-    KmerCounter<ksize> &counter;
-    KmerMatrix matrix;
-    Regression regresser;
-    TreeRound tree;
-    //KmerWindow kmerwindow;
-    
-    ull totalbases = 0, totalreads = 0, totalbgs = 0;
-    size_t gnum;
-    size_t alloc_size = DefaultSize;
-    bool finishcounting = 0;
-    vector<bool> finished_group;
-    
-};
-
-template <int ksize>
-class Processor
+void PriorData::LoadGroups(PriorChunk &Chunk)
 {
-    using kmer_int = typename std::conditional<(ksize>32), u128, ull>::type;
-    using kmer_hash_type = typename std::conditional<(ksize>32), Kmer64_hash, Kmer32_hash>::type;
-    using kmer_hash_type_mul = typename std::conditional<(ksize>32), kmer64_dict_mul, kmer32_dict_mul>::type;
-    
-public:
-    Processor
-    (
-              std::vector<std::string>& infiles,
-              std::vector<std::string>& outfiles,
-              std::vector<float> &d,
-              std::string &mfile,
-              std::string &bfile,
-              std::unordered_set<std::string> &g,
-              std::vector<char *> &r,
-              const int w,
-              const int n,
-              const int N
-    ):
-    inputfiles(infiles),
-    outputfiles(outfiles),
-    depths(d),
-    genes(g),
-    matrixfile(mfile),
-    backgroundfile(bfile),
-    priordata_manager(mfile, n),
-    regions(r),
-    window(w),
-    nthreads(n),
-    Nsubthreads(N)
-    {};
-    
-    
-    void Run();
-    void Load();
-    void Onethread();
-    
-    const std::vector<std::string>& inputfiles;
-    const std::vector<std::string>& outputfiles;
-    const std::string &matrixfile;
-    const std::string &backgroundfile;
-    std::vector<char *> &regions;
-    const std::vector<float> &depths;
-    const std::unordered_set<std::string> &genes;
-    const int window;
-    const int nthreads;
-    const int Nsubthreads;
-    
-private:
-    uint totalkmers, totalgroups;
-    std::atomic_uint restfileindex = {0};
-    std::mutex Threads_lock;
-    std::mutex Threads_lock2;
-    
-    //kmer_hash_type kmer_hash;
-    //kmer_hash_type_mul kmer_multi_hash;
-    //unordered_set<ull, Hash10M> backgroud;
-    KmerCounter<ksize> *Counter =NULL;
-    PriorData priordata_manager;
-};
-
-
-template <int ksize>
-void Processor<ksize>::Run()
-{
-    
-    if (genes.size() > 0)
-    {
-        totalgroups = priordata_manager.LoadIndex(genes);
-    }
-    else
-    {
-        totalgroups = priordata_manager.LoadIndex();
-    }
    
-	cout<<"reading all kmer targets"<<endl;
+    size_t& curr_genenum = Chunk.genenum;
+    string StrLine;
     
-    //kmer_hash.initiate(4 * priordata_manager.totalkmers);
- 
-    Counter = new KmerCounter<ksize>(2 * priordata_manager.totalkmers);
-    if (backgroundfile.length() > 0) Counter->load_backgrounds(backgroundfile.c_str());
+    Chunk.genegroups.resize(curr_genenum, 0);
+    Chunk.numgroups = 0;
+    StrLine.resize(MAX_LINE);
+    for ( int i = 0 ; i < curr_genenum ; ++i)
+    {
+        if (!file.nextLine_genegroup(StrLine) )
+        {
+            break;
+        }
         
-    //Counter->LoadRegion(regions);
-    totalkmers = Counter->read_target(matrixfile.c_str());
+        Chunk.numgroups ++ ;
+        
+        vector<uint16> eles;
+        
+        strsplit(StrLine, eles, ',', 1);
+        
+        for (uint16 ele: eles)
+        {
+            Chunk.genegroups[ele] = i ;
+        }
+    }
     
-    cout<<"finishing reading targets, start genotyping"<<endl;
+    Chunk.groupkmernums.resize(Chunk.numgroups, 0);
+    
+}
+size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine, vector<uint> &pathsizes)
+{
+        
+    if (!file.nextLine(StrLine))
+    {
+        std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
+        std::_Exit(EXIT_FAILURE);
+        return NULL;
+    }
+        
+    const size_t len = strlen(StrLine.c_str());
+    //size_t count = std::count_if( StrLine.begin(), StrLine.end(), []( char c ){return c ==',';}) + 3;
+    matrix[0] = StrLine[1];
+    
+    uint16 rownum = FIXCOL;
+    uint16 element = 0;
+    char c;
+        
+    size_t startpos = 3;
+    
+    uint16 tag1=0, tag2 = 0;
+    for (; startpos < len ; ++startpos)
+    {
+        if (StrLine[startpos] == '|') break;
+        tag1 <<= 6;
+        tag1 += StrLine[startpos] - '0';
+    }
+    ++startpos;
+    
+    for (; startpos < len ; ++startpos)
+    {
+        if (StrLine[startpos] == '\t') break;
+        tag2 <<= 6;
+        tag2 += StrLine[startpos] - '0';
+    }
+    tag2 <<= 6;
+    ++startpos;
+    
+    matrix[5] = tag1 + tag2;
 
-    std::vector<std::unique_ptr<std::thread>> threads;
-    
-    for(int i=0; i< nthreads; ++i)
+    uint16 path=0;
+    for (; startpos < len ; ++startpos)
     {
-        threads.push_back(std::unique_ptr<std::thread>(new std::thread(&Processor<ksize>::Onethread, this)));
+        if (StrLine[startpos] == '\t') break;
+        path <<= 6;
+        path += StrLine[startpos] - '0';
+    }
+    ++startpos;
+    
+    matrix[2] = path;
+    
+    if (pathsizes.size() <= path) pathsizes.resize(path + 1, 0);
+
+    
+    uint loc=0;
+    for (; startpos < len ; ++startpos)
+    {
+        if (StrLine[startpos] == '\t') break;
+        loc <<= 6;
+        loc += StrLine[startpos] - '0';
+    }
+    ++startpos;
+    
+    
+    pathsizes[path] = MAX(pathsizes[path], loc);
+    
+    uint16 part2 = loc & 0xFFFF;
+    uint16 part1 = (loc >> 16) & 0xFFFF;
+    
+    matrix[3] = part1;
+    matrix[4] = part2;
+
+    for (; startpos < len ; ++startpos)
+    {
+        if (StrLine[startpos] == '\t') break;
+    }
+    ++startpos;
+    
+    for (; startpos < len; ++startpos)
+    {
+        
+        c = StrLine[startpos];
+        switch (c)
+        {
+            case ',':
+                matrix[rownum ++] = element;
+                element = 0;
+                break;
+            default:
+                element <<= 6;
+                element += c - '0';
+        }
     }
     
+    matrix[1] = rownum - FIXCOL;
     
-    for(int i=0; i< nthreads; ++i)
-    {
-        threads[i].get()->join();
-    }
-    
-    
+    return rownum;
     
 }
 
-
-template <int ksize>
-void Processor<ksize>::Onethread()
+void GetGroupKmerNum(PriorChunk &Chunk, uint16* matrix, uint &ifingroup_counter, vector<bool> &ifingroup, size_t gnum)
 {
     
-    unique_ptr<Genotyper<ksize>> genotyper = unique_ptr<Genotyper<ksize>>(new Genotyper<ksize>(totalkmers, totalgroups,  *Counter, priordata_manager, window, Nsubthreads));
     
-    
-    while (restfileindex < inputfiles.size() )
+    switch(matrix[0])
     {
-        while(Threads_lock.try_lock());
-        
-        int inputindex = restfileindex++ ;
-        
-        Threads_lock.unlock();
-        
-        if (inputindex >= inputfiles.size() ) break;
-        
-    
-        string outputfile;
-        if (inputindex < outputfiles.size())
+        case '+':
         {
-            outputfile = outputfiles[inputindex];
+            for (int igroup = 0; igroup < Chunk.groupkmernums.size() ; ++igroup)
+            {
+                if (ifingroup[igroup]) Chunk.groupkmernums[igroup] += ifingroup_counter;
+            }
+            
+            std::fill(ifingroup.begin(), ifingroup.end(), 0);
+            
+            for (int igroup = 0; igroup <matrix[1] ; ++igroup)
+            {
+                ifingroup[   Chunk.genegroups[ matrix[FIXCOL + igroup] ]  ] = 1;
+            }
+            
+            ifingroup_counter = 1;
+        
+            break;
+            
         }
-        else if (outputfiles.size())
+            
+        case '-':
         {
-            outputfile = outputfiles[outputfiles.size()-1];
+            for (int igroup = 0; igroup < Chunk.groupkmernums.size() ; ++igroup)
+            {
+                if (ifingroup[igroup]) Chunk.groupkmernums[igroup] += ifingroup_counter;
+            }
+            
+            std::fill(ifingroup.begin(), ifingroup.end(), 0);
+            
+            vector<bool> row_reverse (gnum, 1);
+            for (int igroup = 0; igroup <matrix[1]  ; ++igroup)
+            {
+                row_reverse[ matrix[FIXCOL + igroup] ] = 0;
+            }
+            
+            for (int igroup = 0; igroup < gnum; ++igroup)
+            {
+                if (row_reverse[igroup]) ifingroup[   Chunk.genegroups[ igroup]  ] = 1;
+            }
+            
+            ifingroup_counter = 1;
+            break;
+        }
+            
+        default:
+        {
+            ifingroup_counter ++;
+            break;
+        }
+    }
+}
+
+void PriorData::LoadMatrix(PriorChunk &Chunk, size_t new_kmer_matrix_allocsize)
+{
+    string StrLine;
+    StrLine.resize(MAX_LINE);
+    
+    uint16*& kmer_matrix = Chunk.kmer_matrix;
+    const size_t kmernum = Chunk.kmervec_size;
+    size_t& kmer_matrix_size = Chunk.kmer_matrix_allocsize;
+    
+    if (new_kmer_matrix_allocsize != kmer_matrix_size )
+    {
+        kmer_matrix = (uint16 *) realloc(kmer_matrix, sizeof(uint16) * new_kmer_matrix_allocsize + 10 );
+        
+        kmer_matrix_size = new_kmer_matrix_allocsize;
+    }
+    
+    Chunk.pathsizes.resize(0);
+        
+    vector<bool> ifingroup (Chunk.numgroups,0);
+    uint ifingroup_counter = 0;
+        
+    uint16* matrix = kmer_matrix;
+    size_t rindex =0;
+    for (rindex =0; rindex < kmernum; ++ rindex)
+    {
+        uint16 rsize = LoadRow(matrix , rindex, StrLine, Chunk.pathsizes);
+        
+        GetGroupKmerNum(Chunk, matrix, ifingroup_counter, ifingroup, Chunk.genenum);
+        
+        matrix = &matrix[rsize];
+    }
+    
+    matrix[0] = '+';
+    matrix[1] = 0;
+    GetGroupKmerNum(Chunk, matrix,  ifingroup_counter, ifingroup, Chunk.genenum);
+    
+    /*
+    size_t total2 = 0;
+    for (size_t rindex =0; rindex < kmernum; ++ rindex)
+    {
+        total2 += kmer_matrix[total2 + 1] + 2;
+    }
+    */
+
+}
+
+void PriorData::LoadTree(PriorChunk &Chunk)
+{
+
+    string StrLine;
+    StrLine.resize(MAX_LINE);
+   
+    if (!file.nextLine(StrLine))
+    {
+        std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
+        std::_Exit(EXIT_FAILURE);
+        return;
+    }
+    
+    size_t len = strlen(StrLine.c_str());
+    
+    if (len==0) return ;
+
+	static float pow10[7] = {1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001};
+    
+    size_t count = Chunk.nodenum;
+    count = std::count_if( StrLine.begin(), StrLine.begin()+len, []( char c ){return c ==':';}) + 1;
+    
+    size_t& phylo_tree_allocsize = Chunk.phylo_tree_allocsize;
+    node*& phylo_tree = Chunk.phylo_tree;
+    
+    
+    if (count > phylo_tree_allocsize || 2*count < phylo_tree_allocsize)
+    {
+        phylo_tree = (node*) realloc(phylo_tree, sizeof(node) * count);
+        
+        phylo_tree_allocsize = count;
+        
+    }
+        
+    for (size_t index =0; index < count; ++index)
+    {
+        phylo_tree[index].clear();
+    }
+    
+    node *current_node = &phylo_tree[0];
+    float current_num = 0.0;
+    uint16 current_index = 1;
+    float ifdeci = 0;
+    
+    int notuselast = (StrLine[len-2] == ';') ;
+    
+	float sign = 1;
+    bool ifsci_e = 0;
+    int sci_e = 0;
+    char c;
+    for (int pos=1; pos < len - notuselast; ++pos)
+    {
+        c = StrLine[pos];
+        switch(c)
+        {
+            case ' ': case '\n':
+                break;
+            case '(':
+                current_node = current_node->add(&phylo_tree[current_index++]);
+                break;
+            case ')': case ';':
+                if (sci_e>5) current_num = 0;
+                else if (sci_e > 0) current_num *= pow10[sci_e];
+                current_node->dist = sign * current_num  ;
+                ifdeci = 0;
+                current_num = 0;
+                sign = 1;
+                sci_e = 0;
+                ifsci_e = 0;
+                current_node = current_node->parent;
+                break;
+            case ',':
+                if (sci_e>5) current_num = 0;
+                else if (sci_e > 0) current_num *= pow10[sci_e];
+                current_node->dist = sign *  current_num ;
+                ifdeci = 0;
+                current_num = 0;
+                sign = 1;
+                sci_e = 0;
+                ifsci_e = 0;
+                current_node = current_node->parent->add(&phylo_tree[current_index++]);
+                break;
+            case ':':
+                ifdeci = 0;
+                ifsci_e = 0;
+                sci_e = 0;
+                break;
+            case '.':
+                ifdeci *= 0.1;
+                break;
+            case '-':
+                if (ifdeci==1) sign = -1;
+                break;
+            case 'e':
+                ifdeci = 0;
+                ifsci_e = 1;
+                sci_e = 0;
+                break;
+            default:
+                if (ifdeci>0)
+                {
+                    if (ifdeci==1) current_num *= 10;
+                    current_num += ifdeci * (c - '0');
+                    if (ifdeci<1) ifdeci *= 0.1;
+                }
+                else if (ifsci_e)
+                {
+                    sci_e *=10;
+                    sci_e += (c - '0');
+                }
+                
+                break;
+        }
+    }
+    
+    const uint* gene_kmercounts = Chunk.gene_kmercounts;
+ 
+    int leaveindex = 0;
+    int nonleaveindex = -1;
+    for (size_t index =0; index < count; ++index)
+    {
+        if (phylo_tree[index].numchildren == 0)
+        {
+            phylo_tree[index].size = gene_kmercounts[leaveindex];
+            phylo_tree[index].index = leaveindex ++ ;
+        
+
         }
         else
         {
-            outputfile = "stdout";
+            phylo_tree[index].index = nonleaveindex --;
         }
-                
-        float depth = -1;
-        if (inputindex < depths.size())
-        {
-            depth= depths[inputindex];
-        }
-        else if (depths.size() > 0)
-        {
-            depth= depths[depths.size() -1];
-        }
-        
-        genotyper.get()->run(inputfiles[inputindex], outputfile, depth, Threads_lock2);
+    }
+
+}
+
+PriorChunk* PriorData::getFreeBuffer(size_t Chunkindex)
+{
+    
+    size_t i = 0;
+	
+    for (; i < buffer_size; ++i)
+    {
+        if (Buffer_indexes[i] == INT_MAX ) break;  //uninitialized block
+    }
+	
+    for (i = 0; i < buffer_size; ++i)
+    {
+        if (Buffer_working_counts[i] == 0 ) break;  //not in using block
     }
     
-    
+    Buffer_working_counts[i]++;
+    Buffer_indexes[i] = Chunkindex;
+   
+    return &Buffers[i];
 }
 
 
-#endif /* Processor_hpp */
+PriorChunk* PriorData::getChunkData(size_t Chunkindex)
+{
+        
+    PriorChunk &Chunk = *getFreeBuffer(Chunkindex);
+    Chunk.index = Chunkindex;
+    
+    auto chunk_region = file_pos[Chunkindex];
+    size_t chunk_start = chunk_region.first;
+    file.Seek(chunk_start);
+    
+    auto &kmervec_range = kmervec_pos[Chunkindex];
+    Chunk.kmervec_start = kmervec_range.first;
+    Chunk.kmervec_size = kmervec_range.second;
+        
+    LoadHeader(Chunk);
+    
+    LoadSizes(Chunk);
+ 
+    LoadTree(Chunk);
+    
+    LoadAlleles(Chunk);
+    
+    LoadNorm(Chunk);
+    
+    LoadGroups(Chunk);
+    
+    LoadMatrix(Chunk, indexed_matrix_sizes[Chunkindex] + 10);
+   
+
+    return &Chunk;
+    
+}
+
+void PriorData::FinishChunk(PriorChunk* Chunk_prt)
+{
+    lock_guard<mutex> IO(IO_lock);
+    
+    for (int i = 0; i < buffer_size; ++i)
+    {
+        if (&Buffers[i] == Chunk_prt )
+        {
+            Buffer_working_counts[i]--;
+            break;
+        }
+    }
+}
+
+PriorChunk* PriorData::getNextChunk(const vector<bool>& finished)
+{
+    lock_guard<mutex> IO(IO_lock);
+    
+    for (size_t i = 0 ; i < Buffer_indexes.size(); ++i)
+    {
+        auto buffer_index = Buffer_indexes[i];
+                
+        if (buffer_index != INT_MAX && finished[buffer_index] == 0)
+        {
+            Buffer_working_counts[i] ++;
+            return &Buffers[i];
+        }
+    }
+    
+    size_t i = 0;
+    for (; i < finished.size(); ++i)
+    {
+        if (finished[i] == 0) break;
+    }
+  
+
+    if (i >= finished.size())
+    {
+        std::cerr << "Buffer Error" <<std::endl;
+        std::_Exit(EXIT_FAILURE);
+    }
+    
+    return getChunkData(i);
+}
