@@ -7,7 +7,26 @@
 
 #include "KmerWindow.hpp"
 
-void distract_segments(const vector<float>& covers_, vector<tuple<int,int,float>> &results)
+vector<string> namesplit(string& str, char deli)
+{
+    vector<string> eles;
+    
+    string::size_type start = 0;
+    size_t end = str.find(deli);
+    size_t len = str.length();
+    
+    while (end != std::string::npos && end < len)
+    {
+        eles.push_back(str.substr(start, end - start));
+        start = end + 1;
+        end = str.find(deli, start);
+    }
+    eles.push_back(str.substr(start, len));
+    
+    return eles;
+}
+
+void distract_segments(const vector<float>& covers_, vector<tuple<int,int,float,string>> &results)
 {
     vector<int> covers;
     for (auto cover_: covers_)
@@ -66,16 +85,16 @@ void distract_segments(const vector<float>& covers_, vector<tuple<int,int,float>
         {
             for (int j = min(cover, lastcover) ; j < max(cover, lastcover); ++j )
             {
-                if (startposes[j] > 0)
+                if (startposes[j] > 0 && index - startposes[j] + 1 >=  minwindowcutoff)
                 {
-                    results.push_back(make_tuple(startposes[j]-1,index,j));
+                    results.push_back(make_tuple(startposes[j]-1,index,j,"NA"));
                     startposes[j] = 0;
                 }
             }
             
-            if (startposes[lastcover] > 0)
+            if (startposes[lastcover] > 0 && index - startposes[lastcover]+1 >=  minwindowcutoff)
             {
-                results.push_back(make_tuple(startposes[lastcover]-1,index,lastcover));
+                results.push_back(make_tuple(startposes[lastcover]-1,index,lastcover,"NA"));
                 startposes[lastcover] = 0;
             }
         }
@@ -83,16 +102,16 @@ void distract_segments(const vector<float>& covers_, vector<tuple<int,int,float>
         {
             for (int j = min( lastcover, 0) ; j < max(0, lastcover ); ++j )
             {
-                if (startposes[j] > 0)
+                if (startposes[j] > 0 && index - startposes[j] + 1 >= minwindowcutoff)
                 {
-                    results.push_back(make_tuple(startposes[j]-1,index,j));
+                    results.push_back(make_tuple(startposes[j]-1,index,j,"NA"));
                     startposes[j] = 0 ;
                 }
             }
             
-            if (startposes[lastcover] > 0)
+            if (startposes[lastcover] > 0 && index - startposes[lastcover] + 1 >= minwindowcutoff)
             {
-                results.push_back(make_tuple(startposes[lastcover]-1,index,lastcover));
+                results.push_back(make_tuple(startposes[lastcover]-1,index,lastcover,"NA"));
                 startposes[lastcover] = 0;
             }
         }
@@ -107,7 +126,7 @@ void distract_segments(const vector<float>& covers_, vector<tuple<int,int,float>
 }
 
 
-void refine_edges(const vector<tuple<int,int,int>> &windowcover, const vector<float>& extras, vector<tuple<int,int,float>> &results, const float depth)
+void refine_edges(const vector<tuple<int,int,int>> &windowcover, const vector<float>& extras, vector<tuple<int,int,float,string>> &results, const float depth)
 {
     for (auto &result: results)
     {
@@ -159,19 +178,149 @@ void refine_edges(const vector<tuple<int,int,int>> &windowcover, const vector<fl
             }
         }
         
-        result = make_tuple(leftscore_max.second, rightscore_max.second + 1, copynum);
+        result = make_tuple(leftscore_max.second, rightscore_max.second + 1, copynum, -1);
 
     }
     
 }
 
-void KmerWindow::PartialCopy(vector<vector<tuple<int, int, float>>>& results, const float depth)
+
+inline int getoverlap(vector<tuple<int,int,int,int>> &overlaps, int start,int end, string& coordi)
 {
+    auto segs = namesplit(coordi, '~');
+    
+    int total_overlap_size = 0 ;
+    for (auto seg: segs)
+    {
+        auto coordis_ = namesplit(seg, '_');
+        
+        vector<int> coordis(coordis_.size());
+        for (int i = 0; i < coordis_.size(); ++i)
+        {
+            coordis[i] = atoi(coordis_[i].c_str());
+        }
+        
+        int overlap_size =  (end - start) + (coordis[1] - coordis[0]) - ( (MAX(end, coordis[1])) - (MIN(start, coordis[0])) );
+        
+        cout<<end <<","<<start<<","<<coordis[1]<<","<<coordis[0]<<endl;
+        if (overlap_size > 100)
+        {
+            total_overlap_size += overlap_size;
+            int arr[4] = {start, end, coordis[0], coordis[1]};
+            std::sort(arr, arr + 4);
+            
+            int overlap_ps = arr[1];
+            int overlap_pe = arr[2];
+            
+            int overlap_qs = coordis[2] + overlap_ps - coordis[0];
+            int overlap_qe = coordis[3] - overlap_pe + coordis[1];
+            
+            overlaps.push_back(make_tuple(overlap_ps, overlap_pe, overlap_qs, overlap_qe));
+            
+        }
+        
+    }
+    
+    return total_overlap_size;
+
+}
+
+inline string getbestoverlap(const FLOAT_T* reminders, const vector<string>& genenames, const string& pathname, const int start, const int end,const int size)
+{
+    
+    int useindex = -1;
+    FLOAT_T usereminder = 0.0;
+    
+    string result_str = "";
+    result_str.reserve(100);
+    for (int i = 0; i < genenames.size(); ++i)
+    {
+        if ( reminders[i] < 0.1) continue;
+        
+        
+        auto genename = genenames[i];
+        
+        auto elements = namesplit(genename, '\t');
+        if ( elements.size() < 3) continue;
+        auto element = elements[2];
+        
+        if (element == "NA:NA" || element == "NA" || element.find("_") == std::string::npos) continue;
+        
+        auto segments = namesplit(element, '&');
+        
+        int overlap_size = 0;
+        for (auto &segment:segments )
+        {
+            auto cutpos = segment.find(':', 0);
+            auto contigname = segment.substr(0, cutpos);
+            auto coordi = segment.substr(cutpos+1, segment.length());
+            
+            cout <<segment<<endl;
+            
+            if (strncmp(pathname.c_str(), contigname.c_str(),contigname.length()) != 0) continue;
+            
+            vector<tuple<int,int,int,int>> overlaps ;
+            
+            auto total_overlap_size = getoverlap(overlaps, start,end, coordi);
+            
+            if (total_overlap_size > 0.5*size && reminders[i] > usereminder)
+            {
+                cout <<genename<<","<<overlaps.size()<<endl;
+                
+                usereminder = reminders[i];
+                useindex = i;
+                
+                result_str = genename.substr(0,genename.find('\t', 0))+":";
+                for (size_t i = 0; i < overlaps.size(); ++i) 
+                {
+                    int val2 = std::get<2>(overlaps[i]);
+                    int val3 = std::get<3>(overlaps[i]);
+                    
+                    result_str += std::to_string(val2) + "_" + std::to_string(val3);
+                    
+                    if (i < overlaps.size() - 1)  result_str += "~";
+                }
+                
+            }
+            
+        }
+
+    }
+    
+    return result_str;
+    
+}
+
+void locate_partial(vector<tuple<int,int,float,string>> &results, const FLOAT_T* reminders, const vector<string>& genenames, const string pathname)
+{
+    
+    for (auto &patial: results)
+    {
+        auto start =  30*(get<0>(patial)-1);
+        auto end = 30*(get<1>(patial)-1);
+        auto cpchange = (int) get<2>(patial);
+        
+        auto size = end - start;
+        if (size < 3000) continue;
+        
+        auto result_str = getbestoverlap(reminders, genenames, pathname, start, end, size);
+        
+        std::get<3>(patial) = result_str;
+        
+    }
+    
+}
+
+void KmerWindow::PartialCopy(vector<vector<tuple<int, int, float, string>>>& results, const FLOAT_T* reminders, const vector<string>& genenames, const vector<string>& pathnames, const float depth)
+{
+    
+    
     for (int path = 1; path < windowcovers.size(); ++path )
     {
         
         auto &windowcover = windowcovers[path];
-        vector<tuple<int, int, float>> &result = results[path];
+        auto &result = results[path];
+        result.clear();
         
         ull totalwindow = 0;
         for (int index = 1; index < windowcover.size(); ++index)
@@ -227,7 +376,7 @@ void KmerWindow::PartialCopy(vector<vector<tuple<int, int, float>>>& results, co
                         
             float cpnum_mean = cpnum/elenum;
             
-            if (expt <= 30)
+            if (expt <= 200)
             {
                 covers[index] = MAX_UINT16;
                 continue;
@@ -244,9 +393,13 @@ void KmerWindow::PartialCopy(vector<vector<tuple<int, int, float>>>& results, co
                                     
         }
         
+        
         distract_segments(covers, result);
         
         refine_edges(windowcover, extras, result, depth);
+        
+        locate_partial(result, reminders, genenames, pathnames[path]);
+        
     }
 }
 
@@ -254,6 +407,8 @@ void KmerWindow::WindowCovers(const uint16* kmervec, const uint16* kmermatrix, c
 {
     
     const uint16* rowdata = kmermatrix;
+    vector<uint64_t> kmer_samepos;
+    kmer_samepos.reserve(knum);
     
     int copynum = 0;
     for (int i = 0; i < genenum; ++i)
@@ -266,12 +421,12 @@ void KmerWindow::WindowCovers(const uint16* kmervec, const uint16* kmermatrix, c
     for (size_t i = 0; i < knum; ++i)
     {
         
-        loc= ( rowdata[3] << 16 ) + rowdata[4];
+        loc= ( ((uint)rowdata[3]) << 16 ) + rowdata[4];
+        uint64_t kmer_pos = ( ((uint64_t)rowdata[2]) << 32 ) + loc;
         loc /= window;
-
         auto& thiswindow = windowcovers[rowdata[2]][loc];
-
-	float count_f = (int) kmervec[i];
+        
+        float count_f = (int) kmervec[i];
         
         const uint16 flag = rowdata[5];
         if (optioncorr && (flag & 0x3F) >= errorcutoff1)
@@ -279,15 +434,17 @@ void KmerWindow::WindowCovers(const uint16* kmervec, const uint16* kmermatrix, c
             float corr = 0.01 * (flag & 0xFFC0)/64;
             count_f *= corr;
         }
-        
-        get<0>(thiswindow) += (int)(count_f+0.5);
 
+        get<0>(thiswindow) += (int)(count_f+0.5);
+        
         switch (rowdata[0])
         {
             case '_': case '=':
                 
                 get<1>(thiswindow) += genecounter;
-                get<2>(thiswindow) = MAX(get<2>(thiswindow), genecounter);
+                kmer_samepos.push_back(kmer_pos);
+                
+                //get<2>(thiswindow) = MAX(get<2>(thiswindow), genecounter);
                 break;
 
             case '-':
@@ -298,8 +455,9 @@ void KmerWindow::WindowCovers(const uint16* kmervec, const uint16* kmermatrix, c
                 }
                 
                 get<1>(thiswindow) += genecounter;
+                kmer_samepos.push_back(kmer_pos);
                 
-                get<2>(thiswindow) = MAX(get<2>(thiswindow), genecounter);
+                //get<2>(thiswindow) = MAX(get<2>(thiswindow), genecounter);
                 
                 break;
             case '+':
@@ -310,7 +468,8 @@ void KmerWindow::WindowCovers(const uint16* kmervec, const uint16* kmermatrix, c
                 }
                 
                 get<1>(thiswindow) += genecounter;
-                get<2>(thiswindow) = MAX(get<2>(thiswindow), genecounter);
+                kmer_samepos.push_back(kmer_pos);
+                //get<2>(thiswindow) = MAX(get<2>(thiswindow), genecounter);
                 break;
             default:
                 break;
@@ -322,4 +481,27 @@ void KmerWindow::WindowCovers(const uint16* kmervec, const uint16* kmermatrix, c
         rowdata = &rowdata[rowdata[1] + FIXCOL];
     }
     
+    std::sort(kmer_samepos.begin(), kmer_samepos.end());
+    
+    ull lastpos = 0;
+    for (auto &kmer_pos: kmer_samepos)
+    {
+        if (kmer_pos != lastpos)
+        {
+            uint16 first = (uint16) ( kmer_pos >> 32 );
+            uint second = (uint)( kmer_pos & 0xFFFFFFFF );
+            get<2>(windowcovers[first][second/window])++;
+            lastpos = kmer_pos;
+        }
+    }
+    
+    for (auto &path: windowcovers)
+    {
+        for (auto &windowcover: path)
+        {
+            get<2>(windowcover) = (int)(1.0 * (float)get<1>(windowcover)/ (MAX(1,get<2>(windowcover))) + 0.5);
+        }
+    }
+    
+        
 }
