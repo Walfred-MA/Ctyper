@@ -202,7 +202,6 @@ inline int getoverlap(vector<tuple<int,int,int,int>> &overlaps, int start,int en
         
         int overlap_size =  (end - start) + (coordis[1] - coordis[0]) - ( (MAX(end, coordis[1])) - (MIN(start, coordis[0])) );
         
-        cout<<end <<","<<start<<","<<coordis[1]<<","<<coordis[0]<<endl;
         if (overlap_size > 100)
         {
             total_overlap_size += overlap_size;
@@ -254,9 +253,7 @@ inline string getbestoverlap(const FLOAT_T* reminders, const vector<string>& gen
             auto cutpos = segment.find(':', 0);
             auto contigname = segment.substr(0, cutpos);
             auto coordi = segment.substr(cutpos+1, segment.length());
-            
-            cout <<segment<<endl;
-            
+                        
             if (strncmp(pathname.c_str(), contigname.c_str(),contigname.length()) != 0) continue;
             
             vector<tuple<int,int,int,int>> overlaps ;
