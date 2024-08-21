@@ -32,7 +32,9 @@ public:
     }
     
     bool nextLine(std::string &StrLine);
-    
+
+    bool nextLine_start(std::string &StrLine, const char startchar);
+
     bool nextLine_kmer(std::string &StrLine);
     
     bool nextLine_norm(std::string &StrLine);
