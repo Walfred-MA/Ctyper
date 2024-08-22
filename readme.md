@@ -25,7 +25,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/Walfred-MA/Ctyper">
+  <a href="https://github.com/Walfred-MA/Ctyper/">
     <img src="images/figure1.png" alt="" width="80" height="80">
   </a>
 
