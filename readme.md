@@ -169,16 +169,16 @@ Ctyper takes two kinds of input formats:
 
 1. genotyping single file.
 
-ctyper -i $Inputfile -m $Database -o $Outputfile -b background.list -c 1
+ctyper -i $Inputfile -m $Database -o $Outputfile -b background.list -n 1
 or 
-ctyper -i $Inputfile -m $Database -o $Outputfile -d $sequencing_coverage -c 1
+ctyper -i $Inputfile -m $Database -o $Outputfile -d $sequencing_coverage -n 1
 
 
 2. genotyping a cohort of files.
 
-ctyper -I $AllInputs -m $Database -o $AllOutputs -b background.list -c $threads
+ctyper -I $AllInputs -m $Database -o $AllOutputs -b background.list -n $threads
 or 
-ctyper -I $AllInputs -m $Database -o $AllOutputs -D $All_sequencing_coverages -c $threads
+ctyper -I $AllInputs -m $Database -o $AllOutputs -D $All_sequencing_coverages -n $threads
 
 AllInputs is a text where each line is the path of each input file.
 AllOutputs is a text where each line is the output file of the correponding input file (the input file with the same row number).
@@ -189,31 +189,35 @@ All_sequencing_coverages is a text where each line is the sequencing coverage in
 
 Inputs:
 
-  -i the path of individual input file
+  -i string, the path of individual input file
   
-  -I the path of a mega input file, where each line corresponds to each path of single files
+  -I string, the path of a mega input file, where each line corresponds to each path of single files
 
 Database:
 
-  -m the database file use for genotyping
+  -m string, the database file use for genotyping
   
-  -b the path of the background kmer list
+  -b string, the path of the background kmer list
 
 Coverage information (does not co-exit with -b):
 
-  -d the sequencing coverage of the input file
+  -d float, the sequencing coverage of the input file
   
-  -D the path of all sequencing coverages, where each line corresponds to each input file with the same row index.
+  -D string, the path of all sequencing coverages, where each line corresponds to each input file with the same row index.
   
 Outputs:
 
-  -o the path of individual output file
+  -o string, the path of individual output file
   
-  -O the path of a mega output file, where each line corresponds to the output path for each input file with the same row index.
+  -O string, the path of a mega output file, where each line corresponds to the output path for each input file with the same row index.
 
 multhreads:
 
-  -c number of thread use, default is 1
+  -n int, number of thread use, default is 1
+
+Bias correction:
+
+  -c bool, if performs bias correction for illumina data
 
 
 ## Addtional tools
