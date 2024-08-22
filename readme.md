@@ -160,7 +160,7 @@ Ctyper needs:
 1. inputfile(s),
 2. corresponding outputfile(s),
 3. the pangenome allele database file, needed to be indexed
-4. either directly proving sequencing coverage information or proving background kmers for ctyper to determine sequencing coverage.  
+4. either directly proving sequencing coverage information (when you do not have WGS data) or proving background kmers for ctyper to determine sequencing coverage (recommended).  
 
 
 
