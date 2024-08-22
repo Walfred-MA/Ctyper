@@ -183,7 +183,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 ## Contact
 
 Walfred MA - wangfeim@usc.edu
-
+Mark Chaisson - mchaisso@usc.edu
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
