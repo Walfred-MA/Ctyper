@@ -178,22 +178,31 @@ All_sequencing_coverages is a text where each line is the sequencing coverage in
 ## Parameters
 
 Inputs:
+
   -i the path of individual input file
+  
   -I the path of a mega input file, where each line corresponds to each path of single files
 
 Used Data:
+
   -m the database file use for genotyping
+  
   -b the path of the background kmer list
 
 Coverage information (does not co-exit with -b):
+
   -d the sequencing coverage of the input file
+  
   -D the path of all sequencing coverages, where each line corresponds to each input file with the same row index.
   
 Outputs:
+
   -o the path of individual output file
+  
   -O the path of a mega output file, where each line corresponds to the output path for each input file with the same row index.
 
 multhreads:
+
   -c number of thread use, default is 1
 
 
