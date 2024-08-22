@@ -81,6 +81,15 @@ ctyper itself requires:
 2. eigen (https://gitlab.com/libeigen/eigen)
 3. htslib (https://github.com/samtools/htslib), you can also install the whole samtools instead (https://github.com/samtools/).
 
+### Input format
+
+Ctyper takes five types of files as input:
+
+1. CRAM file (*.cram), needed to be indexed  (recommended due to less I/O intensive).
+2. BAM file (*.bam), needed to be indexed.
+3. SAM file (*.sam).
+4. FASTQ file (*.fastq).
+5. Fasta file (*.fa, *.fasta).
 
 
 ### Installation
