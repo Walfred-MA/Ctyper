@@ -48,7 +48,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About ctyper
 
-Ctype is a tool to genotype complex CNVs (copy number variation) in NGS (Next-Generation Sequencing) data using pangenome database.
+Ctype is a command line tool to genotype complex CNVs (copy number variation) in NGS (Next-Generation Sequencing) data using pangenome database.
 
 The results will be represented as pangenome alleles, which is defined as genic segments with locally phased variants that are combinatorially heritable mostly range in 15-50 kb, about the size of "Haplotype blocks" or "LD-blocks". 
 
@@ -76,7 +76,9 @@ This repository contains:
 
 ### Prerequisites
 
-ctyper itself requires:
+Ctyper only officially support Linux environment.
+
+It requires:
 1. gcc-8
 2. eigen (https://gitlab.com/libeigen/eigen)
 3. htslib (https://github.com/samtools/htslib), you can also install the whole samtools instead (https://github.com/samtools/).
@@ -107,7 +109,7 @@ make
 
 mv ctyper $folder_install
 
-6. Download the pangenome allele database file
+6. Download the pangenome allele database file (we call it $Database)
    
 7. Download the pangenome allele-type annotation file
    
@@ -122,11 +124,34 @@ mv ctyper $folder_install
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+Ctyper needs:
+1. inputfile(s),
+2. corresponding outputfile(s),
+3. the pangenome allele database file,
+4. either directly proving sequencing coverage information or proving background kmers to determine sequencing coverage.  
 
-_For more examples, please refer to the [Documentation](https://example.com)_
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+Ctyper takes two kinds of input formats:
+
+1. genotyping single file.
+
+ctyper -i $Inputfile -m $Database -o $Outputfile -b background.list -c 1
+or 
+ctyper -i $Inputfile -m $Database -o $Outputfile -d $sequencing_coverage -c 1
+
+
+
+
+3. genotyping a cohort of files.
+
+ctyper -I $AllInputs -m $Database -o $AllOutputs -b background.list -c $threads
+or 
+ctyper -I $AllInputs -m $Database -o $AllOutputs -D $All_sequencing_coverages -c $threads
+
+AllInputs is a text where each line is the path of each input file.
+AllOutputs is a text where each line is the output file of the correponding input file (the input file with the same row number).
+All_sequencing_coverages is a text where each line is the sequencing coverage information for the correponding input file (the input file with the same row number).
 
 
 
