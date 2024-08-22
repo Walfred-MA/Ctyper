@@ -244,16 +244,16 @@ $ cat PangenomeAlleles_annotationfix.tsv  | grep "^AMY_group1_" > AMY_group1_ann
 
 Third, distract the AMY_group1 genotyping results:
 
-$ cat PangenomeAlleles_annotationfix.tsv  |  grep "^result: AMY_group1_" 
-result: AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,AMY_group1_GW00042_h2_724,AMY_group1_HG03516_h1_1721,AMY_group1_GW00051_h1_888,AMY_group1_HG002_h2_1034,AMY_group1_NA19240_h2_1831,AMY_group1_GW00005_h2_107,AMY_group1_GW00017_h1_315,AMY_group1_HG002_h1_1023,AMY_group1_GW00034_h1_586,
+$ cat genotype.txt  |  grep "^result: AMY_group1_" 
+result: AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,
 
 
-this shows genotyping result is: AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,AMY_group1_GW00042_h2_724,AMY_group1_HG03516_h1_1721,AMY_group1_GW00051_h1_888,AMY_group1_HG002_h2_1034,AMY_group1_NA19240_h2_1831,AMY_group1_GW00005_h2_107,AMY_group1_GW00017_h1_315,AMY_group1_HG002_h1_1023,AMY_group1_GW00034_h1_586,
+this shows genotyping result is: AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,
 
 
 Last, visualization:
 
-$ python typemutant.py -i AMY_group1_annotationfix.tsv -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,AMY_group1_GW00042_h2_724,AMY_group1_HG03516_h1_1721,AMY_group1_GW00051_h1_888,AMY_group1_HG002_h2_1034,AMY_group1_NA19240_h2_1831,AMY_group1_GW00005_h2_107,AMY_group1_GW00017_h1_315,AMY_group1_HG002_h1_1023,AMY_group1_GW00034_h1_586,"  -o output.png
+$ python typemutant.py -i AMY_group1_annotationfix.tsv -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,"  -o output.png
 
 (optional)
 if you also want to visualize the genecode annotation, you can do following steps:
@@ -263,7 +263,7 @@ $ cat genecode.gff3| grep "gene_name=AMY" > AMY.gff3
 
 
 Then use it as the input, run:
-$ python typemutant.py -i AMY_group1_annotationfix.tsv -g AMY.gff3 -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,AMY_group1_GW00042_h2_724,AMY_group1_HG03516_h1_1721,AMY_group1_GW00051_h1_888,AMY_group1_HG002_h2_1034,AMY_group1_NA19240_h2_1831,AMY_group1_GW00005_h2_107,AMY_group1_GW00017_h1_315,AMY_group1_HG002_h1_1023,AMY_group1_GW00034_h1_586,"  -o output.png
+$ python typemutant.py -i AMY_group1_annotationfix.tsv -g AMY.gff3 -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,"  -o output.png
 
 
 
