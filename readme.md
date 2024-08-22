@@ -54,7 +54,7 @@ The results will be represented as pangenome alleles, which is defined as genic 
 
 The pangenome alleles are further classified as pangenome allele-types, which are highly similar subgroups, and can be used to represent complex genetic variations such as structrual variations, gene conversion, duplication, translocation and etc. 
 
-The genotyping of ctyper allows large cohort association studies on complex CNV genes as well as complex genetic variations. 
+Ctyper is highly efficient, accurate and visualizable, thus allows high resolution large cohort association studies on complex CNV genes as well as complex genetic variations. 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
