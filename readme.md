@@ -83,7 +83,7 @@ The database used by ctyper for genotyping.
 
 5. the annotation of pangenome allele-type to help population analysis (link in data)
 
-The database with annotation information used mostly by cohort study tool.
+The database with annotation information used in cohort study.
 
 6. A more detailed annotation of all individual pangenome alleles to help individual sample study (link in data)
 
