@@ -64,8 +64,15 @@ Ctyper is highly efficient, accurate and visualizable, thus allows high resoluti
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+This repository contains:
+1. ctyper itself (src)
+2. a python tool to visualize the ctyper's results (tools/Plot)
+3. a python tool to help summary cohort study results (tools/Cohort)
+4. a pangenome allele database ctyper relies on
+5. the annotations of pangenome allele database to help interpretation and analysis of genotyping results
+6. simple test cases
+
+
 
 ### Prerequisites
 
