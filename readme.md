@@ -229,7 +229,7 @@ Bias correction:
 
 This visualization is gene by gene and not genome-wide. 
 
-If you interested in visualizing gene AMY1A:
+For example, if you interested in visualizing gene AMY1A:
 
 First, Look for AMY1A to find out which gene group it in.
 
