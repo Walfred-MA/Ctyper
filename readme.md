@@ -34,7 +34,7 @@
   <p align="center">
     A pangenome allele-specific and copy number specific genotyping tool
     <br />
-    <a href="https://github.com/Walfred-MA/Ctyper"><strong>Explore the docs »</strong></a>
+    <a href="https://www.biorxiv.org/content/10.1101/2024.08.11.607269v1"><strong>Cite the paper»</strong></a>
     <br />
     <br />
     <a href="https://github.com/Walfred-MA/Ctyper/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
