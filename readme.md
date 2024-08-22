@@ -81,7 +81,7 @@ ctyper itself requires:
 2. eigen (https://gitlab.com/libeigen/eigen)
 3. htslib (https://github.com/samtools/htslib), you can also install the whole samtools instead (https://github.com/samtools/).
 
-### Input format
+### Input formats
 
 Ctyper takes five types of files as input:
 
