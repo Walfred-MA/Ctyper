@@ -96,7 +96,7 @@ The database with annotation information used in visualization.
 
 
 <!-- Prerequisites -->
-### Prerequisites
+## Prerequisites
 
 Ctyper only officially support Linux environment.
 
@@ -106,7 +106,7 @@ It requires:
 3. htslib (https://github.com/samtools/htslib), you can also install the whole samtools instead (https://github.com/samtools/).
 
 <!-- Inputs-->
-### Inputs
+## Inputs
 
 Ctyper takes five types of files as input:
 
@@ -117,7 +117,7 @@ Ctyper takes five types of files as input:
 5. Fasta file (*.fa, *.fasta).
 
 <!-- Installation -->
-### Installation
+## Installation
 
 1. Install all Prerequisites.
 2. go to src/ directory.
