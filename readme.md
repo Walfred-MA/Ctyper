@@ -234,6 +234,7 @@ For example, if you interested in visualizing gene AMY1A:
 First, Look for AMY1A to find out which gene group it in.
 
 $ cat data/select_files.txt | grep -w "AMY1A" | cut -f2,3
+
 newGeneCopies/AMY/AMY_partitions/AMY_group1_AMY1BOOOAMY1COOOAMY1A.fa	AMY1B,AMY1C,RNPC3,AMY1A,AMYP1,ACTG1P4,RP5-1108M17.5,AMY2B,AMY2A,
 
 
@@ -248,6 +249,7 @@ $ cat PangenomeAlleles_annotationfix.tsv  | grep "^AMY_group1_" > AMY_group1_ann
 Third, distract the AMY_group1 genotyping results:
 
 $ cat genotype.txt  |  grep "^result: AMY_group1_" 
+
 result: AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,
 
 
