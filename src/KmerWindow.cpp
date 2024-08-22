@@ -262,7 +262,6 @@ inline string getbestoverlap(const FLOAT_T* reminders, const vector<string>& gen
             
             if (total_overlap_size > 0.5*size && reminders[i] > usereminder)
             {
-                cout <<genename<<","<<overlaps.size()<<endl;
                 
                 usereminder = reminders[i];
                 useindex = i;
