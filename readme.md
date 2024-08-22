@@ -68,9 +68,9 @@ This repository contains:
 1. ctyper itself (src)
 2. a python tool to visualize the ctyper's results (tools/Plot)
 3. a python tool to help summary cohort study results (tools/Cohort)
-4. a pangenome allele database ctyper relies on
-5. the annotations of pangenome allele database to help interpretation and analysis of genotyping results
-6. simple test cases
+4. a pangenome allele database ctyper relies on (link in data)
+5. the annotations of pangenome allele database to help interpretation and analysis of genotyping results (link in data)
+6. simple test cases (tests)
 
 
 
