@@ -132,7 +132,7 @@ make
 
 mv ctyper $folder_install
 
-6. Download the pangenome allele database file (we call it $Database)
+6. Download the pangenome allele database file (we call it $Database) and its index file. 
    
 7. Download the pangenome allele-type annotation file
    
@@ -150,7 +150,7 @@ mv ctyper $folder_install
 Ctyper needs:
 1. inputfile(s),
 2. corresponding outputfile(s),
-3. the pangenome allele database file,
+3. the pangenome allele database file, needed to be indexed
 4. either directly proving sequencing coverage information or proving background kmers to determine sequencing coverage.  
 
 
@@ -177,6 +177,24 @@ All_sequencing_coverages is a text where each line is the sequencing coverage in
 
 ## Parameters
 
+Inputs:
+  -i the path of individual input file
+  -I the path of a mega input file, where each line corresponds to each path of single files
+
+Used Data:
+  -m the database file use for genotyping
+  -b the path of the background kmer list
+
+Coverage information (does not co-exit with -b):
+  -d the sequencing coverage of the input file
+  -D the path of all sequencing coverages, where each line corresponds to each input file with the same row index.
+  
+Outputs:
+  -o the path of individual output file
+  -O the path of a mega output file, where each line corresponds to the output path for each input file with the same row index.
+
+multhreads:
+  -c number of thread use, default is 1
 
 
 ## Addtional tools
