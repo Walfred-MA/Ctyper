@@ -184,6 +184,44 @@ void refine_edges(const vector<tuple<int,int,int>> &windowcover, const vector<fl
     
 }
 
+inline int getoverlap(vector<tuple<int,int,int,int>> &overlaps, int start,int end, string& coordi)
+{
+    auto segs = namesplit(coordi, '~');
+    
+    int total_overlap_size = 0 ;
+    for (auto seg: segs)
+    {
+        auto coordis_ = namesplit(seg, '_');
+        
+        vector<int> coordis(coordis_.size());
+        for (int i = 0; i < coordis_.size(); ++i)
+        {
+            coordis[i] = atoi(coordis_[i].c_str());
+        }
+        
+        int overlap_size =  (end - start) + (coordis[1] - coordis[0]) - ( (MAX(end, coordis[1])) - (MIN(start, coordis[0])) );
+        
+        if (overlap_size > 100)
+        {
+            total_overlap_size += overlap_size;
+            int arr[4] = {start, end, coordis[0], coordis[1]};
+            std::sort(arr, arr + 4);
+            
+            int overlap_ps = arr[1];
+            int overlap_pe = arr[2];
+            
+            int overlap_qs = coordis[2] + overlap_ps - coordis[0];
+            int overlap_qe = coordis[3] - overlap_pe + coordis[1];
+            
+            overlaps.push_back(make_tuple(overlap_ps, overlap_pe, overlap_qs, overlap_qe));
+            
+        }
+        
+    }
+    
+    return total_overlap_size;
+
+}
 
 inline string getbestoverlap(const float cpchange, const FLOAT_T* reminders, const vector<string>& genenames, const string& pathname, const int start, const int end,const int size)
 {
