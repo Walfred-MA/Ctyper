@@ -169,14 +169,18 @@ Ctyper takes two kinds of inputs:
 1. genotyping single file.
 
 ctyper -i $Inputfile -m $Database -o $Outputfile -b background.list -n 1
+
 or 
+
 ctyper -i $Inputfile -m $Database -o $Outputfile -d $sequencing_coverage -n 1
 
 
 2. genotyping a cohort of files.
 
 ctyper -I $AllInputs -m $Database -o $AllOutputs -b background.list -n $threads
+
 or 
+
 ctyper -I $AllInputs -m $Database -o $AllOutputs -D $All_sequencing_coverages -n $threads
 
 AllInputs is a text where each line is the path of each input file.
