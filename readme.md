@@ -144,9 +144,9 @@ mv ctyper $folder_install
 
 6. Download the pangenome allele database file (we call it $Database) and its index file. 
    
-7. Download the pangenome allele-type annotation file
+7. (optional) Download the allele-type annotation file
    
-8. (optional) Download the full pangenome alleles annotation file
+8. (optional) Download the full alleles annotation file
    
 9. ready to go
 
@@ -235,7 +235,7 @@ newGeneCopies/AMY/AMY_partitions/AMY_group1_AMY1BOOOAMY1COOOAMY1A.fa	AMY1B,AMY1C
 this shows it is in AMY_group1, together with other amylase genes. 
 
 
-Second, distract the annotation of AMY_group1 from the full annotation table.
+Second, download full alleles annotation, and distract the annotation of AMY_group1 from the full annotation table.
 
 $ cat PangenomeAlleles_annotationfix.tsv  | grep "^AMY_group1_" > AMY_group1_annotationfix.tsv
 
@@ -266,14 +266,21 @@ $ python typemutant.py -i AMY_group1_annotationfix.tsv -g AMY.gff3 -n "AMY_group
 
 ## Cohort analysis
 
+There are two scripts in the tools/Cohorts folder, which work together for Cohort analysis. 
 
+first, download the allele-type annotation table: PangenomeAlleles_typefix.tsv. 
 
+second, running CountAllele.py to each sample to get the allele-type results
 
+$ for ($result in $results); do python CountAllele.py -i $result -t PangenomeAlleles_typefix.tsv -o "$result"_alleletype.out ; done
 
+or if you want to run in parallel
 
-## Demo
+$ python CountAllele.py -f $results_folder/ -t  PangenomeAlleles_typefix.tsv  -n $numthreads
 
+Third, summarize results to a mega file and adding annotation
 
+$ python summaryalleles.py -f $results_folder/ -t  PangenomeAlleles_typefix.tsv  -o cohort_results.tsv
 
 
 
