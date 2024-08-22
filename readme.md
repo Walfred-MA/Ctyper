@@ -98,7 +98,7 @@ The database with annotation information used in visualization.
 <!-- Prerequisites -->
 ## Prerequisites
 
-Ctyper only officially support Linux environment.
+Ctyper is officially supported only in Linux environment.
 
 It requires:
 1. gcc-8
