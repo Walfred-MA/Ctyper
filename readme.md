@@ -105,6 +105,16 @@ It requires:
 2. eigen (https://gitlab.com/libeigen/eigen)
 3. htslib (https://github.com/samtools/htslib), you can also install the whole samtools instead (https://github.com/samtools/).
 
+
+For additional python tools:
+They require:
+
+1. Python 3.7+
+2. numpy
+3. pandas (https://pandas.pydata.org/)
+4. matplotlib (https://matplotlib.org/stable/install/index.html)
+
+
 <!-- Inputs-->
 ## Inputs
 
@@ -183,7 +193,7 @@ Inputs:
   
   -I the path of a mega input file, where each line corresponds to each path of single files
 
-Used Data:
+Database:
 
   -m the database file use for genotyping
   
@@ -208,8 +218,22 @@ multhreads:
 
 ## Addtional tools
 
+Running visualization:
+
+for 
+
+python typemutant.py -i $annotation_table -g genecode.gff3 -o output.png
+
+
+
 
 ## Demo
+
+
+
+
+
+
 
 <!-- LICENSE -->
 ## License
