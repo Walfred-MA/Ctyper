@@ -66,11 +66,33 @@ Ctyper is highly efficient, accurate and visualizable, thus allows high resoluti
 
 This repository contains:
 1. ctyper itself (src)
-2. a python tool to visualize the ctyper's results (tools/Plot)
-3. a python tool to help summary cohort study results (tools/Cohort)
+
+A c++ program use to perform genotyping on NGS data
+
+2. a tool to visualize the ctyper's results (tools/Plot)
+
+A python tool use to visualize genotyping results using multiple sequence alignments
+
+3. a tool to help summary cohort study results (tools/Cohort)
+
+A python tool use to summary results from all samples and include annotation information.
+
 4. a pangenome allele database ctyper relies on (link in data)
-5. the annotations of pangenome allele database to help interpretation and analysis of genotyping results (link in data)
-6. simple test cases (tests)
+
+The database used by ctyper for genotyping.
+
+5. the annotation of pangenome allele-type to help population analysis (link in data)
+
+The database with annotation information used mostly by cohort study tool.
+
+6. A more detailed annotation of all individual pangenome alleles to help individual sample study (link in data)
+
+The database with annotation information used in visualization.
+
+7. simple test cases (tests)
+
+
+
 
 
 
@@ -141,9 +163,7 @@ or
 ctyper -i $Inputfile -m $Database -o $Outputfile -d $sequencing_coverage -c 1
 
 
-
-
-3. genotyping a cohort of files.
+2. genotyping a cohort of files.
 
 ctyper -I $AllInputs -m $Database -o $AllOutputs -b background.list -c $threads
 or 
@@ -154,7 +174,14 @@ AllOutputs is a text where each line is the output file of the correponding inpu
 All_sequencing_coverages is a text where each line is the sequencing coverage information for the correponding input file (the input file with the same row number).
 
 
+## Parameters
 
+
+
+## Addtional tools
+
+
+## Demo
 
 <!-- LICENSE -->
 ## License
