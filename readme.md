@@ -261,7 +261,7 @@ Last, visualization:
 $ python typemutant.py -i AMY_group1_annotationfix.tsv -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,"  -o output.png
 
 (optional)
-if you also want to visualize the genecode annotation, you can do following steps:
+if you also want to visualize the genecode annotation on MSA, you can do following steps:
 
 first obtain genecode annotation:
 $ cat genecode.gff3| grep "gene_name=AMY" > AMY.gff3
