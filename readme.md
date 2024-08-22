@@ -106,8 +106,7 @@ It requires:
 3. htslib (https://github.com/samtools/htslib), you can also install the whole samtools instead (https://github.com/samtools/).
 
 
-For additional python tools:
-They require:
+For additional python tools, they require:
 
 1. Python 3.7+
 2. numpy
