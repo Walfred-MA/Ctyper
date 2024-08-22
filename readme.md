@@ -40,6 +40,8 @@
     <a href="https://github.com/Walfred-MA/Ctyper/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
     <a href="https://github.com/Walfred-MA/Ctyper/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+     ·
+    <a href="https://github.com/Walfred-MA/Ctyper/issues/new?labels=enhancement&template=ask-for-help---.md">Ask For Help</a>
   </p>
 </div>
 
