@@ -220,10 +220,46 @@ multhreads:
 
 Running visualization:
 
-for 
+This visualization is gene by gene and not genome-wide. 
 
-python typemutant.py -i $annotation_table -g genecode.gff3 -o output.png
+If you interested in visualizing gene AMY1A:
 
+First, Look for AMY1A to find out which gene group it in.
+
+$ cat data/select_files.txt | grep -w "AMY1A" | cut -f2,3
+newGeneCopies/AMY/AMY_partitions/AMY_group1_AMY1BOOOAMY1COOOAMY1A.fa	AMY1B,AMY1C,RNPC3,AMY1A,AMYP1,ACTG1P4,RP5-1108M17.5,AMY2B,AMY2A,
+
+
+this shows it is in AMY_group1, together with other amylase genes. 
+
+
+Second, distract the annotation of AMY_group1 from the full annotation table.
+
+$ cat PangenomeAlleles_annotationfix.tsv  | grep "^AMY_group1_" > AMY_group1_annotationfix.tsv
+
+
+Third, distract the AMY_group1 genotyping results:
+
+$ cat PangenomeAlleles_annotationfix.tsv  |  grep "^result: AMY_group1_" 
+result: AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,AMY_group1_GW00042_h2_724,AMY_group1_HG03516_h1_1721,AMY_group1_GW00051_h1_888,AMY_group1_HG002_h2_1034,AMY_group1_NA19240_h2_1831,AMY_group1_GW00005_h2_107,AMY_group1_GW00017_h1_315,AMY_group1_HG002_h1_1023,AMY_group1_GW00034_h1_586,
+
+
+this shows genotyping result is: AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,AMY_group1_GW00042_h2_724,AMY_group1_HG03516_h1_1721,AMY_group1_GW00051_h1_888,AMY_group1_HG002_h2_1034,AMY_group1_NA19240_h2_1831,AMY_group1_GW00005_h2_107,AMY_group1_GW00017_h1_315,AMY_group1_HG002_h1_1023,AMY_group1_GW00034_h1_586,
+
+
+Last, visualization:
+
+$ python typemutant.py -i AMY_group1_annotationfix.tsv -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,AMY_group1_GW00042_h2_724,AMY_group1_HG03516_h1_1721,AMY_group1_GW00051_h1_888,AMY_group1_HG002_h2_1034,AMY_group1_NA19240_h2_1831,AMY_group1_GW00005_h2_107,AMY_group1_GW00017_h1_315,AMY_group1_HG002_h1_1023,AMY_group1_GW00034_h1_586,"  -o output.png
+
+(optional)
+if you also want to visualize the genecode annotation, you can do following steps:
+
+first obtain genecode annotation:
+$ cat genecode.gff3| grep "gene_name=AMY" > AMY.gff3
+
+
+Then use it as the input, run:
+$ python typemutant.py -i AMY_group1_annotationfix.tsv -g AMY.gff3 -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,AMY_group1_GW00042_h2_724,AMY_group1_HG03516_h1_1721,AMY_group1_GW00051_h1_888,AMY_group1_HG002_h2_1034,AMY_group1_NA19240_h2_1831,AMY_group1_GW00005_h2_107,AMY_group1_GW00017_h1_315,AMY_group1_HG002_h1_1023,AMY_group1_GW00034_h1_586,"  -o output.png
 
 
 
