@@ -220,9 +220,7 @@ Bias correction:
   -c bool, if performs bias correction for illumina data
 
 
-## Addtional tools
-
-Running visualization:
+## Visualization
 
 This visualization is gene by gene and not genome-wide. 
 
@@ -264,6 +262,12 @@ $ cat genecode.gff3| grep "gene_name=AMY" > AMY.gff3
 
 Then use it as the input, run:
 $ python typemutant.py -i AMY_group1_annotationfix.tsv -g AMY.gff3 -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,"  -o output.png
+
+
+## Cohort analysis
+
+
+
 
 
 
