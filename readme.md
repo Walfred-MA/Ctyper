@@ -164,7 +164,7 @@ Ctyper needs:
 
 
 
-Ctyper takes two kinds of input formats:
+Ctyper takes two kinds of inputs:
 
 1. genotyping single file.
 
