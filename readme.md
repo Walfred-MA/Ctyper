@@ -94,13 +94,17 @@ cd src/
 
 make 
 
-4. Download the pangenome allele database file
+4. Move the ctyper to install folder
+
+mv ctyper $folder_install
+
+6. Download the pangenome allele database file
    
-6. Download the pangenome allele-type annotation file
+7. Download the pangenome allele-type annotation file
    
 8. (optional) Download the full pangenome alleles annotation file
    
-10. ready to go
+9. ready to go
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
