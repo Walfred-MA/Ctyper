@@ -26,7 +26,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Walfred-MA/Ctyper">
-    <img src="https://github.com/Walfred-MA/Ctyper/tree/main/images" alt="" width="80" height="80">
+    <img src="images/logo.png" alt="" width="80" height="80">
   </a>
 
   <h3 align="center">ctyper</h3>
