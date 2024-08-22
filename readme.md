@@ -131,15 +131,15 @@ Ctyper takes five types of files as input:
 1. Install all Prerequisites.
 2. go to src/ directory.
 
-cd src/
+$ cd src/
 
 3. Compile ctyper. 
 
-make 
+$ make 
 
 4. Move the ctyper to install folder
 
-mv ctyper $folder_install
+$ mv ctyper $folder_install
 
 6. Download the pangenome allele database file (we call it $Database) and its index file. 
    
