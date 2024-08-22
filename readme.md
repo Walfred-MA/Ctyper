@@ -190,6 +190,8 @@ All_sequencing_coverages is a text where each line is the sequencing coverage in
 
 ## Parameters
 
+Currently support parameters:
+
 Inputs:
 
   -i string, the path of individual input file
