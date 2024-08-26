@@ -211,7 +211,7 @@ inline int getoverlap(vector<tuple<int,int,int,int>> &overlaps, int start,int en
             int overlap_pe = arr[2];
             
             int overlap_qs = coordis[2] + overlap_ps - coordis[0];
-            int overlap_qe = coordis[3] - overlap_pe + coordis[1];
+            int overlap_qe = coordis[3] + overlap_pe - coordis[1];
             
             overlaps.push_back(make_tuple(overlap_ps, overlap_pe, overlap_qs, overlap_qe));
             
