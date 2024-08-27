@@ -48,5 +48,8 @@ extern bool optioncorr;
 #define sufficient 1000
 #define corrstartpoint 0.3
 
+#define windowmerge 15
+#define minwindowcutoff 3
+#define windowunit 30
 
 #endif /* config_hpp */

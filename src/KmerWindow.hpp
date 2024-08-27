@@ -13,6 +13,8 @@
 #include <string>
 #include <iostream>
 #include <tuple>
+#include <unordered_map>
+#include <unordered_set>
 #include <mutex>
 #include <memory>
 #include <numeric>
@@ -46,6 +48,8 @@ public:
     }
     
     void WindowCovers(const uint16* kmervec, const uint16* kmermatrix, const FLOAT_T depth, const uint16 gnum, const uint knum, const int genenum, const int* results, ull &total_obs, ull &total_exp);
+    
+    void PartialCopy(vector<vector<tuple<int, int, float, string>>>& results, const FLOAT_T* results_genotype, const vector<string>& genenames, const vector<string>& pathnames, const float depth);
     
     vector<vector<tuple<int,int,int>>> windowcovers;
     

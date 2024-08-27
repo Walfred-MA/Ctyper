@@ -28,6 +28,26 @@ bool KtableReader::nextLine(std::string &StrLine)
     return (bool)(fgets((char*)StrLine.c_str(), MAX_LINE, file));
 }
 
+bool KtableReader::nextLine_start(std::string &StrLine, const char startchar)
+{
+    bool ifget = 0;
+    auto position = ftell(file);
+    
+    if (fgets((char*)StrLine.c_str(), MAX_LINE, file) !=NULL )
+    {
+        if (StrLine[0] == startchar)
+        {
+            ifget = 1;
+        }
+        else
+        {
+            fseek(file, position, SEEK_SET);
+        }
+    }
+    
+    return ifget;
+}
+
 bool KtableReader::nextLine_genename(std::string &StrLine)
 {
     bool ifget = 0;

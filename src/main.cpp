@@ -178,7 +178,7 @@ int main(int argc, const char * argv[])
             window = (int)atoi(argv[i]);
         }
         
-        else if (strcmp(Argument, "-c")==0 or strcmp(Argument, "--window")==0)
+        else if (strcmp(Argument, "-c")==0 or strcmp(Argument, "--corr")==0)
         {
             optioncorr = (int)atoi(argv[i]);
         }

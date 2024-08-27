@@ -1,0 +1,29 @@
+[DEBUG Mar  8 10:34:23.974055283, defaults.go:273] Args: [/home1/wangfeim/.local/ActiveState/StateTool/release/bin/state-svc start]
+[DEBUG Mar  8 10:34:23.987145744, locale.go:38] Init
+[DEBUG Mar  8 10:34:24.026817348, errs.go:68] Created error: File could not be found
+[DEBUG Mar  8 10:34:24.029869406, errs.go:68] Created error: Not Recognized
+[DEBUG Mar  8 10:34:24.049011606, errs.go:68] Created error: Secret not found
+[DEBUG Mar  8 10:34:24.049052526, errs.go:68] Created error: Could not save keypair
+[DEBUG Mar  8 10:34:24.049213312, errs.go:68] Created error: Build responded with error
+[DEBUG Mar  8 10:34:24.049244966, errs.go:68] Created error: Unknown build type
+[DEBUG Mar  8 10:34:24.049358242, errors.go:86] Wrapped localized error: <nil> -- with: The installed version of the State Tool Service does not match that of the client.
+Please stop the service with [ACTIONABLE]state-svc stop[/RESET] and try your command again.
+If this issue persists please reinstall the State Tool.
+
+[DEBUG Mar  8 10:34:24.049369561, errs.go:68] Created error: no data
+[DEBUG Mar  8 10:34:24.049392261, errs.go:68] Created error: member not found
+[DEBUG Mar  8 10:34:24.049418492, errs.go:68] Created error: Commit count is unknowable
+[DEBUG Mar  8 10:34:24.049438958, errs.go:68] Created error: No merge required
+[DEBUG Mar  8 10:34:24.049458450, errs.go:68] Created error: Can't merge commit thats already in target commits history
+[DEBUG Mar  8 10:34:24.049479374, errs.go:68] Created error: Bad expander name
+[DEBUG Mar  8 10:34:24.049504424, errs.go:68] Created error: Expander has no handler
+[DEBUG Mar  8 10:34:24.051668273, errs.go:68] Created error: Service is already running
+[DEBUG Mar  8 10:34:24.077533625, secrets.go:35] Gcloud Secretmanager failed to initialize (ignore if you're not trying to use gcloud): google: could not find default credentials. See https://developers.google.com/accounts/docs/application-default-credentials for more information.
+[DEBUG Mar  8 10:34:24.080724311, output.go:53] Requested outputer for 
+[DEBUG Mar  8 10:34:24.080744553, output.go:58] Using Plain outputer
+[DEBUG Mar  8 10:34:24.080824182, termutils.go:17] Cannot get terminal size: inappropriate ioctl for device
+[DEBUG Mar  8 10:34:24.080949180, main.go:107] Running CmdStart
+[DEBUG Mar  8 10:34:24.080951039, client.go:128] Reporting event to 2 reporters: run-command, state-svc start, 
+[DEBUG Mar  8 10:34:24.081935935, exeutils.go:149] Executing: /home1/wangfeim/.local/ActiveState/StateTool/release/bin/state-svc [foreground]
+[DEBUG Mar  8 10:34:24.088429316, manager.go:68] Process started using pid 130573
+[DEBUG Mar  8 10:34:24.088519370, client.go:128] Reporting event to 2 reporters: command-exit, state-svc start, 0

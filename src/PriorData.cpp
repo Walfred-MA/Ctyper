@@ -218,6 +218,7 @@ void PriorData::LoadAlleles(PriorChunk &Chunk)
     
     const size_t& curr_genenum = Chunk.genenum;
     vector<string>& genenames = Chunk.genenames;
+    vector<string>& pathnames = Chunk.pathnames;
     
     if (curr_genenum > genenames.size() || 2 * curr_genenum  < genenames.size())
     {
@@ -227,21 +228,44 @@ void PriorData::LoadAlleles(PriorChunk &Chunk)
     string StrLine;
     StrLine.resize(MAX_LINE);
     
+    pathnames.clear();
+    pathnames.push_back("");
+    while (file.nextLine_start(StrLine, '+'))
+    {
+        string line = StrLine.substr(1, StrLine.find('\n') - 1);
+        size_t second_underscore = line.find('_', line.find('_') + 1);
+        if (second_underscore != std::string::npos) line = line.substr(second_underscore + 1);
+        
+        size_t first_tab = line.find('\t');
+        size_t second_tab = line.find('\t', first_tab + 1);
+
+        if (first_tab != std::string::npos && second_tab != std::string::npos)
+        {
+            for (size_t i = first_tab + 1; i < second_tab; ++i) 
+            {
+                if (line[i] == '-') line[i] = '_';
+            }
+            line[first_tab] = '_';
+        }
+
+        //pathnames.push_back(StrLine.substr(StrLine.find_last_of('\t') + 1, StrLine.find('\n') - StrLine.find_last_of('\t') - 1));
+        pathnames.push_back(line);
+    }
+    
     int index = 0;
     for (int i =0 ; i<  curr_genenum ; ++i)
     {
-        if (!file.nextLine_genename(StrLine))
+        if (!file.nextLine_start(StrLine, '>'))
         {
             std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
             std::_Exit(EXIT_FAILURE);
             return;
         }
-        
-        genenames[index++] =  StrLine.substr(1,StrLine.find('\t', 0)-1);
+        genenames[index++] =  StrLine.substr(1,MIN( StrLine.find('\n', 0)-1  , StrLine.find(';', 0) -1) );
     }
 
-    
 }
+
 
 void PriorData::LoadNorm(PriorChunk &Chunk)
 {

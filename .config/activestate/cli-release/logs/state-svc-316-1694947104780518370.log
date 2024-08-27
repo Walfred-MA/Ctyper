@@ -1,0 +1,32 @@
+[DEBUG Sep 17 03:40:21.021913728, errs.go:68] Created error: File could not be found
+[DEBUG Sep 17 03:40:21.026326626, errs.go:68] Created error: Not Recognized
+[DEBUG Sep 17 03:40:21.022068709, log.go:184] Rollbar error: empty token
+
+[DEBUG Sep 17 03:40:21.055118455, errs.go:68] Created error: Secret not found
+[DEBUG Sep 17 03:40:21.055217786, errs.go:68] Created error: Could not save keypair
+[DEBUG Sep 17 03:40:21.055598233, errs.go:68] Created error: Build responded with error
+[DEBUG Sep 17 03:40:21.055680810, errs.go:68] Created error: Unknown build type
+[DEBUG Sep 17 03:40:21.055852344, errors.go:86] Wrapped localized error: <nil> -- with: The installed version of the State Tool Service does not match that of the client.
+Please stop the service with [ACTIONABLE]state-svc stop[/RESET] and try your command again.
+If this issue persists please reinstall the State Tool.
+
+[DEBUG Sep 17 03:40:21.055877329, errs.go:68] Created error: no data
+[DEBUG Sep 17 03:40:21.055912403, errs.go:68] Created error: member not found
+[DEBUG Sep 17 03:40:21.055931701, errs.go:68] Created error: Commit count is unknowable
+[DEBUG Sep 17 03:40:21.056087272, errs.go:68] Created error: No merge required
+[DEBUG Sep 17 03:40:21.056149495, errs.go:68] Created error: Can't merge commit thats already in target commits history
+[DEBUG Sep 17 03:40:21.056180263, errs.go:68] Created error: Bad expander name
+[DEBUG Sep 17 03:40:21.056227076, errs.go:68] Created error: Expander has no handler
+[DEBUG Sep 17 03:40:21.058205626, errs.go:68] Created error: Service is already running
+[DEBUG Sep 17 03:40:21.126492068, secrets.go:35] Gcloud Secretmanager failed to initialize (ignore if you're not trying to use gcloud): google: could not find default credentials. See https://developers.google.com/accounts/docs/application-default-credentials for more information.
+[DEBUG Sep 17 03:40:21.136473439, output.go:53] Requested outputer for 
+[DEBUG Sep 17 03:40:21.136492295, output.go:58] Using Plain outputer
+[DEBUG Sep 17 03:40:21.136680267, termutils.go:17] Cannot get terminal size: inappropriate ioctl for device
+[DEBUG Sep 17 03:40:21.136869163, main.go:137] Running CmdForeground
+[DEBUG Sep 17 03:40:21.136887731, main.go:147] Running in Foreground
+[DEBUG Sep 17 03:40:21.136942114, client.go:128] Reporting event to 2 reporters: run-command, state-svc foreground, 
+[DEBUG Sep 17 03:40:21.137221749, service.go:30] service:Start
+[DEBUG Sep 17 03:41:21.153775435, watcher.go:72] Checking for runtime processes
+[DEBUG Sep 17 03:41:25.569153066, errs.go:75] Wrapped error: disk I/O error (266) -- with: Could not store setting
+[DEBUG Sep 17 03:41:25.569360835, errs.go:75] Wrapped error: Could not store setting -- with: Could not save config
+[DEBUG Sep 17 03:41:25.569414691, errs.go:75] Wrapped error: Could not save config -- with: Could not start service

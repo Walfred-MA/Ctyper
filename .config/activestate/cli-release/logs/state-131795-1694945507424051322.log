@@ -1,0 +1,2 @@
+[DEBUG Sep 17 03:11:47.424264332, defaults.go:273] Args: [/home1/wangfeim/.local/ActiveState/StateTool/release/bin/state exec --path /home1/wangfeim/packages/perl/Perl-5.34.0-Windows -- perl -pe s/\+\n/\>\n+/g]
+[DEBUG Sep 17 03:11:47.446406723, locale.go:38] Init

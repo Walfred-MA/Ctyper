@@ -1,0 +1,48 @@
+[DEBUG Aug  2 07:38:51.943005789, defaults.go:273] Args: [/home1/wangfeim/.local/ActiveState/StateTool/release/bin/state exec --path /home1/wangfeim/packages/perl/Perl-5.34.0-Windows -- perl -pe s/(group\d+)(?!_)/\1_/g -i Groups/CCDC77_group1_CCDC77OOOKDM5A.fasta_annotate.fa_tree.ph]
+[DEBUG Aug  2 07:38:51.956551020, locale.go:38] Init
+[DEBUG Aug  2 07:38:51.999241070, errs.go:68] Created error: File could not be found
+[DEBUG Aug  2 07:38:52.002272412, errs.go:68] Created error: Not Recognized
+[DEBUG Aug  2 07:38:52.016363337, errors.go:86] Wrapped localized error: <nil> -- with: The installed version of the State Tool Service does not match that of the client.
+Please stop the service with [ACTIONABLE]state-svc stop[/RESET] and try your command again.
+If this issue persists please reinstall the State Tool.
+
+[DEBUG Aug  2 07:38:52.016517092, errs.go:68] Created error: Build responded with error
+[DEBUG Aug  2 07:38:52.016552982, errs.go:68] Created error: Unknown build type
+[DEBUG Aug  2 07:38:52.016642653, errs.go:68] Created error: no data
+[DEBUG Aug  2 07:38:52.016666647, errs.go:68] Created error: member not found
+[DEBUG Aug  2 07:38:52.016688774, errs.go:68] Created error: Commit count is unknowable
+[DEBUG Aug  2 07:38:52.016710829, errs.go:68] Created error: No merge required
+[DEBUG Aug  2 07:38:52.016731519, errs.go:68] Created error: Can't merge commit thats already in target commits history
+[DEBUG Aug  2 07:38:52.024495838, errs.go:68] Created error: Secret not found
+[DEBUG Aug  2 07:38:52.024568411, errs.go:68] Created error: Could not save keypair
+[DEBUG Aug  2 07:38:52.024603239, errs.go:68] Created error: Bad expander name
+[DEBUG Aug  2 07:38:52.024632768, errs.go:68] Created error: Expander has no handler
+[DEBUG Aug  2 07:38:52.024841134, errs.go:68] Created error: camel runtime is currently being built
+[DEBUG Aug  2 07:38:52.024930231, errs.go:68] Created error: Runtime is not completely installed.
+[DEBUG Aug  2 07:38:52.088984571, output.go:53] Requested outputer for 
+[DEBUG Aug  2 07:38:52.089012079, output.go:58] Using Plain outputer
+[DEBUG Aug  2 07:38:52.092324567, main.go:143] ConfigPath: /home1/wangfeim/.config/activestate/cli-release
+[DEBUG Aug  2 07:38:52.092352607, main.go:144] CachePath: /home1/wangfeim/.cache/activestate
+[DEBUG Aug  2 07:38:52.092490197, exeutils.go:149] Executing: /home1/wangfeim/.local/ActiveState/StateTool/release/bin/state-svc [start]
+[DEBUG Aug  2 07:38:52.095043756, errors.go:86] Wrapped localized error: File could not be found -- with: could not find file=[NOTICE]activestate.yaml[/RESET] in path=[NOTICE]/scratch1/wangfeim/CTPor/Build/thirdrun[/RESET]
+[DEBUG Aug  2 07:38:52.099138056, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Aug  2 07:38:52.132186133, secrets.go:35] Gcloud Secretmanager failed to initialize (ignore if you're not trying to use gcloud): google: could not find default credentials. See https://developers.google.com/accounts/docs/application-default-credentials for more information.
+[DEBUG Aug  2 07:38:52.136223046, subshell.go:102] Detected SHELL: bash
+[DEBUG Aug  2 07:38:52.136249059, subshell.go:134] Using binary: /usr/bin/bash
+[DEBUG Aug  2 07:38:52.137076604, errors.go:86] Wrapped localized error: File could not be found -- with: could not find file=[NOTICE]activestate.yaml[/RESET] in path=[NOTICE]/scratch1/wangfeim/CTPor/Build/thirdrun[/RESET]
+[DEBUG Aug  2 07:38:52.140678442, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Aug  2 07:38:52.146985784, secrets.go:61] secrets-api scheme=https host=platform.activestate.com base_path=/api/secrets/v1
+[DEBUG Aug  2 07:38:52.149896137, errors.go:86] Wrapped localized error: File could not be found -- with: could not find file=[NOTICE]activestate.yaml[/RESET] in path=[NOTICE]/scratch1/wangfeim/CTPor/Build/thirdrun[/RESET]
+[DEBUG Aug  2 07:38:52.153773528, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Aug  2 07:38:52.160205093, secrets.go:61] secrets-api scheme=https host=platform.activestate.com base_path=/api/secrets/v1
+[DEBUG Aug  2 07:38:52.162921911, cmdcall.go:50] cmdcall
+[DEBUG Aug  2 07:38:52.162944524, svcmanager.go:57] Waiting for state-svc
+[DEBUG Aug  2 07:38:52.163058204, svcmanager.go:59] Attempt 1
+[DEBUG Aug  2 07:38:52.164169684, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Aug  2 07:38:52.174488060, target.go:141] In newStore: resolved project dir is: /home1/wangfeim/packages/perl/Perl-5.34.0-Windows
+[DEBUG Aug  2 07:38:52.185123821, runtime.go:126] Getting runtime env, inherit: true, useExec: false
+[DEBUG Aug  2 07:38:52.186222385, target.go:141] In newStore: resolved project dir is: /home1/wangfeim/packages/perl/Perl-5.34.0-Windows
+[DEBUG Aug  2 07:38:52.186529559, projectfile.go:512] Parsed URL: {Walfred-MA Perl-5.34.0-Windows 8667df40-a0c0-44c6-afc9-004781c977a2 main}
+[DEBUG Aug  2 07:38:52.193232597, exec.go:135] Trying to exec perl on PATH=/home1/wangfeim/.cache/activestate/a862ff9f/site/bin:/home1/wangfeim/.cache/activestate/a862ff9f/site/bin:/home1/wangfeim/.cache/activestate/a862ff9f/bin:/home1/wangfeim/.cache/activestate/a862ff9f/bin:/spack/compilers/gcc/13.2.0/bin:/spack/compilers/gcc/13.2.0/bin:/home1/wangfeim/.cache/activestate/bin:/home1/wangfeim/.local/ActiveState/StateTool/release:/home1/wangfeim/.local/ActiveState/StateTool/release:/spack/apps/gcc/8.3.0/bin:/spack/apps/gcc/8.3.0/bin:/home1/wangfeim/miniconda3/envs/cython/bin:/home1/wangfeim/miniconda3/envs/cython/bin:/home1/wangfeim/bin/bin:/home1/wangfeim/bin/bin:/home1/wangfeim/bin:/home1/wangfeim/bin:/spack/utilities:/spack/utilities:/home1/wangfeim/miniconda3/bin:/home1/wangfeim/miniconda3/bin:/home1/wangfeim/miniconda3/condabin:/home1/wangfeim/miniconda3/condabin:/usr/local/bin:/usr/local/bin:/usr/bin:/usr/bin:/usr/local/sbin:/usr/local/sbin:/usr/sbin:/usr/sbin:/home1/wangfeim/usr/local/bin/openssl/bin:/home1/wangfeim/usr/local/bin/openssl/bin:/home1/wangfeim/Tools/emboss/EMBOSS-6.6.0/emboss:/home1/wangfeim/Tools/emboss/EMBOSS-6.6.0/emboss:/home1/wangfeim/usr/local:/home1/wangfeim/usr/local:/home1/wangfeim/usr/local/share:/home1/wangfeim/usr/local/share:/home1/wangfeim/usr/local/include:/home1/wangfeim/usr/local/include:/home1/wangfeim/usr/local/bin:/home1/wangfeim/usr/local/bin:/home1/wangfeim/usr/local/bin/openssl:/home1/wangfeim/usr/local/bin/openssl:/home1/wangfeim/tools/HMMMER/hmmer-3.3.2/src:/home1/wangfeim/tools/HMMMER/hmmer-3.3.2/src:/home1/wangfeim/usr/local/include/ncurses:/home1/wangfeim/usr/local/include/ncurses:/home1/wangfeim/usr/local/lib:/home1/wangfeim/usr/local/lib:/home1/wangfeim/usr/local/lib64:/home1/wangfeim/usr/local/lib64:/home1/wangfeim/Tools/java/jdk-16.0.2/bin:/home1/wangfeim/Tools/java/jdk-16.0.2/bin:/home1/wangfeim/bin/gcc/bin:/home1/wangfeim/bin/gcc/bin:/home1/wangfeim:/home1/wangfeim:/home1/wangfeim/.pyenv/bin:/home1/wangfeim/.pyenv/bin:/home1/wangfeim/.local/bin:/home1/wangfeim/.local/bin
+[DEBUG Aug  2 07:38:52.214636839, sscommon.go:170] Running command: bash -c /tmp/state-exec438269608.sh "-pe" "s/(group\\d+)(?!_)/\\1_/g" "-i" "Groups/CCDC77_group1_CCDC77OOOKDM5A.fasta_annotate.fa_tree.ph"
+[DEBUG Aug  2 07:38:52.287715570, cmdcall.go:50] cmdcall

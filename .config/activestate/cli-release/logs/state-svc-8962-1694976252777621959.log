@@ -1,0 +1,9 @@
+[DEBUG Sep 17 11:44:26.778395653, log.go:184] goroutine 1 [running]:
+runtime/debug.Stack(0x4, 0x122609b, 0x8)
+	/opt/hostedtoolcache/go/1.16.13/x64/src/runtime/debug/stack.go:24 +0x9f
+github.com/ActiveState/cli/internal/logging.Critical(0x123e846, 0x19, 0xc000bd77c0, 0x1, 0x1)
+	/home/runner/work/cli/cli/internal/logging/logging.go:302 +0x95
+main.main()
+	/home/runner/work/cli/cli/cmd/state-svc/main.go:63 +0x348
+
+

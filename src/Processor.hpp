@@ -61,7 +61,7 @@ public:
     kmer_counts(new uint16[k+1]),
     Nsubthreads(N),
     
-    norm_vec(new FLOAT_T[MAX_UINT16]),
+    norm_vec(new FLOAT_T[DefaultSize]),
     norm_matrix(new FLOAT_T[DefaultSize*DefaultSize]),
     
     coefs(new FLOAT_T[MAX_UINT16]),
@@ -106,7 +106,6 @@ public:
         
         cout << "regressing to references for sample: " << inputfile<<endl;
         regresser.Call(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size, norm_vec.get(), norm_matrix.get(),  total_lambda, priorData->gene_kmercounts, coefs.get(), residuels.get(), priorData->numgroups, priorData->genegroups,priorData->groupkmernums);
-        
 
         cout << "rounding for sample: " << inputfile<<endl;
         
@@ -114,19 +113,29 @@ public:
 
         cout << "determine window residuels: " << inputfile<<endl;
 
-	KmerWindow kmerwindow(window);
-	kmerwindow.resize(priorData->pathsizes);
+    
+        KmerWindow kmerwindow(window);
+        kmerwindow.resize(priorData->pathsizes);
         kmerwindow.WindowCovers(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size, priorData->genenum, &results.get()[0], total_obs, total_exp);
-                
-        write(priorData, outputfile, inputfile, priorData->prefix, priorData->genenames, kmerwindow.windowcovers, depth, Threads_lock);
+        
+        vector<vector<tuple<int, int, float, string>>> PatialCopies(priorData->pathnames.size()+1);
+        kmerwindow.PartialCopy(PatialCopies, &reminders.get()[0], priorData->genenames, priorData->pathnames, depth);
+        
+        write(priorData, outputfile, inputfile, priorData->prefix, priorData->genenames, PatialCopies, kmerwindow.windowcovers, depth, Threads_lock);
 
-	cout<<"finish run"<<endl;
+        cout<<"finish run"<<endl;
     };
     
-    void write(const PriorChunk* priorData, const std::string& outputfile, const string &sample, const string &prefix, const vector<string>&genenames, const vector<vector<tuple<int,int,int>>>& windowcovers, const float depth, std::mutex& Threads_lock)
+    void write(const PriorChunk* priorData, const std::string& outputfile, const string &sample, const string &prefix, const vector<string>&genenames_ori, const vector<vector<tuple<int, int, float, string>>>& PatialCopies, const vector<vector<tuple<int,int,int>>>& windowcovers, const float depth, std::mutex& Threads_lock)
     {
-        std::unique_lock<std::mutex> lck(Threads_lock);
         
+        auto genenames(genenames_ori);
+        for (auto &genename: genenames)
+        {
+            genename = genename.substr(0,genename.find('\t', 0));
+        }
+        
+        std::unique_lock<std::mutex> lck(Threads_lock);
         
         FILE *fwrite;
         
@@ -205,8 +214,42 @@ public:
         fprintf(fwrite,"\n");
         
         
+        for (int path = 1; path < PatialCopies.size(); ++path)
+        {
+            auto& patials = PatialCopies[path];
+            
+            std::string pathname = "";
+            if (priorData->pathnames.size() > path)
+            {
+                pathname = priorData->pathnames[path];
+            }
+            else
+            {
+                pathname = string("Path") + to_string(path);
+            }
+            
+            for (auto &patial : patials)
+            {
+                
+                if (get<1>(patial) - get<0>(patial) > 100) fprintf(fwrite,"Partial\t%s\t%s\t%d\t%d\t%d\n", get<3>(patial).c_str(), pathname.c_str(), 30*(get<0>(patial)-1), 30*(get<1>(patial)-1),  (int) get<2>(patial));
+            }
+        }
+        
+        
+        
+        
         for (int path = 1; path < windowcovers.size(); ++path )
         {
+            std::string pathname = "";
+            if (priorData->pathnames.size() >= path)
+            {
+                pathname = string("Path") + to_string(path) + string("\t") + priorData->pathnames[path];
+            }
+            else
+            {
+                pathname = string("Path") + to_string(path);
+            }
+            
             auto &windowcover = windowcovers[path];
             
             ull totalwindow = 0;
@@ -216,7 +259,7 @@ public:
             }
             if (totalwindow < 100) continue;
             
-            fprintf(fwrite,"windows size %u at path %d: ", window,path);
+            fprintf(fwrite,"Coverage %s: ", pathname.c_str());
             
             int lastcpnum = -1;
             for (auto &thepair: windowcover)
@@ -268,15 +311,15 @@ public:
 	
 	if (MAX(newalloc_size, alloc_size) > DefaultSize)
         {
-            //norm_vec.reset(new FLOAT_T[newalloc_size]);
-            assert(newalloc_size < MAX_UINT16);
+            norm_vec.reset(new FLOAT_T[newalloc_size]);
+            
             try_allocate_unique(norm_matrix, newalloc_size*newalloc_size, newalloc_size*newalloc_size);
             
-            //coefs.reset(new FLOAT_T[newalloc_size]);
+            coefs.reset(new FLOAT_T[newalloc_size]);
             
-            //residuels.reset(new FLOAT_T[newalloc_size]);
+            residuels.reset(new FLOAT_T[newalloc_size]);
             
-            //results.reset(new int[newalloc_size]);
+            results.reset(new int[newalloc_size]);
             
             alloc_size = newalloc_size;
         }
@@ -327,7 +370,7 @@ public:
     
     void run(const std::string& inputfile, const std::string& outputfile, float depth,std::mutex& Threads_lock)
     {
-	cerr<<"running for sample: "<<inputfile << endl;
+        cerr<<"running for sample: "<<inputfile << endl;
 
         newsample();
         
@@ -366,7 +409,7 @@ public:
             
             PriorChunk* priorData = priordata_manager.getNextChunk(finished_group);
             
-	    cout << "running gene " << priorData->prefix << " for sample " << inputfile << endl ;
+            cout << "running gene " << priorData->prefix << " for sample " << inputfile << endl ;
 
             gnum = priorData->genenum;
             
@@ -441,7 +484,7 @@ public:
     genes(g),
     matrixfile(mfile),
     backgroundfile(bfile),
-    priordata_manager(mfile, n),
+    priordata_manager(mfile, 2*n),
     regions(r),
     window(w),
     nthreads(n),
@@ -571,3 +614,4 @@ void Processor<ksize>::Onethread()
 
 
 #endif /* Processor_hpp */
+

@@ -1,0 +1,2 @@
+[DEBUG Mar  7 20:24:09.486894900, client.go:128] Reporting event to 2 reporters: installer, input-error, User interrupted the State Tool process.: caught a signal: interrupt
+[DEBUG Mar  7 20:24:09.488367932, client.go:128] Reporting event to 2 reporters: installer-funnel, fail, User interrupted the State Tool process.
