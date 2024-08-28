@@ -231,7 +231,7 @@ public:
             for (auto &patial : patials)
             {
                 
-                if (get<1>(patial) - get<0>(patial) > 100) fprintf(fwrite,"Partial\t%s\t%s\t%d\t%d\t%d\n", get<3>(patial).c_str(), pathname.c_str(), 30*(get<0>(patial)-1), 30*(get<1>(patial)-1),  (int) get<2>(patial));
+                if (get<1>(patial) - get<0>(patial) > 100) fprintf(fwrite,"Partial:\t%s\t%s\t%d\t%d\t%d\n", get<3>(patial).c_str(), pathname.c_str(), 30*(get<0>(patial)-1), 30*(get<1>(patial)-1),  (int) get<2>(patial));
             }
         }
         
