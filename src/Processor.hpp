@@ -166,7 +166,8 @@ public:
             if (coefs.get()[i] > cutoff) fprintf(fwrite,"%s:%.2lf,", genenames[i].c_str(),coefs.get()[i]);
         }
         fprintf(fwrite,"\n");
-        
+
+	/*
         fprintf(fwrite,"reproject: ");
         for (int i = 0; i < gnum; ++i)
         {
@@ -178,7 +179,8 @@ public:
             if ( total > 0.01) fprintf(fwrite,"%s:%.2lf%s,", genenames[i].c_str(),total, info.c_str());
         }
         fprintf(fwrite,"\n");
-        
+	*/
+	
         fprintf(fwrite,"round: ");
         for (int i = 0; i < gnum; ++i)
         {
