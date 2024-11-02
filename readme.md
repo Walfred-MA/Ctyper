@@ -93,20 +93,29 @@ Simple test cases for validating the tools and pipeline.
 <!-- Prerequisites -->
 ## Prerequisites  
   
-Ctyper is officially supported only in Linux environment.  
-  
-It requires:  
-1. gcc-8  
-2. eigen (https://gitlab.com/libeigen/eigen)  
-3. htslib (https://github.com/samtools/htslib), you can also install the whole samtools instead (https://github.com/samtools/).  
-  
-  
-For additional python tools, they require:  
-  
-1. Python 3.7+  
-2. numpy  
-3. pandas (https://pandas.pydata.org/)  
-4. matplotlib (https://matplotlib.org/stable/install/index.html)  
+Ctyper is officially supported only in a **Linux** environment.
+
+### Required Software
+
+1. **GCC 8**
+2. **Eigen Library**  
+   [https://gitlab.com/libeigen/eigen](https://gitlab.com/libeigen/eigen)
+3. **HTSlib**  
+   [https://github.com/samtools/htslib](https://github.com/samtools/htslib)  
+   Alternatively, you can install the entire Samtools package:  
+   [https://github.com/samtools/samtools](https://github.com/samtools/samtools)
+
+### Python Tools (Optional)
+
+For additional Python tools, you need:
+
+1. **Python 3.7+**
+2. **NumPy**
+3. **Pandas**  
+   [https://pandas.pydata.org/](https://pandas.pydata.org/)
+4. **Matplotlib**  
+   [https://matplotlib.org/stable/install/index.html](https://matplotlib.org/stable/install/index.html)
+
   
 
 <!-- Inputs-->
