@@ -1,4 +1,4 @@
-<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+![image](https://github.com/user-attachments/assets/3cfab1eb-6352-4b11-9b0b-ed2dfc765243)<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a id="readme-top"></a>
 <!--
 *** Thanks for checking out the Best-README-Template. If you have a suggestion
@@ -82,14 +82,22 @@ This repository includes the following components:
 4. **Pangenome Allele Database**  
    A database required by ctyper for genotyping. Files: `HprcCpcHgsvc_final42_matrix.v1.0.txt` and `HprcCpcHgsvc_final42_matrix.v1.0.txt.index` available at [https://zenodo.org/records/13381931](https://zenodo.org/records/13381931).
 
-5. **Population Analysis Annotation Database**  
+6. **Population Analysis Annotation Database**  
    A database containing annotation information to support population-level analysis. File: `PangenomeAlleles_typefix.v1.0.tsv` available at [https://zenodo.org/records/13381931](https://zenodo.org/records/13381931).
 
-6. **Individual Sample Annotation Database**  
+7. **Individual Sample Annotation Database**  
    A comprehensive database with detailed annotations for individual pangenome alleles, supporting individual sample studies and visualization. File: `PangenomeAlleles_annotationfix.v1.0.tsv` available at [https://zenodo.org/records/13381931](https://zenodo.org/records/13381931).
 
-7. **Test Cases (tests/)**  
+8. **Additional data files (Data/)**
+   Data/backgrounds.list: A list of k-mers selected to used as backgrounds to determine NGS coverage if not predetermined. 
+   Data/select_files.txt: The catalog for all included genes and matrices, which can be used to locate the gene of the interest.
+   Data/all_nomenclature.txt: The public nomenclatures for pangenome-alleles, currently only included HLAs, CYP2D6 and KIRs.
+    HLAs include: HLA-A,HLA-B,HLA-C,HLA-DMA,HLA-DMB,HLA-DOA,HLA-DOB,HLA-DPA1,HLA-DPA2,HLA-DPB1,HLA-DPB2,HLA-DQA1,HLA-DQA2,HLA-DQB1,HLA-DQB2,HLA-DRA,HLA-E,HLA-F,HLA-G,HLA-H,HLA-J,HLA-K,HLA-L,HLA-N,HLA-P,HLA-S,HLA-T,HLA-U,HLA-V,HLA-W,HLA-Y.  
+    KIRs include: KIR2DL1,KIR2DL2,KIR2DL3,KIR2DL4,KIR2DL5A,KIR2DL5B,KIR2DP1,KIR2DS1,KIR2DS2,KIR2DS3,KIR2DS4,KIR2DS5,KIR3DL1,KIR3DL2,KIR3DL3.
+  
+8. **Test Cases (tests/)**  
    Simple test cases for validating the tools and pipeline.
+
 
 ---
 
