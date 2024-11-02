@@ -91,7 +91,7 @@ This repository includes the following components:
 8. **Additional data files (Data/)**
    Data/backgrounds.list: A list of k-mers selected to used as backgrounds to determine NGS coverage if not predetermined. 
    Data/select_files.txt: The catalog for all included genes and matrices, which can be used to locate the gene of the interest.
-   Data/all_nomenclature.txt: The public nomenclatures for pangenome-alleles, currently only included HLAs, CYP2D6 and KIRs.
+   Data/all_nomenclature.txt: The public nomenclatures for pangenome-alleles, currently only included HLAs, CYP2D6 and KIRs.  
     HLAs include: HLA-A,HLA-B,HLA-C,HLA-DMA,HLA-DMB,HLA-DOA,HLA-DOB,HLA-DPA1,HLA-DPA2,HLA-DPB1,HLA-DPB2,HLA-DQA1,HLA-DQA2,HLA-DQB1,HLA-DQB2,HLA-DRA,HLA-E,HLA-F,HLA-G,HLA-H,HLA-J,HLA-K,HLA-L,HLA-N,HLA-P,HLA-S,HLA-T,HLA-U,HLA-V,HLA-W,HLA-Y.  
     KIRs include: KIR2DL1,KIR2DL2,KIR2DL3,KIR2DL4,KIR2DL5A,KIR2DL5B,KIR2DP1,KIR2DS1,KIR2DS2,KIR2DS3,KIR2DS4,KIR2DS5,KIR3DL1,KIR3DL2,KIR3DL3.
   
