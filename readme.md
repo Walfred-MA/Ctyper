@@ -247,6 +247,19 @@ Supported parameters:
 - **Bias Correction:**
   - `-c <bool>`: Perform bias correction for Illumina data.
 
+
+---
+
+## Results Summary 
+
+output the line starts with "results: "
+
+```bash
+cat $Outputfile | grep "^results: " >> genotype.txt
+```
+
+
+---
 ---
 
 # Visualization
