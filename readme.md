@@ -70,30 +70,34 @@ This repository includes the following components:
 
 1. **Ctyper (src/)**  
    A C++ program for performing genotyping on NGS data.
-
-2. **Visualization Tool (tools/Plot/)**  
+2. **Additional analyze Tool (tools/Annotation/)**  
+    Python tools for analyze genotyping results.
+    - `tools/Annotation/GenotypetoNomenclature.py`: Output the public nomenclatures from genotyping results. The nomenclatures annotation can be found at Data/all_nomenclature.txt.
+    - `tools/Annotation/GenotypetoVCF.py`: Converting the genotyping results to VCF format. This requires Individual Sample Annotation Database (eg. PangenomeAlleles_annotationfix.v1.0.tsv). Note: this not recommended to be used in association studies, because of the limitation of VCF file on representing pangenome, but maybe used for locating known important variants.
+      
+4. **Visualization Tool (tools/Plot/)**  
    A Python tool for visualizing genotyping results using multiple sequence alignments.
 
-3. **Cohort Analysis Tool (tools/Cohort/)**  
+5. **Cohort Analysis Tool (tools/Cohort/)**  
    A Python tool for summarizing results across all samples in a cohort study, including annotation information.
 
-4. **Pangenome Allele Database**  
+6. **Pangenome Allele Database**  
    A database required by ctyper for genotyping. Files: `HprcCpcHgsvc_final42_matrix.v1.0.txt` and `HprcCpcHgsvc_final42_matrix.v1.0.txt.index` available at [https://zenodo.org/records/13381931](https://zenodo.org/records/13381931).
 
-5. **Population Analysis Annotation Database**  
+7. **Population Analysis Annotation Database**  
    A database containing annotation information to support population-level analysis. File: `PangenomeAlleles_typefix.v1.0.tsv` available at [https://zenodo.org/records/13381931](https://zenodo.org/records/13381931).
 
-6. **Individual Sample Annotation Database**  
+8. **Individual Sample Annotation Database**  
    A comprehensive database with detailed annotations for individual pangenome alleles, supporting individual sample studies and visualization. File: `PangenomeAlleles_annotationfix.v1.0.tsv` available at [https://zenodo.org/records/13381931](https://zenodo.org/records/13381931).
 
-7. **Additional Data Files (Data/)**  
+9. **Additional Data Files (Data/)**  
    - `backgrounds.list`: A list of k-mers used as backgrounds to determine NGS coverage if not predetermined.
    - `select_files.txt`: The catalog for all included genes and matrices, which can be used to locate the gene of interest.
-   - `all_nomenclature.txt`: The public nomenclatures for pangenome-alleles, currently including HLAs, CYP2D6, and KIRs.  
+   - `all_nomenclature.txt`: The public nomenclatures used by GenotypetoNomenclature.py, currently including HLAs, CYP2D6, and KIRs.  
      - **HLAs include**: HLA-A, HLA-B, HLA-C, HLA-DMA, HLA-DMB, HLA-DOA, HLA-DOB, HLA-DPA1, HLA-DPA2, HLA-DPB1, HLA-DPB2, HLA-DQA1, HLA-DQA2, HLA-DQB1, HLA-DQB2, HLA-DRA, HLA-E, HLA-F, HLA-G, HLA-H, HLA-J, HLA-K, HLA-L, HLA-N, HLA-P, HLA-S, HLA-T, HLA-U, HLA-V, HLA-W, HLA-Y.
      - **KIRs include**: KIR2DL1, KIR2DL2, KIR2DL3, KIR2DL4, KIR2DL5A, KIR2DL5B, KIR2DP1, KIR2DS1, KIR2DS2, KIR2DS3, KIR2DS4, KIR2DS5, KIR3DL1, KIR3DL2, KIR3DL3.
 
-8. **Test Cases (tests/)**  
+10. **Test Cases (tests/)**  
    Simple test cases for validating the tools and pipeline.
 
 
