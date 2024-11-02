@@ -1,11 +1,10 @@
 //
-//  CramReader.hpp
-//  kmer_haplotyping
+//  Created by Walfred (Wangfei) MA at the University of Southern California,
+//  Mark Chaisson Lab on 2/13/23.
 //
-//  Created by Wangfei MA on 1/29/23.
-//  Copyright © 2023 USC_Mark. All rights reserved.
-//
-
+//  Licensed under the MIT License. 
+//  If you use this code, please cite our work.
+//   
 
 #ifndef CramReader_hpp
 #define CramReader_hpp
