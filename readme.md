@@ -26,7 +26,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Walfred-MA/Ctyper">
-    <img src="images/figure1.png" width="600" >
+    <img src="images/figure1.png" width="500" >
   </a>
 
   <h3 align="center">ctyper</h3>
@@ -37,14 +37,13 @@
     <a href="https://www.biorxiv.org/content/10.1101/2024.08.11.607269v1"><strong>Cite the paper»</strong></a>
     <br />
     <br />
-    <a href="issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/Walfred-MA/Ctyper/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
-    <a href="issues/new?labels=enhancement&template=give-feedback---.md">Give Feedback</a>
+    <a href="https://github.com/Walfred-MA/Ctyper/issues/new?labels=enhancement&template=give-feedback---.md">Give Feedback</a>
      ·
-    <a href="issues/new?labels=enhancement&template=ask-for-help---.md">Ask For Help</a>
+    <a href="https://github.com/Walfred-MA/Ctyper/issues/new?labels=enhancement&template=ask-for-help---.md">Ask For Help</a>
   </p>
 </div>
-
 
 
 <!-- ABOUT THE PROJECT -->
