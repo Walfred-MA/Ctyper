@@ -255,7 +255,7 @@ Supported parameters:
 output the line starts with "results: "
 
 ```bash
-cat $Outputfile | grep "^results: " >> genotype.txt
+cat $Outputfile | grep "^result: " >> genotype.txt
 ```
 
 
