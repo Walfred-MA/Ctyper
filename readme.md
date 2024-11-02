@@ -75,13 +75,13 @@ A Python tool for visualizing genotyping results using multiple sequence alignme
 Cohort Analysis Tool (tools/Cohort)  
 A Python tool for summarizing results across all samples in a cohort study, including annotation information.  
 
-Pangenome Allele Database (link in data)  
+Pangenome Allele Database (link in data/)  
 A database required by ctyper for genotyping.  
 
-Population Analysis Annotation Database (link in data)  
+Population Analysis Annotation Database (link in data/)  
 A database containing annotation information to support population-level analysis.  
 
-Individual Sample Annotation Database (link in data)  
+Individual Sample Annotation Database (link in data/)  
 A comprehensive database with detailed annotations for individual pangenome alleles, supporting individual sample studies and visualization.  
 
 Test Cases (tests)  
