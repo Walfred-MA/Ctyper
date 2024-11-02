@@ -1,10 +1,3 @@
-//
-//  config.hpp
-//  CTyper
-//
-//  Created by Wangfei MA on 3/13/23.
-//
-
 #ifndef config_hpp
 #define config_hpp
 
