@@ -63,36 +63,30 @@ Ctyper is highly efficient, accurate and visualizable, thus allows high resoluti
 
 
 
-
 <!-- GETTING STARTED -->
-## Getting Started
+Getting Started
+This repository includes the following components:
 
-This repository contains:
-1. ctyper itself (src)
+ctyper (src)
+A C++ program for performing genotyping on NGS data.
 
-A c++ program use to perform genotyping on NGS data
+Visualization Tool (tools/Plot)
+A Python tool for visualizing genotyping results using multiple sequence alignments.
 
-2. a tool to visualize the ctyper's results (tools/Plot)
+Cohort Analysis Tool (tools/Cohort)
+A Python tool for summarizing results across all samples in a cohort study, including annotation information.
 
-A python tool use to visualize genotyping results using multiple sequence alignments
+Pangenome Allele Database (link in data)
+A database used by ctyper for genotyping purposes.
 
-3. a tool to help summary cohort study results (tools/Cohort)
+Population Analysis Annotation Database (link in data)
+A database with annotation information to assist in population-level analyses.
 
-A python tool use to summary results from all samples and include annotation information.
+Individual Sample Annotation Database (link in data)
+A comprehensive database with detailed annotations for individual pangenome alleles, supporting individual sample studies and visualization.
 
-4. a pangenome allele database ctyper relies on (link in data)
-
-The database used by ctyper for genotyping.
-
-5. the annotation of pangenome allele-type to help population analysis (link in data)
-
-The database with annotation information used in cohort study.
-
-6. A more detailed annotation of all individual pangenome alleles to help individual sample study (link in data)
-
-The database with annotation information used in visualization.
-
-7. simple test cases (tests)
+Test Cases (tests)
+Simple test cases for validating the tools and pipeline.
 
 
 
