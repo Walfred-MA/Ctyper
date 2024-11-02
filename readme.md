@@ -84,7 +84,7 @@ A database containing annotation information to support population-level analysi
 Individual Sample Annotation Database  
 A comprehensive database with detailed annotations for individual pangenome alleles, supporting individual sample studies and visualization. PangenomeAlleles_annotationfix.v1.0.tsv at https://zenodo.org/records/13381931  
 
-Test Cases (tests)  
+Test Cases (tests/)  
 Simple test cases for validating the tools and pipeline.  
 
 
