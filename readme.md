@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/3cfab1eb-6352-4b11-9b0b-ed2dfc765243)<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+
 <a id="readme-top"></a>
 <!--
 *** Thanks for checking out the Best-README-Template. If you have a suggestion
