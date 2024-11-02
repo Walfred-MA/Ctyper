@@ -104,7 +104,7 @@ This repository includes the following components:
 <!-- Prerequisites -->
 # Prerequisites  
   
-Ctyper is officially supported only in a **Linux** environment.
+Ctyper is officially supported only in a **Linux** environment. Although it may run on UNIX-like system like MACOS as well, but we may not provide support for it.  
 
 ### Required Software
 
