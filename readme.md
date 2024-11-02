@@ -64,28 +64,34 @@ Ctyper is highly efficient, accurate and visualizable, thus allows high resoluti
 
 
 <!-- GETTING STARTED -->
+---
+
+# Repository Overview
+
 This repository includes the following components:
-	
-ctyper (src)  
-A C++ program for performing genotyping on NGS data.  
 
-Visualization Tool (tools/Plot)  
-A Python tool for visualizing genotyping results using multiple sequence alignments.  
+1. **Ctyper (src/)**  
+   A C++ program for performing genotyping on NGS data.
 
-Cohort Analysis Tool (tools/Cohort)  
-A Python tool for summarizing results across all samples in a cohort study, including annotation information.  
+2. **Visualization Tool (tools/Plot/)**  
+   A Python tool for visualizing genotyping results using multiple sequence alignments.
 
-Pangenome Allele Database  
-A database required by ctyper for genotyping. HprcCpcHgsvc_final42_matrix.v1.0.txt and HprcCpcHgsvc_final42_matrix.v1.0.txt.index at https://zenodo.org/records/13381931
+3. **Cohort Analysis Tool (tools/Cohort/)**  
+   A Python tool for summarizing results across all samples in a cohort study, including annotation information.
 
-Population Analysis Annotation Database 
-A database containing annotation information to support population-level analysis. PangenomeAlleles_typefix.v1.0.tsv at https://zenodo.org/records/13381931
+4. **Pangenome Allele Database**  
+   A database required by ctyper for genotyping. Files: `HprcCpcHgsvc_final42_matrix.v1.0.txt` and `HprcCpcHgsvc_final42_matrix.v1.0.txt.index` available at [https://zenodo.org/records/13381931](https://zenodo.org/records/13381931).
 
-Individual Sample Annotation Database  
-A comprehensive database with detailed annotations for individual pangenome alleles, supporting individual sample studies and visualization. PangenomeAlleles_annotationfix.v1.0.tsv at https://zenodo.org/records/13381931  
+5. **Population Analysis Annotation Database**  
+   A database containing annotation information to support population-level analysis. File: `PangenomeAlleles_typefix.v1.0.tsv` available at [https://zenodo.org/records/13381931](https://zenodo.org/records/13381931).
 
-Test Cases (tests/)  
-Simple test cases for validating the tools and pipeline.  
+6. **Individual Sample Annotation Database**  
+   A comprehensive database with detailed annotations for individual pangenome alleles, supporting individual sample studies and visualization. File: `PangenomeAlleles_annotationfix.v1.0.tsv` available at [https://zenodo.org/records/13381931](https://zenodo.org/records/13381931).
+
+7. **Test Cases (tests/)**  
+   Simple test cases for validating the tools and pipeline.
+
+---
 
 
 
