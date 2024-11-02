@@ -49,7 +49,7 @@
 
 
 <!-- ABOUT THE PROJECT -->
-## About ctyper
+# About ctyper
 
 Ctype is a command line tool to perform copy number sensitive versatile genotyping for NGS (Next-Generation Sequencing) data using pangenome database. It is designed to work on complex CNV (copy number variation) genes, but can also work as genotyping, local phasing or SV-calling tools for other genes. 
 
@@ -91,7 +91,7 @@ Simple test cases for validating the tools and pipeline.
 
 
 <!-- Prerequisites -->
-## Prerequisites  
+# Prerequisites  
   
 Ctyper is officially supported only in a **Linux** environment.
 
@@ -119,182 +119,223 @@ For additional Python tools, you need:
   
 
 <!-- Inputs-->
-## Inputs  
+# Inputs  
   
 Ctyper takes five types of files as input:  
   
-1. CRAM file (*.cram), needed to be indexed  (recommended due to less I/O intensive).  
-2. BAM file (*.bam), needed to be indexed.  
-3. SAM file (*.sam).  
-4. FASTQ file (*.fastq).  
-5. Fasta file (*.fa, *.fasta).  
+1. **CRAM files** (`*.cram`) — must be indexed (recommended due to lower I/O intensity).
+2. **BAM files** (`*.bam`) — must be indexed.
+3. **SAM files** (`*.sam`).
+4. **FASTQ files** (`*.fastq`).
+5. **FASTA files** (`*.fa`, `*.fasta`).
+
   
 <!-- Installation -->
-## Installation  
+# Installation  
   
-1. Install all Prerequisites.  
-2. go to src/ directory.  
-  
-$ cd src/
-  
-3. Compile ctyper. 
-  
-$ make 
-  
-4. Move the ctyper to install folder  
-  
-$ mv ctyper $folder_install  
-  
-6. Download the pangenome allele database file (we call it $Database) and its index file. 
-   
-7. (optional) Download the allele-type annotation file  
-   
-8. (optional) Download the full alleles annotation file  
-   
-9. ready to go  
+1. **Install all prerequisites.**
+2. **Navigate to the `src/` directory:**
+
+   ```bash
+   cd src/
+   ```
+
+3. **Compile ctyper:**
+
+   ```bash
+   make
+   ```
+
+4. **Move ctyper to your installation folder:**
+
+   ```bash
+   mv ctyper /path/to/your/install/folder
+   ```
+
+5. **Download the pangenome allele database file** (we'll refer to it as `$Database`) **and its index file.**
+6. **(Optional) Download the allele-type annotation file.**
+7. **(Optional) Download the full alleles annotation file.**
+8. **You're ready to go!**
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
 <!-- USAGE EXAMPLES -->
-## Usage  
-  
-Ctyper needs:  
-1. inputfile(s),  
-2. corresponding outputfile(s),  
-3. the pangenome allele database file, needed to be indexed,   
-4. either directly proving sequencing coverage information (when you do not have WGS data) or proving background kmers for ctyper to determine sequencing coverage (recommended).  
+# Usage
 
-  
+Ctyper requires:
 
-Ctyper takes two kinds of inputs:  
-  
-1. genotyping single file.  
-  
-ctyper -i $Inputfile -m $Database -o $Outputfile -b background.list -n 1  
-  
-or   
-  
-ctyper -i $Inputfile -m $Database -o $Outputfile -d $sequencing_coverage -n 1  
-  
-  
-2. genotyping a cohort of files.  
-  
-ctyper -I $AllInputs -m $Database -o $AllOutputs -b background.list -n $threads  
-  
-or   
-  
-ctyper -I $AllInputs -m $Database -o $AllOutputs -D $All_sequencing_coverages -n $threads  
-  
-AllInputs is a text where each line is the path of each input file.  
-AllOutputs is a text where each line is the output file of the correponding input file (the input file with the same row number).  
-All_sequencing_coverages is a text where each line is the sequencing coverage information for the correponding input file (the input file with the same row number).  
-  
-  
-## Parameters  
-  
-Currently support parameters:  
-  
-Help:  
-  -h print for help  
-  
-Inputs:  
-  
-  -i string, the path of individual input file  
-    
-  -I string, the path of a mega input file, where each line corresponds to each path of single files  
-  
-Database:  
-  
-  -m string, the database file use for genotyping  
-    
-  -b string, the path of the background kmer list  
-  
-Coverage information (does not co-exit with -b):  
-  
-  -d float, the sequencing coverage of the input file  
-    
-  -D string, the path of all sequencing coverages, where each line corresponds to each input file with the same row index.  
-    
-Outputs:  
-  
-  -o string, the path of individual output file  
-  
-  -O string, the path of a mega output file, where each line corresponds to the output path for each input file with the same row index.  
-  
-multhreads:  
-  
-  -n int, number of thread use, default is 1  
-  
-Bias correction:  
-   
-  -c bool, if performs bias correction for illumina data  
-  
-  
-## Visualization  
-  
-This visualization is gene by gene and not genome-wide.   
-  
-For example, if you interested in visualizing gene AMY1A:  
-  
-First, Look for AMY1A to find out which gene group it in.  
-  
-$ cat data/select_files.txt | grep -w "AMY1A" | cut -f2,3  
-  
-newGeneCopies/AMY/AMY_partitions/AMY_group1_AMY1BOOOAMY1COOOAMY1A.fa	AMY1B,AMY1C,RNPC3,AMY1A,AMYP1,ACTG1P4,RP5-1108M17.5,AMY2B,AMY2A,  
-  
-  
-this shows it is in AMY_group1, together with other amylase genes.   
-  
-  
-Second, download full alleles annotation, and distract the annotation of AMY_group1 from the full annotation table.  
-  
-$ cat PangenomeAlleles_annotationfix.tsv  | grep "^AMY_group1_" > AMY_group1_annotationfix.tsv  
-  
-  
-Third, distract the AMY_group1 genotyping results:  
-  
-$ cat genotype.txt  |  grep "^result: AMY_group1_"   
-  
-result: AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,  
-  
-  
-this shows genotyping result is: AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,   
-  
-  
-Last, visualization:  
-  
-$ python typemutant.py -i AMY_group1_annotationfix.tsv -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,"  -o output.png  
-  
-(optional)  
-if you also want to visualize the genecode annotation on MSA, you can do following steps:  
-  
-first obtain genecode annotation:  
-$ cat genecode.gff3| grep "gene_name=AMY" > AMY.gff3  
+1. **Input file(s)**
+2. **Corresponding output file(s)**
+3. **The pangenome allele database file** (must be indexed)
+4. **Sequencing coverage information**, either by:
+   - Providing background k-mers for ctyper to determine sequencing coverage (recommended)
+   - Directly providing sequencing coverage information (useful when you don't have WGS data)
+
+## Running Ctyper
+
+Ctyper can process:
+
+### 1. A Single File
+
+Using background k-mers:
+
+```bash
+ctyper -i $Inputfile -m $Database -o $Outputfile -b background.list -n 1
+```
+
+Or providing sequencing coverage:
+
+```bash
+ctyper -i $Inputfile -m $Database -o $Outputfile -d $sequencing_coverage -n 1
+```
+
+### 2. A Cohort of Files
+
+Using background k-mers:
+
+```bash
+ctyper -I $AllInputs -m $Database -o $AllOutputs -b background.list -n $threads
+```
+
+Or providing sequencing coverage:
+
+```bash
+ctyper -I $AllInputs -m $Database -o $AllOutputs -D $All_sequencing_coverages -n $threads
+```
+
+- **$AllInputs**: A text file where each line is the path to an input file.
+- **$AllOutputs**: A text file where each line is the output file corresponding to the input file (same line number).
+- **$All_sequencing_coverages**: A text file where each line is the sequencing coverage information for the corresponding input file (same line number).
+
+---
+
+## Parameters
+
+Supported parameters:
+
+- **Help:**
+  - `-h`: Print help information.
+
+- **Inputs:**
+  - `-i <string>`: Path to an individual input file.
+  - `-I <string>`: Path to a file listing multiple input files (one per line).
+
+- **Database:**
+  - `-m <string>`: Path to the database file used for genotyping.
+  - `-b <string>`: Path to the background k-mer list.
+
+- **Coverage Information** (cannot be used with `-b`):
+  - `-d <float>`: Sequencing coverage of the input file.
+  - `-D <string>`: Path to a file listing sequencing coverages (one per input file, corresponding by line number).
+
+- **Outputs:**
+  - `-o <string>`: Path to the individual output file.
+  - `-O <string>`: Path to a file listing multiple output files (one per input file, corresponding by line number).
+
+- **Multithreading:**
+  - `-n <int>`: Number of threads to use (default is 1).
+
+- **Bias Correction:**
+  - `-c <bool>`: Perform bias correction for Illumina data.
+
+---
+
+# Visualization
+
+Visualization is performed on a **gene-by-gene** basis (not genome-wide).
+
+For example, to visualize the gene **AMY1A**:
+
+1. **Identify the gene group for AMY1A:**
+
+   ```bash
+   cat data/select_files.txt | grep -w "AMY1A" | cut -f2,3
+   ```
+
+   Output:
+
+   ```
+   newGeneCopies/AMY/AMY_partitions/AMY_group1_AMY1BOOOAMY1COOOAMY1A.fa	AMY1B,AMY1C,RNPC3,AMY1A,AMYP1,ACTG1P4,RP5-1108M17.5,AMY2B,AMY2A,
+   ```
+
+   This shows that **AMY1A** is in **AMY_group1**, along with other amylase genes.
+
+2. **Extract the annotation for AMY_group1 from the full annotation table:**
+
+   ```bash
+   grep "^AMY_group1_" PangenomeAlleles_annotationfix.tsv > AMY_group1_annotationfix.tsv
+   ```
+
+3. **Extract the genotyping results for AMY_group1:**
+
+   ```bash
+   grep "^result: AMY_group1_" genotype.txt
+   ```
+
+   Output:
+
+   ```
+   result: AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,
+   ```
+
+   The genotyping result is: `AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891`.
+
+4. **Visualize the results:**
+
+   ```bash
+   python typemutant.py -i AMY_group1_annotationfix.tsv -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891," -o output.png
+   ```
+
+**Optional:** To visualize the GENCODE annotation on the MSA:
+
+1. **Obtain the GENCODE annotation:**
+
+   ```bash
+   grep "gene_name=AMY" genecode.gff3 > AMY.gff3
+   ```
+
+2. **Run the visualization with GENCODE annotation:**
+
+   ```bash
+   python typemutant.py -i AMY_group1_annotationfix.tsv -g AMY.gff3 -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891," -o output.png
+   ```
 
 
-Then use it as the input, run:
-$ python typemutant.py -i AMY_group1_annotationfix.tsv -g AMY.gff3 -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,"  -o output.png
+## Cohort Analysis
 
+There are two scripts in the `tools/Cohort` folder that work together for cohort analysis.
 
-## Cohort analysis
+1. **Download the allele-type annotation table:**
 
-There are two scripts in the tools/Cohorts folder, which work together for Cohort analysis. 
+   ```
+   PangenomeAlleles_typefix.tsv
+   ```
 
-first, download the allele-type annotation table: PangenomeAlleles_typefix.tsv. 
+2. **Run `CountAllele.py` on each sample to get allele-type results:**
 
-second, running CountAllele.py to each sample to get the allele-type results
+   ```bash
+   # For each result in $results
+   for result in $results; do
+       python CountAllele.py -i $result -t PangenomeAlleles_typefix.tsv -o "${result}_alleletype.out"
+   done
+   ```
 
-$ for ($result in $results); do python CountAllele.py -i $result -t PangenomeAlleles_typefix.tsv -o "$result"_alleletype.out ; done
+   **Or**, to run in parallel:
 
-or if you want to run in parallel
+   ```bash
+   python CountAllele.py -f $results_folder/ -t PangenomeAlleles_typefix.tsv -n $numthreads
+   ```
 
-$ python CountAllele.py -f $results_folder/ -t  PangenomeAlleles_typefix.tsv  -n $numthreads
+3. **Summarize results into a single file and add annotations:**
 
-Third, summarize results to a mega file and adding annotation
+   ```bash
+   python summaryalleles.py -f $results_folder/ -t PangenomeAlleles_typefix.tsv -o cohort_results.tsv
+   ```
 
-$ python summaryalleles.py -f $results_folder/ -t  PangenomeAlleles_typefix.tsv  -o cohort_results.tsv
+---
 
 
 
