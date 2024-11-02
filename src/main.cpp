@@ -17,6 +17,26 @@
 extern bool optioncorr;
 bool optioncorr = 0;
 
+
+void printHelp() 
+{
+    std::cout << "Usage: CTyper [options]\n\n"
+              << "Options:\n"
+              << "  -i, --input <file>         Input NGS file, allows CRAM(indexed), BAM(indexed), SAM, FASTQ and FASTA formats\n"
+              << "  -I, --Inputs <file>        File with a list of input files\n"
+              << "  -m, --matrix <file>        Path to the matrix database, need to come with its index file \n"
+              << "  -o, --output <file>        Output file\n"
+              << "  -O, --Outputs <file>       File with a list of output files\n"
+              << "  -n, --nthreads <number>    Number of threads to use (default: 1) \n"
+              << "  -N, --Nsubthreads <number> Number of sub-threads (default: 1) \n"
+              << "  -d, --depth <value>        Predetermined depth value, not compatible with -b options\n"
+              << "  -D, --Depth <file>         File with a list of predetermined depth values, not compatible with -b options\n"
+              << "  -b, --background <file>    Background k-mer file, used to determine NGS coverage, not compatible with -d/-D options \n"
+              << "  -c, --corr <0/1>           Set correction for biased k-mer option for NGS data (default: 0)\n"
+              << "  -h, --help                 Show this help message\n"
+              << std::endl;
+}
+
 int main(int argc, const char * argv[])
 {
     
@@ -37,6 +57,12 @@ int main(int argc, const char * argv[])
     int nthreads = 1;
     int Nsubthreads = 1;
     int window = 30;
+
+    if (argc == 1 and (strcmp(Argument, "-h")==0 or strcmp(Argument, "--help")==0) )
+    {
+        printHelp();
+        return 0;
+    }
     
     for (int i = 1; i < argc ; i++)
     {
