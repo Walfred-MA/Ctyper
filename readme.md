@@ -380,7 +380,7 @@ There are two scripts in the `tools/Cohort` folder that work together for cohort
 3. **Summarize results into a single file and add annotations:**
 
    ```bash
-   python summaryalleles.py -f $results_folder/ -t PangenomeAlleles_typefix.tsv -o cohort_results.tsv
+   python SummaryAlleles.py -f $results_folder/ -t PangenomeAlleles_typefix.tsv -o cohort_results.tsv
    ```
 
 ---
