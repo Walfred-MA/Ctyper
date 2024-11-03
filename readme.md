@@ -285,7 +285,7 @@ Here shows the commands to make the genotyping results interpretable:
 3. **(optional) Convert genotyping results into VCF file**
 
    ```bash
-   python tools/Annotation/VCF/GenotypetoVCF.py -i genotype.txt -a PangenomeAlleles_annotationfix.tsv -o genotype.vcf
+   python tools/Annotation/VCF/GenotypetoVCF.py -i genotype.txt -o genotype.vcf
    ```
 
 ---
