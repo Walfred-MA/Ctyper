@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import parser
 import collections as cl
 
 def summary(inputfile, annofile, outputfile, iffilter):
