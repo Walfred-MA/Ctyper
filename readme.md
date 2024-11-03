@@ -255,14 +255,26 @@ Supported parameters:
 
 ---
 
-## Results Summary 
+# Results Annotation (optional)
 
-output the line starts with "results: "
+Here shows the commands to make the genotyping results interpretable:
 
-```bash
-cat $Outputfile | grep "^result: " >> genotype.txt
-```
+1. **Summary the genotyping results into a table with annotation information**
 
+   ```bash
+   python tools/Annotation/SampleAnnotate.py -i $ctyper_outputs.txt -a PangenomeAlleles_annotationfix.tsv > genotype.txt
+   ```
+
+2. **Obtain public nomenclatures for important genes,including HLA, CYP2D6, and KIR**
+
+   ```bash
+   python tools/Annotation/Nomenclature/GenotypetoNomenclature.py -i genotype.txt -a data/all_nomenclature.txt > nomenclature.txt
+   ```
+2. **Convert genotyping results into VCF file**
+
+   ```bash
+   python tools/Annotation/VCF/GenotypetoVCF.py -i genotype.txt -a PangenomeAlleles_annotationfix.tsv -o genotype.vcf
+   ```
 
 ---
 ---
