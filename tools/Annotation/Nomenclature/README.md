@@ -1,6 +1,6 @@
-# README for SampleAnnotate.py
+# README for GenotypetoNomenclature.py
 
-This README provides an overview of how to use `SampleAnnotate.py` and describes its output format in detail.
+This README provides an overview of how to use `GenotypetoNomenclature.py`.
 
 ## 1. Requirements
 - **Python** version 3.7 or higher.
@@ -10,7 +10,7 @@ This README provides an overview of how to use `SampleAnnotate.py` and describes
 To run the script, use the following command:
 
 ```bash
-python SampleAnnotate.py -i <Inputfile> -a <Sample_Annotation> > result.txt
+python GenotypetoNomenclature.py -i <Inputfile> -a <Nomenclature_Annotation> > result.txt
 ```
 
 Replace `<Inputfile>` with the path to your input file and `<Sample_Annotation>` with the sample annotation file.
