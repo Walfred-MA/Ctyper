@@ -88,7 +88,7 @@ This repository includes the following components:
 8. **Individual Sample Annotation Database**  
    A comprehensive database with detailed annotations for individual pangenome alleles, supporting individual sample studies and visualization. File: `PangenomeAlleles_annotationfix.v1.0.tsv` available at [https://zenodo.org/records/13381931](https://zenodo.org/records/13381931).
 
-9. **Additional Data Files (Data/)**  
+9. **Additional Data Files (data/)**  
    - `backgrounds.list`: A list of k-mers used as backgrounds to determine NGS coverage if not predetermined.
    - `select_files.txt`: The catalog for all included genes and matrices, which can be used to locate the gene of interest.
    - `all_nomenclature.txt`: The public nomenclatures used by GenotypetoNomenclature.py, currently including HLAs, CYP2D6, and KIRs.  
@@ -270,7 +270,7 @@ Here shows the commands to make the genotyping results interpretable:
    ```bash
    python tools/Annotation/Nomenclature/GenotypetoNomenclature.py -i genotype.txt -a data/all_nomenclature.txt > nomenclature.txt
    ```
-2. **Convert genotyping results into VCF file**
+3. **Convert genotyping results into VCF file**
 
    ```bash
    python tools/Annotation/VCF/GenotypetoVCF.py -i genotype.txt -a PangenomeAlleles_annotationfix.tsv -o genotype.vcf
