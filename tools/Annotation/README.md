@@ -14,20 +14,20 @@ Output will be a text TSV table. Each row represents the information of each gen
 The columns of this table are: 
 
 Name 
-Allele type 
-Overlap genes
-Mapped transcripts
-relationship to reference genes: 
-  -Ref: same allele-type; 
-  -Alt: different alleles-type; 
-  -Dup: alleles-types of similar paralog; 
-  -Novel: alleles-types of diverged paralog
-Location in the pangenome assemblies:
+Allele type   
+Overlap genes  
+Mapped transcripts  
+relationship to reference genes:  
+  -Ref: same allele-type;   
+  -Alt: different alleles-type;   
+  -Dup: alleles-types of similar paralog;   
+  -Novel: alleles-types of diverged paralog  
+Location in the pangenome assemblies:  
   -format: contig:start-end[strand]
-Liftover on the reference:
-  -format: chromsome:start-end[strand]:CIGAR-extended
-  -CIGAR-extended: extended version of CIGAR strings
-
+Liftover on the reference:    
+  -format: chromsome:start-end[strand]:CIGAR-extended  
+  -CIGAR-extended: extended version of CIGAR strings  
+  
 4. Description of the CIGAR-extended used to encode liftover pairwise alignment.
 
 CIGAR-extended is an extended version of CIGAR. The extension allow it to include all variant information in its text. 
