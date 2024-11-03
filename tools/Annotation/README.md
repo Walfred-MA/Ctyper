@@ -1,40 +1,46 @@
-This is the readme file for SampleAnnotate.py, and mainly decribed its output table. 
+# README for SampleAnnotate.py
 
-1.Requirement: python >3.7
+This README provides an overview of how to use `SampleAnnotate.py` and describes its output format in detail.
 
-2.Running SampleAnnotate.py:
+## 1. Requirements
+- **Python** version 3.7 or higher.
 
-bash
-python SampleAnnotate.py -i $Inputfile -a $Sample_Annotation > result.txt
+## 2. Running SampleAnnotate.py
 
-3.Output description
+To run the script, use the following command:
 
-Output will be a text TSV table. Each row represents the information of each genotyped pangenome-alleles. 
+```bash
+python SampleAnnotate.py -i <Inputfile> -a <Sample_Annotation> > result.txt
+```
 
-The columns of this table are: 
+Replace `<Inputfile>` with the path to your input file and `<Sample_Annotation>` with the sample annotation file.
 
-Name 
-Allele type   
-Overlap genes  
-Mapped transcripts  
-relationship to reference genes:  
-  -Ref: same allele-type;   
-  -Alt: different alleles-type;   
-  -Dup: alleles-types of similar paralog;   
-  -Novel: alleles-types of diverged paralog  
-Location in the pangenome assemblies:  
-  -format: contig:start-end[strand]
-Liftover on the reference:    
-  -format: chromsome:start-end[strand]:CIGAR-extended  
-  -CIGAR-extended: extended version of CIGAR strings  
-  
-4. Description of the CIGAR-extended used to encode liftover pairwise alignment.
+## 3. Output Description
 
-CIGAR-extended is an extended version of CIGAR. The extension allow it to include all variant information in its text. 
+The output will be a tab-separated values (TSV) file where each row contains information about a genotyped pangenome allele. The columns of the output table include:
 
-For each variant (X/I/D), the variant information will be appended to the end of their cigar segment. For example 6D will extended to 6DAAATTT, means AAATTT has been deleted. 
-For mismatch, both orginal sequences and changed sequences will be appended in sequential. 
+- **Name**
+- **Allele Type**
+- **Overlap Genes**
+- **Mapped Transcripts**
+- **Relationship to Reference Genes**:
+  - **Ref**: same allele type as reference.
+  - **Alt**: different allele type.
+  - **Dup**: allele types of similar paralogs.
+  - **Novel**: allele types of diverged paralogs.
+- **Location in Pangenome Assemblies**:
+  - Format: `contig:start-end[strand]`
+- **Liftover on the Reference**:
+  - Format: `chromosome:start-end[strand]:CIGAR-extended`
+  - **CIGAR-extended**: extended version of CIGAR strings (see section below).
 
+## 4. CIGAR-Extended Description for Liftover Pairwise Alignment
+
+The **CIGAR-extended** format is an enhanced version of the CIGAR string, allowing it to encode all variant information within the alignment string.
+
+- For each variant (e.g., substitution, insertion, deletion), variant details are appended to the CIGAR segment.
+  - For example, `6D` becomes `6DAAATTT`, meaning `AAATTT` was deleted.
+- For mismatches, both the original and altered sequences are included sequentially.
 
 
 
