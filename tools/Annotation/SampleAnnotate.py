@@ -29,7 +29,7 @@ def summary(inputfile, annofile, outputfile, iffilter):
 				
 				if line[0] in results:
 					
-					line = line[:3] + line[4:6] + [line[-1]]
+					line = line[:3] + line[4:6]+ [line[7]] + [line[-1]]
 					if ":" in line[2]:
 						line[2] = line[2].split(":")[0]
 						
