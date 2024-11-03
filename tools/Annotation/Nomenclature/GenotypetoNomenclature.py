@@ -23,15 +23,11 @@ def nomenclature(inputfile, annofile ):
 	
 	with open(inputfile, mode = 'r') as f:
 		
-		for line in f:
-			
-			if line.startswith("result: "):
-				
-				line = line[8:].split(",")[:-1]
-				for allele in line:
-					
-					if allele in nametonomen:
-						print(allele, nametonomen[allele])
+		for line_ in f:
+							
+			allele = line_.strip().split()[0]
+			if allele in nametonomen:
+				print(allele, nametonomen[allele])
 	
 
 
@@ -54,4 +50,4 @@ def run():
 	
 	
 if __name__ == "__main__":
-		run()
+	run()
