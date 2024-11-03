@@ -54,7 +54,7 @@
 5. [Installation](#installation)
 6. [Usage](#usage)
 7. [Results Annotation (optional)](#results-annotation-optional)
-8. [Visualization](#visualization)
+8. [Results Visualization](#Results-visualization)
 9. [Cohort Analysis](#cohort-analysis)
 10. [License](#license)
 11. [Contact](#contact)
@@ -290,7 +290,7 @@ Here shows the commands to make the genotyping results interpretable:
 ---
 ---
 
-# Visualization
+# Results Visualization
 
 Visualization is performed on a **gene-by-gene** basis (not genome-wide).
 
