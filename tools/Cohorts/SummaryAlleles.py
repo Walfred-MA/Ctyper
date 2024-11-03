@@ -49,10 +49,11 @@ def main(args):
 				
 				allele_counts[line[0]][index] += sum([int(float(x)+0.5) for x in line[1].split(",") if len(x)])
 				allele_sortidx[line[0]] = index
-				
+
+	colnames = "\t".join(["name", "tag", "refgene", "trancripts_count", "most_likely_liftover", "Exon_Intron_Decoy","min_kmernumber","Infotag","SV_infor","Members"])
 	with open(args.output, mode = 'w') as f:
 		
-		f.write("1KGsamples\t"+"\t".join(headers)+"\n")
+		f.write(colnames+"\t"+"\t".join(headers)+"\n")
 		
 		all_allele = sorted(list(allele_counts.keys()), key = lambda x: int(x.split("_")[-1]))
 		
