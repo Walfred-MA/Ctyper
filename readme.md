@@ -80,7 +80,8 @@ This repository includes the following components:
 1. **Ctyper (src/)**  
    A C++ program for performing genotyping on NGS data.
 2. **Auxiliary Analyze Tool (tools/Annotation/)**  
-    Python tools for analyze genotyping results.
+    Python tools to analyze genotyping results.
+    - `tools/Annotation/SampleAnnotate.py`: Convert the raw output file to more interpretable table with annotations.
     - `tools/Annotation/Nomenclature/GenotypetoNomenclature.py`: Output the public nomenclatures from genotyping results. The nomenclatures annotation can be found at Data/all_nomenclature.txt.
     - `tools/Annotation/VCF/GenotypetoVCF.py`: Converting the genotyping results to VCF format. This requires Individual Sample Annotation Database (eg. PangenomeAlleles_annotationfix.v1.0.tsv). Note: this not recommended to be used in association studies, because of the limitation of VCF file on representing pangenome, but maybe used for locating known important variants.
       
