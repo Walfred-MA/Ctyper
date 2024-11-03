@@ -266,7 +266,7 @@ Supported parameters:
 
 ---
 
-# Results Annotation (optional)
+# Results Annotation
 
 Here shows the commands to make the genotyping results interpretable:
 
@@ -276,12 +276,12 @@ Here shows the commands to make the genotyping results interpretable:
    python tools/Annotation/SampleAnnotate.py -i $ctyper_outputs.txt -a PangenomeAlleles_annotationfix.tsv > genotype.txt
    ```
 
-2. **Obtain public nomenclatures for important genes,including HLA, CYP2D6, and KIR**
+2. **(optional) Obtain public nomenclatures for important genes,including HLA, CYP2D6, and KIR**
 
    ```bash
    python tools/Annotation/Nomenclature/GenotypetoNomenclature.py -i genotype.txt -a data/all_nomenclature.txt > nomenclature.txt
    ```
-3. **Convert genotyping results into VCF file**
+3. **(optional) Convert genotyping results into VCF file**
 
    ```bash
    python tools/Annotation/VCF/GenotypetoVCF.py -i genotype.txt -a PangenomeAlleles_annotationfix.tsv -o genotype.vcf
