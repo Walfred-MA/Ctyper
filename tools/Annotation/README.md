@@ -1,6 +1,6 @@
 # README for SampleAnnotate.py
 
-This README provides an overview of how to use `SampleAnnotate.py` and describes its output format in detail.
+This README provides an overview of how to use `SampleAnnotate.py` and describes its output format in details.
 
 ## 1. Requirements
 - **Python** version 3.7 or higher.
