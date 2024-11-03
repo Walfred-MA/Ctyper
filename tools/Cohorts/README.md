@@ -63,7 +63,7 @@ The first 10 columns are for annotations. The rest columns are for individuals.
 - **members**:
   - List of all its pangenome-allele members
 
-
+## 5. Rest columns are copy numbers of samples. 
 
 
 
