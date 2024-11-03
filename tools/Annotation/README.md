@@ -42,7 +42,9 @@ The **CIGAR-extended** format is an enhanced version of the CIGAR string, allowi
   - For example, `6D` becomes `6DAAATTT`, meaning `AAATTT` was deleted.
 - For mismatches, both the original and altered sequences are included sequentially.
 
+You can convert CIGAR-Extended to normal CIGAR simply via python:
 
+CIGAR = "".join(re.findall(r'\d+[=MIDXSH]',CIGAR-Extended))
 
 
 
