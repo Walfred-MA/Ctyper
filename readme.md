@@ -53,7 +53,7 @@
 4. [Inputs](#inputs)
 5. [Installation](#installation)
 6. [Usage](#usage)
-7. [Results Annotation (optional)](#results-annotation)
+7. [Results Annotation](#results-annotation)
 8. [Results Visualization](#Results-visualization)
 9. [Cohort Analysis](#cohort-analysis)
 10. [License](#license)
