@@ -19,7 +19,19 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 
-
+<!-- TABLE OF CONTENTS -->
+## Table of Contents
+1. [About ctyper](#about-ctyper)
+2. [Repository Overview](#repository-overview)
+3. [Prerequisites](#prerequisites)
+4. [Inputs](#inputs)
+5. [Installation](#installation)
+6. [Usage](#usage)
+7. [Results Annotation (optional)](#results-annotation-optional)
+8. [Visualization](#visualization)
+9. [Cohort Analysis](#cohort-analysis)
+10. [License](#license)
+11. [Contact](#contact)
 
 
 <!-- PROJECT LOGO -->
