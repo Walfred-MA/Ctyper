@@ -12,6 +12,20 @@ This README provides an overview of how to use `typemutant.py` and describes its
    [https://matplotlib.org/stable/install/index.html](https://matplotlib.org/stable/install/index.html)
 
 
+## Parameters
+
+Supported parameters:
+
+- **Help:**
+  - `-h`: Print help information.
+- **Inputs:**
+  - `-i <string>`: Path to an individual input file.
+- **samples highlight:**
+  - `-n <string>`: name of samples highlight.
+- **Gff annotation:**
+  - `-g <string>`: Path to gff3 annotation file.
+
+
 ### Usages walkthrough
 Visualization is performed on a **gene-by-gene** basis (not genome-wide).
 
@@ -57,4 +71,12 @@ For example, to visualize the gene **AMY1A**:
    ```bash
    python typemutant.py -i AMY_group1_annotationfix.tsv -g AMY.gff3 -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891," -o output.png
    ```
+
+### figure decription
+
+This output will create a mutant map for pengnome-alleles involve.  
+Each row on this mutant map corresponds to each pengnome-allele as well as variants on it.   
+The colors correspond to different allele-types.   
+The red dots on the leftside indicate the location highlighted alleles on the map. 
+
 
