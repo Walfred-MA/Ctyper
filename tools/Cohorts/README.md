@@ -31,3 +31,6 @@ To run the script, use the following command:
 python SummaryAlleles.py -f <results_folder> -t <Allele_type_Annotation> -o <Outputfile>
 ```
 
+## 4. Output description
+
+
