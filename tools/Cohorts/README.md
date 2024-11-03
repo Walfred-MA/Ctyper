@@ -33,4 +33,46 @@ python SummaryAlleles.py -f <results_folder> -t <Allele_type_Annotation> -o <Out
 
 ## 4. Output description
 
+It output the cohort copy number table that summarizes the genotyped copy number of each sample for each allele-type.
+
+The row represents each allele-type.  
+
+The first 10 columns are for annotations. The rest columns are for individuals.  
+
+
+- **Name**
+- **Allele Type**
+- **Relationship to Reference Genes**:
+  - **Ref**: same allele type as reference.
+  - **Alt**: different allele type.
+  - **Dup**: allele types of similar paralogs.
+  - **Novel**: allele types of diverged paralogs.
+- **Overlap Genes**
+- **Mapped transcripts counts**
+- **Relationship to Reference Genes**:
+  - **Ref**: same allele type as reference.
+  - **Alt**: different allele type.
+  - **Dup**: allele types of similar paralogs.
+  - **Novel**: allele types of diverged paralogs.
+- **Most likely Location in Pangenome Assemblies**:
+  - Format: `ref_allelename_overlap:contig:start-end[strand]`
+- **Additional annotation**:
+  - Format: `Other smaller allele-types that this type captulate | other annotion information like gene consertion`
+- **SV annotation**:
+  - Insertion or deletion found, as well as their number of unique bases.
+- **members**:
+  - List of all its pangenome-allele members
+
+
+
+
+
+
+
+
+
+
+
+
+
 
