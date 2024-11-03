@@ -74,9 +74,11 @@ For example, to visualize the gene **AMY1A**:
 
 ### figure decription
 
-This output will create a mutant map for pengnome-alleles involve.  
-Each row on this mutant map corresponds to each pengnome-allele as well as variants on it.   
-The colors correspond to different allele-types.   
-The red dots on the leftside indicate the location highlighted alleles on the map. 
+1. This output will create a mutant map for pengnome-alleles involve.  
+2. Each row on this mutant map corresponds to each pengnome-allele as well as variants on it.   
+3. The colors correspond to different allele-types.   
+4. The red dots on the leftside indicate the location highlighted alleles on the map.  
+
+
 
 
