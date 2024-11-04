@@ -5,7 +5,10 @@ This README provides an overview of how to use `GenotypetoNomenclature.py`.
 ## 1. Requirements
 - **Python** version 3.7 or higher.
 
-## 2. Running SampleAnnotate.py
+## 2. Function
+It outputs the public nomenclatures for a list of genes based on annotation results. 
+
+## 3. Running SampleAnnotate.py
 
 To run the script, use the following command:
 
