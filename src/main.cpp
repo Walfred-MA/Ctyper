@@ -59,7 +59,7 @@ int main(int argc, const char * argv[])
     int Nsubthreads = 1;
     int window = 30;
 
-    if (argc == 1 and (strcmp(Argument, "-h")==0 or strcmp(Argument, "--help")==0) )
+    if (argc == 1)
     {
         printHelp();
         return 0;
