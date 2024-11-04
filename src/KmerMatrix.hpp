@@ -1,9 +1,10 @@
 //
-//  KmerMatrix.hpp
-//  CTyper
+//  Created by Walfred (Wangfei) MA at the University of Southern California,
+//  Mark Chaisson Lab on 2/13/23.
 //
-//  Created by Wangfei MA on 2/13/23.
-//
+//  Licensed under the MIT License. 
+//  If you use this code, please cite our work.
+//   
 
 #ifndef KmerMatrix_hpp
 #define KmerMatrix_hpp

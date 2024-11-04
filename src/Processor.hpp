@@ -1,9 +1,10 @@
 //
-//  Processor.hpp
-//  CTyper
+//  Created by Walfred (Wangfei) MA at the University of Southern California,
+//  Mark Chaisson Lab on 2/13/23.
 //
-//  Created by Wangfei MA on 2/13/23.
-//
+//  Licensed under the MIT License. 
+//  If you use this code, please cite our work.
+//   
 
 #ifndef Processor_hpp
 #define Processor_hpp
@@ -166,7 +167,8 @@ public:
             if (coefs.get()[i] > cutoff) fprintf(fwrite,"%s:%.2lf,", genenames[i].c_str(),coefs.get()[i]);
         }
         fprintf(fwrite,"\n");
-        
+
+	/*
         fprintf(fwrite,"reproject: ");
         for (int i = 0; i < gnum; ++i)
         {
@@ -178,7 +180,8 @@ public:
             if ( total > 0.01) fprintf(fwrite,"%s:%.2lf%s,", genenames[i].c_str(),total, info.c_str());
         }
         fprintf(fwrite,"\n");
-        
+	*/
+	
         fprintf(fwrite,"round: ");
         for (int i = 0; i < gnum; ++i)
         {
@@ -231,7 +234,7 @@ public:
             for (auto &patial : patials)
             {
                 
-                if (get<1>(patial) - get<0>(patial) > 100) fprintf(fwrite,"Partial\t%s\t%s\t%d\t%d\t%d\n", get<3>(patial).c_str(), pathname.c_str(), 30*(get<0>(patial)-1), 30*(get<1>(patial)-1),  (int) get<2>(patial));
+                if (get<1>(patial) - get<0>(patial) > 100) fprintf(fwrite,"Partial:\t%s\t%s\t%d\t%d\t%d\n", get<3>(patial).c_str(), pathname.c_str(), 30*(get<0>(patial)-1), 30*(get<1>(patial)-1),  (int) get<2>(patial));
             }
         }
         

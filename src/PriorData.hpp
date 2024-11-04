@@ -1,9 +1,10 @@
 //
-//  PriorData.hpp
-//  CTyper
+//  Created by Walfred (Wangfei) MA at the University of Southern California,
+//  Mark Chaisson Lab on 2/13/23.
 //
-//  Created by Wangfei MA on 3/8/23.
-//
+//  Licensed under the MIT License. 
+//  If you use this code, please cite our work.
+//   
 
 #ifndef PriorData_hpp
 #define PriorData_hpp
