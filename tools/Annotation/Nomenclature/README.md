@@ -6,7 +6,7 @@ This README provides an overview of how to use `GenotypetoNomenclature.py`.
 - **Python** version 3.7 or higher.
 
 ## 2. Function
-It takes the genotype table file as input and outputs the public nomenclatures for a list of genes based on annotation results. 
+It takes the genotype table file from SampleAnnotate.py as input and outputs the public nomenclatures for a list of genes based on annotation results. 
 
 ## 3. Running SampleAnnotate.py
 
