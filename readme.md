@@ -41,7 +41,7 @@
      ·
     <a href="https://github.com/Walfred-MA/Ctyper/issues/new?labels=enhancement&template=ask-for-help---.md">Ask For Help</a>
      ·
-    <a href="https://github.com/Walfred-MA/Ctyper/issues/new?labels=enhancement&template=suggest-a-gene---.md">Suggest include new genes</a>
+    <a href="https://github.com/Walfred-MA/Ctyper/issues/new?labels=enhancement&template=suggest-genes---.md">Suggest include new genes</a>
   </p>
 </div>
 
