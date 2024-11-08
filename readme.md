@@ -146,12 +146,11 @@ For additional Python tools, you need:
   
 Ctyper takes five types of files as input:  
   
-1. **CRAM files** (`*.cram`) — must be indexed (recommended due to lower I/O intensity).
+1. **CRAM files** (`*.cram`) — must be indexed (recommended due to lower I/O intensity). 
 2. **BAM files** (`*.bam`) — must be indexed.
 3. **SAM files** (`*.sam`).
 4. **FASTQ files** (`*.fastq`).
 5. **FASTA files** (`*.fa`, `*.fasta`).
-
   
 <!-- Installation -->
 # Installation  
@@ -209,11 +208,23 @@ Using background k-mers:
 ctyper -i $Inputfile -m $Database -o $Outputfile -b background.list -n 1
 ```
 
-Or providing sequencing coverage:
+Or providing sequencing coverage of 31-mers: 
+31-mers = read_coverage * (read_length - 30) / read_length, for example a NGS at read coverage = 30, its 31-mers coverage is 30 * (150-30)/150  = 24.
 
 ```bash
 ctyper -i $Inputfile -m $Database -o $Outputfile -d $sequencing_coverage -n 1
 ```
+
+If you only interested in genes at certain region, for example chr1:100-1000
+
+```bash
+samtools view -b input.bam chr1:100-1000 -f 4 -o subset.bam
+samtools sort -o sorted_input.bam input.bam
+samtools index sorted_input.bam
+
+ctyper -i sorted_input.bam -m $Database -o $Outputfile -d $sequencing_coverage -n 1
+```
+
 
 ### 2. A Cohort of Files
 
