@@ -47,17 +47,27 @@
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
-1. [About ctyper](#about-ctyper)
-2. [Repository Overview](#repository-overview)
-3. [Prerequisites](#prerequisites)
-4. [Inputs](#inputs)
-5. [Installation](#installation)
-6. [Usage](#usage)
-7. [Results Annotation](#results-annotation)
-8. [Results Visualization](#Results-visualization)
-9. [Cohort Analysis](#cohort-analysis)
-10. [License](#license)
-11. [Contact](#contact)
+1. [Getting Started](#Getting Started)
+2. [About ctyper](#about-ctyper)
+3. [Repository Overview](#repository-overview)
+4. [Prerequisites](#prerequisites)
+5. [Inputs](#inputs)
+6. [Installation](#installation)
+7. [Usage](#usage)
+8. [Results Annotation](#results-annotation)
+9. [Results Visualization](#Results-visualization)
+10. [Cohort Analysis](#cohort-analysis)
+11. [License](#license)
+12. [Contact](#contact)
+
+
+<!-- Getting Started -->
+# Getting Started
+
+
+
+
+
 
 <!-- ABOUT THE PROJECT -->
 # About ctyper
