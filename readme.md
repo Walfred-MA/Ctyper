@@ -47,7 +47,7 @@
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
-1. [Getting Started](#Getting Started)
+1. [Getting Started](#getting-started)
 2. [About ctyper](#about-ctyper)
 3. [Repository Overview](#repository-overview)
 4. [Prerequisites](#prerequisites)
