@@ -110,7 +110,8 @@ Ctyper/ctyper -i NA12718.final.cram -m HprcCpcHgsvc_final42_matrix.v1.0.txt -c 1
 
 After finishing genotyping, let us start to visualize and analyze, making sure you have python3 installed. 
 
-first, change the raw output to a text table. The header is: allele name, allele type, HG38 gene(s), transcriptname(exon_number):transcript_genename:similarity, type category(ref: in same type of HG38 gene, alt: different orthology type, dup: duplicated paralog, novel: diverged paralog), pangenome assembly location, reference liftover location and alignment CIGAR string. 
+first, change the raw output to a text table. The headers are: 
+allele name, allele type, HG38 gene(s), transcriptname(exon_number):transcript_genename:similarity, type category(ref: in same type of HG38 gene, alt: different orthology type, dup: duplicated paralog, novel: diverged paralog), pangenome assembly location, reference liftover location and alignment CIGAR string. 
 ```bash
 python Ctyper/tools/Annotation/SampleAnnotate.py -i ctyper.out -a PangenomeAlleles_annotationfix.v1.0.tsv -o genotype.txt
 ```
