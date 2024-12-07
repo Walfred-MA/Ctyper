@@ -1,4 +1,3 @@
-![image](https://github.com/user-attachments/assets/c2bb9e8f-5f77-4837-a186-0d3a9fa94e0e)
 <a id="readme-top"></a>
 <!--
 *** Thanks for checking out the Best-README-Template. If you have a suggestion
@@ -200,7 +199,7 @@ example output of SMN mutant map:
 Each row is each allele, and each vertically location is the consensus in multiple sequence alignments.  
 The gap is the deletion/missing sequences on each allele and each black dots is each variants on HG38.  
 Each color represents each allele-type we defined.  
-The location of genotyped alleles are slightly bolded in color and highlighted with a red dot on the left.  
+The location of genotyped alleles are slightly bolded in color (may need to zoom in sometimes) and highlighted with a red dot on the left.  
 The genecode gene and exons are highlight at the top.
 
 ![Alt Text](images/exampleSMN.png)
