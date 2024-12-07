@@ -12,7 +12,7 @@ typedef unsigned short  uint16;
 typedef unsigned char  uint8;
 typedef unsigned long long ull_atom;
 
-//large_prime will determine the hash space and memory usage
+//large_prime will determine the hash space and memory usage: recommend use 1073741827, or 2147483647
 #define large_prime 2147483647
 #define prime10M 9999991
 #define MAX_UINT16 65535
