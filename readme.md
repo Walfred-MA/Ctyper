@@ -120,7 +120,7 @@ second, if you want to have genotypes of HLA, CYP2D6, and KIR.
 python Ctyper/tools/Annotation/Nomenclature/GenotypetoNomenclature.py -i  genotype.txt -a Ctyper/data/all_nomenclature.txt
 ```
 
-example output:
+example output: (the first column are names of pangenome allele, the second column is their public Nomenclature)
 ```
 CYP2D_group1_HG01358_h2_162 *1
 CYP2D_group1_GW00005_h1_12 *1
