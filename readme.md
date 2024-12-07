@@ -196,11 +196,10 @@ python Ctyper/tools/Plot/typemutant.py -i SMN_allannotations.txt -g SMN.gff3 -n 
 
 example output of SMN mutant map: 
 
-Each row is each allele, and each vertically location is the consensus in multiple sequence alignments. 
-The gap is the deletion/missing sequences on each allele and each black dots is each variants on HG38.
-Each color represents each allele-type we defined.
-
-The location of genotyped alleles are slightly bolded in color and highlighted with a red dot on the left.
+Each row is each allele, and each vertically location is the consensus in multiple sequence alignments.  
+The gap is the deletion/missing sequences on each allele and each black dots is each variants on HG38.  
+Each color represents each allele-type we defined.  
+The location of genotyped alleles are slightly bolded in color and highlighted with a red dot on the left.  
 The genecode gene and exons are highlight at the top.
 
 ![Alt Text](images/exampleSMN.png)
