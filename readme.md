@@ -168,7 +168,7 @@ KIR3DL1_group1_HG01123_h2_259 KIR3DL1*0040201
 KIR3DL1_group1_HG00741_h2_246 KIR3DL1*0040101
 ```
 
-Then let Plot SMN genotyping results (make sure you have pandas and matplotlib installed)
+Then let Plot SMN genotyping results as mutant map (make sure you have pandas and matplotlib installed)
 
 (optional) download genecode gff3 annotation
 ```bash
@@ -193,6 +193,15 @@ Plot
 ```bash
 python Ctyper/tools/Plot/typemutant.py -i SMN_allannotations.txt -g SMN.gff3 -n SMN_group1_GW00024_h2_152,SMN_group1_chr5_718,SMN_group1_chr5_719,SMN_group1_HG01175_h1_475 -o SMN.png
 ```
+
+example output of SMN mutant map: 
+
+Each row is each allele, and each vertically location is the consensus in multiple sequence alignments. 
+The gap is the deletion/missing sequences on each allele and each black dots is each variants on HG38.
+Each color represents each allele-type we defined.
+
+The location of genotyped alleles are slightly bolded in color and highlighted with a red dot on the left.
+The genecode gene and exons are highlight at the top.
 
 ![Alt Text](images/exampleSMN.png)
 
