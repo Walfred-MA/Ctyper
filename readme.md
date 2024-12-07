@@ -74,6 +74,18 @@ wget "ftp://ftp.sra.ebi.ac.uk/vol1/run/ERR323/ERR3239480/NA12718.final.cram"
 wget "ftp://ftp.sra.ebi.ac.uk/vol1/run/ERR323/ERR3239480/NA12718.final.cram.crai"
 ```
 
+Download relying databases
+
+```bash
+wget "https://zenodo.org/records/13381931/files/HprcCpcHgsvc_final42_matrix.v1.0.txt.gz"
+gunzip HprcCpcHgsvc_final42_matrix.v1.0.txt.gz
+
+wget "https://zenodo.org/records/13381931/files/HprcCpcHgsvc_final42_matrix.v1.0.txt.index"
+
+wget "https://zenodo.org/records/13381931/files/PangenomeAlleles_annotationfix.v1.0.tsv.gz"
+gunzip PangenomeAlleles_annotationfix.v1.0.tsv.gz
+```
+
 Download and compile ctyper, making sure you have gcc >= 8 and eigen, zlib, and HTSlib installed
 
 $EIGEN_ROOT is the root path of EIGEN, usally /usr/
