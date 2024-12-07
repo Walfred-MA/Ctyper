@@ -1,4 +1,3 @@
-![image](https://github.com/user-attachments/assets/c2bb9e8f-5f77-4837-a186-0d3a9fa94e0e)
 <a id="readme-top"></a>
 <!--
 *** Thanks for checking out the Best-README-Template. If you have a suggestion
