@@ -1,4 +1,4 @@
-
+![image](https://github.com/user-attachments/assets/c2bb9e8f-5f77-4837-a186-0d3a9fa94e0e)
 <a id="readme-top"></a>
 <!--
 *** Thanks for checking out the Best-README-Template. If you have a suggestion
@@ -62,10 +62,31 @@
 
 
 <!-- Getting Started -->
-# Getting Started with an example
+# Getting Started
 
+Let us get start to genotype an example sample NA12718
 
+first obtain it's cram file 
 
+```bash
+wget "ftp://ftp.sra.ebi.ac.uk/vol1/run/ERR323/ERR3239480/NA12718.final.cram"
+
+wget "ftp://ftp.sra.ebi.ac.uk/vol1/run/ERR323/ERR3239480/NA12718.final.cram.crai"
+```
+
+Download and compile ctyper, making sure you have gcc >= 8 and eigen, zlib, and HTSlib installed
+
+$EIGEN_ROOT is the root path of EIGEN, usally /usr/
+
+```bash
+git clone https://github.com/Walfred-MA/Ctyper 
+
+export EIGEN_ROOT=$EIGEN_ROOT
+
+cd Ctyper/src && make
+
+mv ctyper ..
+```
 
 
 
