@@ -194,6 +194,10 @@ Plot
 python Ctyper/tools/Plot/typemutant.py -i SMN_allannotations.txt -g SMN.gff3 -n SMN_group1_GW00024_h2_152,SMN_group1_chr5_718,SMN_group1_chr5_719,SMN_group1_HG01175_h1_475 -o SMN.png
 ```
 
+![Alt Text](images/exampleSMN.png)
+
+
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
