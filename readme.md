@@ -355,7 +355,7 @@ For example, to visualize the gene **AMY1A**:
 4. **Visualize the results:**
 
    ```bash
-   python typemutant.py -i AMY_group1_annotationfix.tsv -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891," -o output.png
+   python typemutant.py -i AMY_group1_annotationfix.tsv -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891" -o output.png
    ```
 
 **Optional:** To visualize the GENCODE annotation on the MSA:
