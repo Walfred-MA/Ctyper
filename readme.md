@@ -108,7 +108,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 Ctyper/ctyper -i NA12718.final.cram -m HprcCpcHgsvc_final42_matrix.v1.0.txt -c 1 -b Ctyper/data/backgrounds.list -o ctyper.out > log.txt &
 ```
 
-After finishing genotyping, let us start to visualize and analyze. 
+After finishing genotyping, let us start to visualize and analyze, making sure you have python3 installed. 
 
 first, change the raw output to a text table.
 ```bash
@@ -168,6 +168,31 @@ KIR3DL1_group1_HG01123_h2_259 KIR3DL1*0040201
 KIR3DL1_group1_HG00741_h2_246 KIR3DL1*0040101
 ```
 
+Then let Plot SMN genotyping results (make sure you have pandas and matplotlib installed)
+
+(optional) download genecode gff3 annotation
+```bash
+wget "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_47/gencode.v47.annotation.gff3.gz"
+zcat gencode.v47.annotation.gff3.gz | grep "gene_name=SMN" > SMN.gff3
+```
+
+Get names of genotyped SMN alleles
+```bash
+grep "^SMN" genotype.txt | cut -f1 | tr "$\n" "," | sed  's/.$/\n/'
+
+SMN_group1_GW00024_h2_152,SMN_group1_chr5_718,SMN_group1_chr5_719,SMN_group1_HG01175_h1_475
+```
+
+
+Otain all SMN annotation from database
+```bash
+grep "^SMN" PangenomeAlleles_annotationfix.v1.0.tsv > SMN_annotation.txt  &
+```
+
+Plot 
+```bash
+python Ctyper/tools/Plot/typemutant.py -i SMN_allannotations.txt -g SMN.gff3 -n SMN_group1_GW00024_h2_152,SMN_group1_chr5_718,SMN_group1_chr5_719,SMN_group1_HG01175_h1_475 -o SMN.png
+```
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
