@@ -1,4 +1,4 @@
-
+![image](https://github.com/user-attachments/assets/c2bb9e8f-5f77-4837-a186-0d3a9fa94e0e)
 <a id="readme-top"></a>
 <!--
 *** Thanks for checking out the Best-README-Template. If you have a suggestion
@@ -47,17 +47,168 @@
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
-1. [About ctyper](#about-ctyper)
-2. [Repository Overview](#repository-overview)
-3. [Prerequisites](#prerequisites)
-4. [Inputs](#inputs)
-5. [Installation](#installation)
-6. [Usage](#usage)
-7. [Results Annotation](#results-annotation)
-8. [Results Visualization](#Results-visualization)
-9. [Cohort Analysis](#cohort-analysis)
-10. [License](#license)
-11. [Contact](#contact)
+1. [Getting Started](#getting-started)
+2. [About ctyper](#about-ctyper)
+3. [Repository Overview](#repository-overview)
+4. [Prerequisites](#prerequisites)
+5. [Inputs](#inputs)
+6. [Installation](#installation)
+7. [Usage](#usage)
+8. [Results Annotation](#results-annotation)
+9. [Results Visualization](#Results-visualization)
+10. [Cohort Analysis](#cohort-analysis)
+11. [License](#license)
+12. [Contact](#contact)
+
+
+<!-- Getting Started -->
+# Getting Started
+
+Let us get start to genotype an example sample NA12718
+
+first obtain it's cram file 
+
+```bash
+wget "ftp://ftp.sra.ebi.ac.uk/vol1/run/ERR323/ERR3239480/NA12718.final.cram"
+
+wget "ftp://ftp.sra.ebi.ac.uk/vol1/run/ERR323/ERR3239480/NA12718.final.cram.crai"
+```
+
+Download relying databases
+
+```bash
+wget "https://zenodo.org/records/13381931/files/HprcCpcHgsvc_final42_matrix.v1.0.txt.gz"
+gunzip HprcCpcHgsvc_final42_matrix.v1.0.txt.gz
+
+wget "https://zenodo.org/records/13381931/files/HprcCpcHgsvc_final42_matrix.v1.0.txt.index"
+
+wget "https://zenodo.org/records/13381931/files/PangenomeAlleles_annotationfix.v1.0.tsv.gz"
+gunzip PangenomeAlleles_annotationfix.v1.0.tsv.gz
+```
+
+Download and compile ctyper, making sure you have gcc >= 8 and eigen, zlib, and HTSlib installed
+
+$EIGEN_ROOT is the root path of EIGEN, usally /usr/
+
+```bash
+git clone https://github.com/Walfred-MA/Ctyper 
+
+export EIGEN_ROOT=$EIGEN_ROOT
+
+cd Ctyper/src && make
+
+mv ctyper ..
+```
+
+Now, let us start to genotype it, $LIBRARY_PATH is your path of LD_LIBRARY, if you are using conda to install HTSlib or samtools, then it should be usally at /home/$user_name/miniconda3/lib/, otherwise have a try at /usr/local/lib/
+
+```bash
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+
+Ctyper/ctyper -i NA12718.final.cram -m HprcCpcHgsvc_final42_matrix.v1.0.txt -c 1 -b Ctyper/data/backgrounds.list -o ctyper.out > log.txt &
+```
+
+After finishing genotyping, let us start to visualize and analyze, making sure you have python3 installed. 
+
+first, change the raw output to a text table. The headers are: 
+allele name, allele type, HG38 gene(s), transcriptname(exon_number):transcript_genename:similarity, type category(ref: in same type of HG38 gene, alt: different orthology type, dup: duplicated paralog, novel: diverged paralog), pangenome assembly location, reference liftover location and alignment CIGAR string. 
+```bash
+python Ctyper/tools/Annotation/SampleAnnotate.py -i ctyper.out -a PangenomeAlleles_annotationfix.v1.0.tsv -o genotype.txt
+```
+
+second, if you want to have genotypes of HLA, CYP2D6, and KIR. 
+```bash
+python Ctyper/tools/Annotation/Nomenclature/GenotypetoNomenclature.py -i  genotype.txt -a Ctyper/data/all_nomenclature.txt
+```
+
+example output: (the first column are names of pangenome allele, the second column is their public Nomenclature)
+```
+CYP2D_group1_HG01358_h2_162 *1
+CYP2D_group1_GW00005_h1_12 *1
+HLA-A_group2_HG01071_h2_1333 HLA-A*03:01:01:01
+HLA-A_group2_HG00741_h1_1304 HLA-A*11:01:01:01
+HLA-B_group10_HG02717_h2_2635 HLA-B*15:03:01:01
+HLA-B_group10_HG02055_h2_2334 HLA-B*07:02:01:14
+HLA-C_group8_chr6_2356 HLA-C*07:02:01:03
+HLA-DM_group1_HG01361_h1_160 HLA-DMA*01:01:01:13,HLA-DMB*01:04
+HLA-DM_group1_NA12878_h1_216 HLA-DMA*01:03:01:02,HLA-DMB*01:07:01:02
+HLA-DO_group1_NA12878_h2_435 HLA-DOB*01:01:01:24
+HLA-DO_group1_HG02572_h1_374 HLA-DOB*01:01:01:11
+HLA-DO_group2_chr6_GL000251v2_alt_485 HLA-DOA*01:01:05
+HLA-DO_group2_chr6_GL000253v2_alt_490 HLA-DOA*01:01:01:01
+HLA-DP_group2_HG00733_h2_790 HLA-DPA1*02:01:01:01,HLA-DPB1*11:01:01:01
+HLA-DP_group3_HG00733_h2_789 HLA-DPB2*03:01:01:03
+HLA-DQ_group84_HG01071_h1_58107 HLA-DQA2*01:04:01:01,HLA-DQB2*01:01:01:04
+HLA-DRA_group1_HG02818_h2_198 HLA-DRA*01:02:02:11
+HLA-DRA_group1_chr6_GL000253v2_alt_244 HLA-DRA*01:01:01:02
+HLA-E_group6_GW00048_h1_639 HLA-E*01:01:01:01
+HLA-E_group6_chr6_GL000255v2_alt_2012 HLA-E*01:01:01:52
+HLA-F_group1_HG01258_h2_666 HLA-F*01:03:01:01
+HLA-F_group1_GW00057_h1_494 HLA-F*01:01:02:09
+HLA-G_group1_HG01071_h2_771 HLA-G*01:01:01:05
+HLA-G_group1_GW00038_h1_416 HLA-G*01:01:03:03
+HLA-H_group3_HG02630_h2_1530 HLA-H*02:04:01
+HLA-H_group3_NA12878_h2_2195 HLA-H*02:07:01:01
+HLA-J_group1_GW00027_h1_325 HLA-J*01:01:01:04
+HLA-J_group1_GW00043_h1_497 HLA-J*01:01:01:02
+HLA-K_group2_HG01258_h2_650 HLA-K*01:01:01:01
+HLA-L_group1_GW00022_h2_200 HLA-L*01:03
+HLA-L_group1_GW00052_h2_462 HLA-L*01:03
+HLA-N_group1_NA24385_h1_230 HLA-N*01:01:01:01
+HLA-P_group1_HG01071_h2_425 HLA-P*02:01:01:02
+HLA-S_group1_GW00018_h1_38 HLA-S*01:01:01:02
+HLA-S_group1_chr6_GL000253v2_alt_241 HLA-S*01:01:01:01
+HLA-T_group1_chr6_463 HLA-T*03:01:01:01
+HLA-U_group1_HG00732_h1_347 HLA-U*01:05
+HLA-U_group1_HG01175_h1_389 HLA-U*01:04
+HLA-V_group1_HG01071_h2_641 HLA-V*01:01:01:01
+HLA-W_group1_HG01071_h2_308 HLA-W*01:01:01:05
+KIR2DL_group1_HG01952_h1_188 KIR2DL1*0040101,KIR2DL2*0010102,KIR2DL4*0080204,KIR2DL5B*0020109
+KIR2DL_group1_chr19_KI270933v1_alt_348 KIR2DL1*0020103,KIR2DL3*0020103,KIR2DL4*0080204
+KIR3DL1_group1_HG01123_h2_259 KIR3DL1*0040201
+KIR3DL1_group1_HG00741_h2_246 KIR3DL1*0040101
+```
+
+Then let Plot SMN genotyping results as mutant map (make sure you have pandas and matplotlib installed)
+
+(optional) download genecode gff3 annotation
+```bash
+wget "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_47/gencode.v47.annotation.gff3.gz"
+zcat gencode.v47.annotation.gff3.gz | grep "gene_name=SMN" > SMN.gff3
+```
+
+Get names of genotyped SMN alleles
+```bash
+grep "^SMN" genotype.txt | cut -f1 | tr "$\n" "," | sed  's/.$/\n/'
+
+SMN_group1_GW00024_h2_152,SMN_group1_chr5_718,SMN_group1_chr5_719,SMN_group1_HG01175_h1_475
+```
+
+
+Otain all SMN annotation from database
+```bash
+grep "^SMN" PangenomeAlleles_annotationfix.v1.0.tsv > SMN_annotation.txt  &
+```
+
+Plot 
+```bash
+python Ctyper/tools/Plot/typemutant.py -i SMN_allannotations.txt -g SMN.gff3 -n SMN_group1_GW00024_h2_152,SMN_group1_chr5_718,SMN_group1_chr5_719,SMN_group1_HG01175_h1_475 -o SMN.png
+```
+
+example output of SMN mutant map: 
+
+Each row is each allele, and each vertically location is the consensus in multiple sequence alignments.  
+The gap is the deletion/missing sequences on each allele and each black dots is each variants on HG38.  
+Each color represents each allele-type we defined.  
+The location of genotyped alleles are slightly bolded in color and highlighted with a red dot on the left.  
+The genecode gene and exons are highlight at the top.
+
+![Alt Text](images/exampleSMN.png)
+
+
+
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ABOUT THE PROJECT -->
 # About ctyper
@@ -345,7 +496,7 @@ For example, to visualize the gene **AMY1A**:
 4. **Visualize the results:**
 
    ```bash
-   python typemutant.py -i AMY_group1_annotationfix.tsv -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891," -o output.png
+   python typemutant.py -i AMY_group1_annotationfix.tsv -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891" -o output.png
    ```
 
 **Optional:** To visualize the GENCODE annotation on the MSA:
