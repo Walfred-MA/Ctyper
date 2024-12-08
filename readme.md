@@ -65,7 +65,7 @@
 
 Let us get start to genotype an example sample NA12718
 
-first obtain it's cram file 
+first obtain its cram file 
 
 ```bash
 wget "ftp://ftp.sra.ebi.ac.uk/vol1/run/ERR323/ERR3239480/NA12718.final.cram"
@@ -99,7 +99,7 @@ cd Ctyper/src && make
 mv ctyper ..
 ```
 
-Now, let us start to genotype it, $LIBRARY_PATH is your path of LD_LIBRARY, if you are using conda to install HTSlib or samtools, then it should be usally at /home/$user_name/miniconda3/lib/, otherwise have a try at /usr/local/lib/
+Now, let's us start to genotype it, $LIBRARY_PATH is your path of LD_LIBRARY, if you are using conda to install HTSlib or samtools, then it should be usally at /home/$user_name/miniconda3/lib/, otherwise have a try at /usr/local/lib/
 
 ```bash
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
@@ -191,7 +191,7 @@ grep "^SMN" PangenomeAlleles_annotationfix.v1.0.tsv > SMN_annotation.txt  &
 
 Plot 
 ```bash
-python Ctyper/tools/Plot/typemutant.py -i SMN_allannotations.txt -g SMN.gff3 -n SMN_group1_GW00024_h2_152,SMN_group1_chr5_718,SMN_group1_chr5_719,SMN_group1_HG01175_h1_475 -o SMN.png
+python Ctyper/tools/Plot/typemutant.py -i SMN_allannotations.txt  (optional) -g SMN.gff3 -n SMN_group1_GW00024_h2_152,SMN_group1_chr5_718,SMN_group1_chr5_719,SMN_group1_HG01175_h1_475 -o SMN.png
 ```
 
 example output of SMN mutant map: 
@@ -200,7 +200,7 @@ Each row is each allele, and each vertically location is the consensus in multip
 The gap is the deletion/missing sequences on each allele and each black dots is each variants on HG38.  
 Each color represents each allele-type we defined.  
 The location of genotyped alleles are slightly bolded in color (may need to zoom in sometimes) and highlighted with a red dot on the left.  
-The genecode gene and exons are highlight at the top.
+(optional) The genecode gene and exons are highlight at the top.
 
 ![Alt Text](images/exampleSMN.png)
 
