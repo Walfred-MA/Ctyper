@@ -12,6 +12,11 @@ To run the script, use the following command:
 ```bash
 python matrixparition.py -i <Inputfile> -p <number of partitions> 
 ```
+If you only have 16G RAM, you need to partition into two parts;
+If you only have 8G RAM, you need to partition into three parts; 
+Then you can concatenate the genotyping output from different parts together.
+
+
 
 Alternatively, if you only interested in certain gene matrix, you may use -g or -G option to select them out:
 ```bash
