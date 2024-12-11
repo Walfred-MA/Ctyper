@@ -58,12 +58,16 @@ def partition(args):
 		filepaths.append(filepath)
 		outfiles.append(open(filepath, mode = 'w'))
 	
-	genelist = set(args.genes.split(","))
-	if len(args.genelist):
+	genelist = set()
+	
+	if len(args.genes):
+		genelist = args.genes.split(",")
 		
+	if len(args.genelist):
 		with open(args.genelist, mode = 'r') as f:
 			
 			genelist.update([x.strip() for x in f.readlines()])
+	
 	
 	skip = 0
 	matrix = ""
@@ -81,6 +85,7 @@ def partition(args):
 					currentfile.write(matrix)
 					
 					if len(genelist) and line.split()[0][1:] not in genelist:
+						
 						del matrix
 						matrix = ""
 						skip = 1
