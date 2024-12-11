@@ -76,12 +76,12 @@ wget "ftp://ftp.sra.ebi.ac.uk/vol1/run/ERR323/ERR3239480/NA12718.final.cram.crai
 Download relying databases
 
 ```bash
-wget "https://zenodo.org/records/13381931/files/HprcCpcHgsvc_final42_matrix.v1.0.txt.gz"
+wget "https://zenodo.org/records/14399353/files/HprcCpcHgsvc_final42_matrix.v1.0.txt.gz"
 gunzip HprcCpcHgsvc_final42_matrix.v1.0.txt.gz
 
-wget "https://zenodo.org/records/13381931/files/HprcCpcHgsvc_final42_matrix.v1.0.txt.index"
+wget "https://zenodo.org/records/14399353/files/HprcCpcHgsvc_final42_matrix.v1.0.txt.index"
 
-wget "https://zenodo.org/records/13381931/files/PangenomeAlleles_annotationfix.v1.0.tsv.gz"
+wget "https://zenodo.org/records/14399353/files/PangenomeAlleles_annotationfix.v1.0.tsv.gz"
 gunzip PangenomeAlleles_annotationfix.v1.0.tsv.gz
 ```
 
@@ -265,8 +265,13 @@ This repository includes the following components:
 
 <!-- Prerequisites -->
 # Prerequisites  
-  
+
 Ctyper is officially supported only in a **Linux** environment. Although it may run on UNIX-like system like MACOS as well, but we may not provide support for it.  
+
+### System Required
+You need RAM > 20G to run all genes at once. 
+If you have a less RAM, you may split the whole database to smaller partitions. See in tools/Partition/.
+
 
 ### Required Software
 
@@ -342,9 +347,14 @@ Ctyper requires:
 1. **Input file(s)**
 2. **Corresponding output file(s)**
 3. **The pangenome allele database file** (must be indexed)
+   - the database of pangenome allele for 3,351 CNV genes and 212 medically challenging genes. The information of those genes and their belonged matrices can be found at data/select_files.txt.
+   - If you prefer only run selected genes or you want to run in smaller RAM, you can use a tool called matrixpartion.py we included at tools/Partition
+   
 4. **Sequencing coverage information**, either by:
    - Providing background k-mers for ctyper to determine sequencing coverage (recommended)
    - Directly providing sequencing coverage information (useful when you don't have WGS data)
+
+
 
 ## Running Ctyper
 
