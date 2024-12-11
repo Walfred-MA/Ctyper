@@ -34,8 +34,7 @@ python matrixparition.py -i HprcCpcHgsvc_final42_matrix.v1.0.txt -g "SMN_group1"
 
 If you only interested in HLAs, distract all HLA matrices into a list text file
 ```bash
-cat Ctyper/data/select_files.txt | grep "HLA_" | cut -f1 
-| rev | cut -d/ -f1 | rev | cut -d. -f1 > HLA_matrix.list
+cat Ctyper/data/select_files.txt | grep "HLA_" | cut -f1 | rev | cut -d/ -f1 | rev | cut -d. -f1 > HLA_matrix.list
 ```
 
 ```bash
