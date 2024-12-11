@@ -46,22 +46,29 @@ def indexfile(inputfile):
 			last_location = location
 
 
-def partition(inputfile, partnum = 2):
+def partition(args):
 	
 	
 	filepaths = []
 	outfiles = []
-	for index in range(partnum):
+	for index in range(args.partnum):
 		
-		filepath = inputfile+"_part"+str(index+1)
+		filepath = args.input+"_part"+str(index+1)
 		
 		filepaths.append(filepath)
 		outfiles.append(open(filepath, mode = 'w'))
-		
 	
+	genelist = set(args.genes.split(","))
+	if len(args.genelist):
+		
+		with open(args.genelist, mode = 'r') as f:
+			
+			genelist.update([x.strip() for x in f.readlines()])
+	
+	skip = 0
 	matrix = ""
 	index = 0
-	with open(inputfile, mode = 'r') as f:
+	with open(args.input, mode = 'r') as f:
 		
 		line = f.readline()
 		kmer_num = 0
@@ -70,16 +77,26 @@ def partition(inputfile, partnum = 2):
 			if len(line):
 				if line[0] == '#':
 					
-					currentfile = outfiles[index%partnum]
+					currentfile = outfiles[index%args.partnum]
 					currentfile.write(matrix)
-					index += 1
-					matrix = line
 					
-				else:
+					if len(genelist) and line.split()[0][1:] not in genelist:
+						del matrix
+						matrix = ""
+						skip = 1
+							
+					else:
+						skip = 0
+						index += 1
+						del matrix
+						matrix = line
+					
+				elif skip == 0:
+					kmer_num += 1
 					matrix += line
 					
 			line = f.readline()
-			
+		
 		currentfile.write(matrix)
 		
 	for file in outfiles:
@@ -91,7 +108,7 @@ def partition(inputfile, partnum = 2):
 	
 def main(args):
 
-	partition(args.input, partnum = args.partnum)
+	partition(args)
 
 			
 			
@@ -101,7 +118,9 @@ def run():
 	"""
 	parser = argparse.ArgumentParser(description="program run partition")
 	parser.add_argument("-i", "--input", help="path to input data file", dest="input", type=str, required=True)
-	parser.add_argument("-p", "--part", help="number of partitions", dest="partnum", type=int, required=True)
+	parser.add_argument("-p", "--part", help="number of partitions", dest="partnum", type=int, default = 1)
+	parser.add_argument("-g", "--genes", help="distracted gene matrice(s), separated by comma", dest="genes", type=str, default = "")
+	parser.add_argument("-G", "--genelist", help="file path of distracted gene matrix list, separated by line", dest="genelist", type=str, default = "")
 	parser.set_defaults(func=main)
 	args = parser.parse_args()
 	args.func(args)
