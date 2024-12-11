@@ -347,9 +347,14 @@ Ctyper requires:
 1. **Input file(s)**
 2. **Corresponding output file(s)**
 3. **The pangenome allele database file** (must be indexed)
+   - the database of pangenome allele for 3,351 CNV genes and 212 medically challenging genes. The information of those genes and their belonged matrices can be found at data/select_files.txt.
+   - If you prefer only run selected genes or you want to run in smaller RAM, you can use a tool called matrixpartion.py we included at tools/Partition
+   
 4. **Sequencing coverage information**, either by:
    - Providing background k-mers for ctyper to determine sequencing coverage (recommended)
    - Directly providing sequencing coverage information (useful when you don't have WGS data)
+
+
 
 ## Running Ctyper
 
