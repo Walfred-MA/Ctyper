@@ -482,6 +482,10 @@ A4GALT_group1_GW00056_h1_227    A4GALT_group1_9 A4GALT  ENST00000401850:A4GALT:9
    ```bash
    python tools/Annotation/Nomenclature/GenotypetoNomenclature.py -i genotype.txt -a data/all_nomenclature.txt > nomenclature.txt
    ```
+
+nomenclature.txt is also a table file with two columns: first column the name the genotyped pangenome-allele, and the second is the public nameclature this pangenome-allele contains. 
+
+
 3. **(optional) Convert genotyping results into VCF file**
 
    ```bash
