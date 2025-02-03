@@ -115,6 +115,20 @@ allele name, allele type, HG38 gene(s), transcriptname(exon_number):transcript_g
 python Ctyper/tools/Annotation/SampleAnnotate.py -i ctyper.out -a PangenomeAlleles_annotationfix.v1.0.tsv -o genotype.txt
 ```
 
+genotype.txt is a tsv table file. Its headers are:
+
+| Column Name     | Description                           |
+|-----------------|---------------------------------------|
+| allele_name       | Unique identifier for the pangenone allele, format is $prefix_$groupindex_$sample_$haplotype_$index   |
+| clade_name        | which clade (type of pangenome allele, alias to HLA nameclature) this pangenone allele belongs to |
+| transcript      | The exonic DNA it contains, format is $transcript_id:$gene_name:$similarity, if have multiple transcripts, then separated by semicolon, and if only contains a part of transcript, then it would be $transcript_id($start_exon_index-$end_exon_index):$gene_name:$similarity |
+| classfication        | Ref: the alleles very similar to reference genes, Alt: alternative version of reference genes, Dup: duplicated paralogs, Novel: paralogs with novel sequences |
+| pangenome_location | the location of the assembly, format: $sample#$haplotype#$contig:$start-$end$strand |
+| liftover_location | The liftover location of the allele, format: $chromosome:$start-$end$strand:$alignment_CIGAR  |
+
+Example row:
+A4GALT_group1_GW00056_h1_227    A4GALT_group1_9 A4GALT  ENST00000401850:A4GALT:99.68;   Alt     GW00056#1#GWHBKGU00000010:748831-766661-        chr22:42689120-42706939-:2058M2I5D303M1X1463M4I3116M1X261M1X279M1X82M1X448M1X459M1X124M1X85M2D225M1X1240M1X650M9I794M1X144M18D20I929M1X399M1X793M1X83M1X709M1X182M1X296M1X136M1X650M1X96M1X59M3I291M1I95M1X276M1X245M1X263M17D16I36M1X184M1X299M
+
 second, if you want to have genotypes of HLA, CYP2D6, and KIR. 
 ```bash
 python Ctyper/tools/Annotation/Nomenclature/GenotypetoNomenclature.py -i  genotype.txt -a Ctyper/data/all_nomenclature.txt
@@ -184,7 +198,7 @@ SMN_group1_GW00024_h2_152,SMN_group1_chr5_718,SMN_group1_chr5_719,SMN_group1_HG0
 ```
 
 
-Otain all SMN annotation from database
+Obtain all SMN annotation from database
 ```bash
 grep "^SMN" PangenomeAlleles_annotationfix.v1.0.tsv > SMN_annotation.txt  &
 ```
@@ -448,11 +462,30 @@ Here shows the commands to make the genotyping results interpretable:
    python tools/Annotation/SampleAnnotate.py -i $ctyper_outputs.txt -a PangenomeAlleles_annotationfix.tsv > genotype.txt
    ```
 
+To understand the output file, genotype.txt is a tsv table file. Its headers are:
+
+| Column Name     | Description                           |
+|-----------------|---------------------------------------|
+| allele_name       | Unique identifier for the pangenone allele, format is $prefix_$groupindex_$sample_$haplotype_$index   |
+| clade_name        | which clade (type of an allele, alias to HLA nameclature) this pangenone allele belongs to |
+| transcript      | The exonic DNA it contains, format is $transcript_id:$gene_name:$similarity, if have multiple transcripts, then separated by semicolon, and if only contains a part of transcript, then it would be $transcript_id($start_exon_index-$end_exon_index):$gene_name:$similarity |
+| classfication        | Ref: the alleles very similar to reference genes, Alt: alternative version of reference genes, Dup: duplicated paralogs, Novel: paralogs with novel sequences |
+| pangenome_location | the location of the assembly, format: $sample#$haplotype#$contig:$start-$end$strand |
+| liftover_location | The liftover location of the allele, format: $chromosome:$start-$end$strand:$alignment_CIGAR  |
+
+Example row:
+A4GALT_group1_GW00056_h1_227    A4GALT_group1_9 A4GALT  ENST00000401850:A4GALT:99.68;   Alt     GW00056#1#GWHBKGU00000010:748831-766661-        chr22:42689120-42706939-:2058M2I5D303M1X1463M4I3116M1X261M1X279M1X82M1X448M1X459M1X124M1X85M2D225M1X1240M1X650M9I794M1X144M18D20I929M1X399M1X793M1X83M1X709M1X182M1X296M1X136M1X650M1X96M1X59M3I291M1I95M1X276M1X245M1X263M17D16I36M1X184M1X299M
+
+
 2. **(optional) Obtain public nomenclatures for important genes,including HLA, CYP2D6, and KIR**
 
    ```bash
    python tools/Annotation/Nomenclature/GenotypetoNomenclature.py -i genotype.txt -a data/all_nomenclature.txt > nomenclature.txt
    ```
+
+nomenclature.txt is also a table file with two columns: first column the name the genotyped pangenome-allele, and the second is the public nameclature this pangenome-allele contains. 
+
+
 3. **(optional) Convert genotyping results into VCF file**
 
    ```bash
