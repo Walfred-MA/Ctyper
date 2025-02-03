@@ -120,7 +120,7 @@ genotype.txt is a tsv table file. Its headers are:
 | Column Name     | Description                           |
 |-----------------|---------------------------------------|
 | allele_name       | Unique identifier for the pangenone allele, format is $prefix_$groupindex_$sample_$haplotype_$index   |
-| clade_name        | which clade (type of an allele, alias to HLA nameclature) this pangenone allele belongs to |
+| clade_name        | which clade (type of pangenome allele, alias to HLA nameclature) this pangenone allele belongs to |
 | transcript      | The exonic DNA it contains, format is $transcript_id:$gene_name:$similarity, if have multiple transcripts, then separated by semicolon, and if only contains a part of transcript, then it would be $transcript_id($start_exon_index-$end_exon_index):$gene_name:$similarity |
 | classfication        | Ref: the alleles very similar to reference genes, Alt: alternative version of reference genes, Dup: duplicated paralogs, Novel: paralogs with novel sequences |
 | pangenome_location | the location of the assembly, format: $sample#$haplotype#$contig:$start-$end$strand |
