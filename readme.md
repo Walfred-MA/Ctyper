@@ -65,7 +65,14 @@
 
 Let us get start to genotype an example sample NA12718
 
-first obtain its cram file 
+First install ctyper via conda:
+
+```bash
+conda create -n ctyper -c bioconda -c conda-forge -c defaults ctyper
+conda activate ctyper
+```
+
+Then obtain its cram file 
 
 ```bash
 wget "ftp://ftp.sra.ebi.ac.uk/vol1/run/ERR323/ERR3239480/NA12718.final.cram"
@@ -85,11 +92,6 @@ wget "https://zenodo.org/records/14399353/files/PangenomeAlleles_annotationfix.v
 gunzip PangenomeAlleles_annotationfix.v1.0.tsv.gz
 ```
 
-
-```bash
-conda create -n ctyper -c bioconda -c conda-forge -c defaults ctyper
-conda activate ctyper
-```
 
 Now, let's us start to genotype it, $LIBRARY_PATH is your path of LD_LIBRARY, if you are using conda to install HTSlib or samtools, then it should be usally at /home/$user_name/miniconda3/lib/, otherwise have a try at /usr/local/lib/
 
