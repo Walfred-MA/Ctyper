@@ -65,11 +65,19 @@
 
 Let us get start to genotype an example sample NA12718
 
-First install ctyper via conda:
+
+First Download and compile ctyper, making sure you have gcc >= 8 and eigen, zlib, and HTSlib installed
+
+$EIGEN_ROOT is the root path of EIGEN, usally /usr/
 
 ```bash
-conda create -n ctyper -c bioconda -c conda-forge -c defaults ctyper
-conda activate ctyper
+git clone https://github.com/Walfred-MA/Ctyper 
+
+export EIGEN_ROOT=$EIGEN_ROOT
+
+cd Ctyper/src && make
+
+mv ctyper ..
 ```
 
 Then obtain its cram file 
