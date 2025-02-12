@@ -85,18 +85,10 @@ wget "https://zenodo.org/records/14399353/files/PangenomeAlleles_annotationfix.v
 gunzip PangenomeAlleles_annotationfix.v1.0.tsv.gz
 ```
 
-Download and compile ctyper, making sure you have gcc >= 8 and eigen, zlib, and HTSlib installed
-
-$EIGEN_ROOT is the root path of EIGEN, usally /usr/
 
 ```bash
-git clone https://github.com/Walfred-MA/Ctyper 
-
-export EIGEN_ROOT=$EIGEN_ROOT
-
-cd Ctyper/src && make
-
-mv ctyper ..
+conda create -n ctyper -c bioconda -c conda-forge -c defaults ctyper
+conda activate ctyper
 ```
 
 Now, let's us start to genotype it, $LIBRARY_PATH is your path of LD_LIBRARY, if you are using conda to install HTSlib or samtools, then it should be usally at /home/$user_name/miniconda3/lib/, otherwise have a try at /usr/local/lib/
