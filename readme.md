@@ -322,8 +322,16 @@ Ctyper takes five types of files as input:
 5. **FASTA files** (`*.fa`, `*.fasta`).
   
 <!-- Installation -->
-# Installation  
-  
+# Installation from conda
+
+   ```bash
+   conda create -n ctyper_env  -c conda-forge -c bioconda ctyper
+   conda activate ctyper_env
+   ```
+
+
+# Installation from source
+
 1. **Install all prerequisites.**
 2. **Navigate to the `src/` directory:**
 
