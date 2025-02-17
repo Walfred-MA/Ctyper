@@ -55,7 +55,7 @@ private:
     
     hts_itr_t * iter = NULL;
     
-    sam_hdr_t *header = NULL;
+    bam_hdr_t *header = NULL;
     
     hts_idx_t *indexdata = NULL;
     
