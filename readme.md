@@ -65,20 +65,18 @@
 
 Let us get start to genotype an example sample NA12718
 
-
-First Download and compile ctyper, making sure you have gcc >= 8 and eigen, zlib, and HTSlib installed
-
-$EIGEN_ROOT is the root path of EIGEN, usally /usr/
+ctyper now is available in conda:
 
 ```bash
-git clone https://github.com/Walfred-MA/Ctyper 
-
-export EIGEN_ROOT=$EIGEN_ROOT
-
-cd Ctyper/src && make
-
-mv ctyper ..
+conda create -n ctyper_env  -c conda-forge -c bioconda ctyper
+conda activate ctyper_env
 ```
+
+Background kmers, and public nomenclature files are included at /share/cyber/data/backgrounds.list,
+Post-analysis tools are included at /share/ctyper/tools/ 
+
+if you cannot find it, you may obtain it from GitHub folders here. 
+
 
 Then obtain its cram file 
 
