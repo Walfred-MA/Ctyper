@@ -65,7 +65,20 @@
 
 Let us get start to genotype an example sample NA12718
 
-first obtain its cram file 
+ctyper now is available in conda:
+
+```bash
+conda create -n ctyper_env  -c conda-forge -c bioconda ctyper
+conda activate ctyper_env
+```
+
+Background kmers, and public nomenclature files are included at /share/cyber/data/backgrounds.list,
+Post-analysis tools are included at /share/ctyper/tools/ 
+
+if you cannot find it, you may obtain it from GitHub folders here. 
+
+
+Then obtain its cram file 
 
 ```bash
 wget "ftp://ftp.sra.ebi.ac.uk/vol1/run/ERR323/ERR3239480/NA12718.final.cram"
@@ -85,19 +98,6 @@ wget "https://zenodo.org/records/14399353/files/PangenomeAlleles_annotationfix.v
 gunzip PangenomeAlleles_annotationfix.v1.0.tsv.gz
 ```
 
-Download and compile ctyper, making sure you have gcc >= 8 and eigen, zlib, and HTSlib installed
-
-$EIGEN_ROOT is the root path of EIGEN, usally /usr/
-
-```bash
-git clone https://github.com/Walfred-MA/Ctyper 
-
-export EIGEN_ROOT=$EIGEN_ROOT
-
-cd Ctyper/src && make
-
-mv ctyper ..
-```
 
 Now, let's us start to genotype it, $LIBRARY_PATH is your path of LD_LIBRARY, if you are using conda to install HTSlib or samtools, then it should be usally at /home/$user_name/miniconda3/lib/, otherwise have a try at /usr/local/lib/
 
@@ -322,8 +322,16 @@ Ctyper takes five types of files as input:
 5. **FASTA files** (`*.fa`, `*.fasta`).
   
 <!-- Installation -->
-# Installation  
-  
+# Installation from conda
+
+   ```bash
+   conda create -n ctyper_env  -c conda-forge -c bioconda ctyper
+   conda activate ctyper_env
+   ```
+
+
+# Installation from source
+
 1. **Install all prerequisites.**
 2. **Navigate to the `src/` directory:**
 
