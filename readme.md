@@ -72,8 +72,8 @@ conda create -n ctyper_env  -c conda-forge -c bioconda ctyper
 conda activate ctyper_env
 ```
 
-Background kmers, and public nomenclature files are included at /share/cyber/data/backgrounds.list,
-Post-analysis tools are included at /share/ctyper/tools/ 
+Background kmers, and public nomenclature files are included at $CONDA_PREFIX/share/cyber/data/backgrounds.list,
+Post-analysis tools are included at $CONDA_PREFIX/share/ctyper/tools/ 
 
 if you cannot find it, you may obtain it from GitHub folders here. 
 
