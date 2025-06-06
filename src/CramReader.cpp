@@ -19,7 +19,24 @@ void CramReader::LoadRegion(std::vector<char *>& bedregions)
     
     if (strlen(filepath)<2) return;
     
-    std::string indexpath = std::string(filepath)+".crai";
+    std::string indexpath;
+    if (strlen(filepath) >= 5 && std::string(filepath).substr(strlen(filepath) - 5) == ".cram")
+    {
+        indexpath = std::string(filepath) + ".crai";
+    }
+    else if (strlen(filepath) >= 4 && std::string(filepath).substr(strlen(filepath) - 4) == ".bam")
+    {
+        indexpath = std::string(filepath) + ".bai";
+    }
+    else if (strlen(filepath) >= 4 && std::string(filepath).substr(strlen(filepath) - 4) == ".sam")
+    {
+        indexpath = std::string(filepath) + ".sai";  // placeholder
+    }
+    else
+    {
+        std::cerr << "Unsupported file type: " << filepath << std::endl;
+        std::_Exit(EXIT_FAILURE);
+    }
             
     int attemp = 200;
     do
