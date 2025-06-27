@@ -72,8 +72,8 @@ def variant_totext(chr, pos, data):
     type, size, seq, name, qcontig, qpos,qstrd, rstrd = data
     
     if type == "X":
-        REF = seq[:len(seq)-size]
-        ALT = seq[-size:]
+        ALT = seq[:len(seq)-size]
+        REF = seq[-size:]
     if type == "D":
         REF = seq
         ALT = "<DEL>"
