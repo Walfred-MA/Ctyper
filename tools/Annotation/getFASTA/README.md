@@ -1,7 +1,7 @@
 # Ctyper Genotyping FASTA Converter
 
 This script converts Ctyper genotyping annotation outputs into standard FASTA sequence files by extracting the aligned reference regions based on CIGAR strings and reference genome data.
-
+To make sure of inputting all alternative loci, consider also input $CTYPER_PATH/data/Allalters.fa
 ---
 
 ## 🔧 Requirements
