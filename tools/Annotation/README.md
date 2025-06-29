@@ -13,7 +13,7 @@ To run the script, use the following command:
 python SampleAnnotate.py -i <Inputfile> -a <Sample_Annotation> > result.txt
 ```
 
-Replace `<Inputfile>` with the path to your input file and `<Sample_Annotation>` with the sample annotation file.
+Replace `<Inputfile>` with the path to your input file and `<Sample_Annotation>` with the sample annotation file. Sample_Annotation need to be a tsv file or gzipped tsv.gz file
 
 ## 3. Output Description
 
