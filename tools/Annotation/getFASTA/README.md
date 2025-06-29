@@ -15,4 +15,7 @@ To make sure of inputting all alternative loci, consider also input $CTYPER_PATH
 ## 🚀 Usage
 
 ```bash
-python getFASTA.py -i <Inputfile> -r <references> -a <Sample_Annotation> -o <Outputfile>
+python getFASTA.py -i <Inputfile> -r <GRCH38_References> -a <Sample_Annotation> -o <Outputfile>
+
+Sample_Annotation need to be a tsv file or gzipped tsv.gz file
+References is GRCH38_References (including all alternative loci) ,can be single or multiple fasta files (comma separated). 
