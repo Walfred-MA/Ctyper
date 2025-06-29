@@ -89,21 +89,18 @@ def get_fasta(input_path, anno_path, ref_files, output_path):
                 continue
 
             qlocation, alignment = line[7], line[-1]
-            try:
-                chrom, rlocation, cigar = alignment.split(":")[-3:]
-            except ValueError:
-                out.write(f">{name} {qlocation} {alignment}\nUnmap\n")
+            chrom, rlocation, cigar = alignment.split(":")[-3:]
+            if rlocation == "NA" or chrom == "NA":
+                out.write(f">{name}\t{qlocation}\tUnmap\t\n{cigar}")
                 continue
 
-            if rlocation == "NA" or chrom == "NA":
-                continue
 
             if chrom not in ref_seqs:
                 print(f"[WARN] Missing reference contig '{chrom}' — check for alternative contigs or use -r HG38_main.fa,$Ctyper_PATH/data/Allalters.fa")
                 continue
 
             seq = cigar_to_seq(rlocation, cigar, ref_seqs[chrom])
-            out.write(f">{name} {qlocation} {chrom}:{rlocation}\n{seq}\n")
+            out.write(f">{name}\t{qlocation}\t{chrom}:{rlocation}\n{seq}\n")
 
     anno_file.close()
 
