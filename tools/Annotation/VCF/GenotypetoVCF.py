@@ -3,6 +3,7 @@
 import argparse
 import collections as cl
 import re 
+import gzip 
 
 def makereverse(seq):
 	
@@ -22,9 +23,9 @@ def CIGARbreak(CIGAR):
 		cigar_list.append((thetype,int(size_str), seq))
 		
 	return cigar_list
+	
 		
-
-def CIGAR_polish(rstart, rend,strd, qstart, qend,qstrd, allcigars):
+def CIGAR_polish(rstart, rend,rstrd, qstart, qend,qstrd, allcigars):
 	
 	leftsize = 0
 	leftindex = 0
@@ -48,55 +49,34 @@ def CIGAR_polish(rstart, rend,strd, qstart, qend,qstrd, allcigars):
 			rightindex = len(allcigars) - i
 			break
 		
-	leftsize = sum([x[1] for x in allcigars[:leftindex] if x[1] in ['M','D','X']]+[0])
-	rightsize = sum([x[1] for x in allcigars[rightindex:] if x[1] in ['M','D','X']]+[0])
+	leftsize = sum([x[1] for x in allcigars[:leftindex] if x[0] in ['M','D','X']]+[0])
+	rightsize = sum([x[1] for x in allcigars[rightindex:] if x[0] in ['M','D','X']]+[0])
 	
-	if strd == '+':
+	if rstrd == '+':
 		rstart, rend = rstart+leftsize, rend-rightsize
 	else:
-		rstart, rend = rstart-leftsize, rend+rightsize
+		rstart, rend = rstart+rightsize, rend-leftsize
 		
-	leftsize = sum([x[1] for x in allcigars[:leftindex] if x[1] in ['M','I','X']]+[0])
-	rightsize = sum([x[1] for x in allcigars[rightindex:] if x[1] in ['M','I','X']]+[0])
+	leftsize = sum([x[1] for x in allcigars[:leftindex] if x[0] in ['M','I','X']]+[0])
+	rightsize = sum([x[1] for x in allcigars[rightindex:] if x[0] in ['M','I','X']]+[0])
 	
 	if qstrd == '+':
 		qstart, qend = qstart+leftsize, qend-rightsize
 	else:
-		qstart, qend = qstart-leftsize, qend+rightsize
+		qstart, qend = qstart+rightsize, qend-leftsize
 		
-		
+	
 		
 	return rstart, rend, qstart, qend, allcigars[leftindex:rightindex]
 
 def variant_totext(chr, pos, data):
 	
-	type, size, seq, name, qcontig, qpos,qstrd, rstrd = data
-	
-	if type == "X":
-		ALT = seq[:len(seq)-size]
-		REF= seq[-size:]
-	if type == "D":
-		REF = seq
-		ALT = "<DEL>"
-	if type == 'I':
-		REF = seq[0]
-		ALT = seq[2:]
-
-	if rstrd == -1:
-		if type in ['X'] :
-			REF = makereverse(REF)
-			ALT = makereverse(ALT)
-		elif type in ['D']:
+	type, length, REF, ALT, name, qcontig, qpos,qstrd, rstrd = data
 			
-			REF = makereverse(REF)
-		elif type in ['I']:
-			REF = makereverse(seq[len(seq) -1 - size ])
-			ALT = makereverse(ALT)
-	
 	info = {}
 	if type in ['D','I']:
 		
-		info["END"] = str(pos+size-1)
+		info["END"] = str(pos+length-1)
 		info["SVTYPE"] = "DEL" if type == 'D' else "INS"
 		
 		
@@ -119,30 +99,46 @@ class vcfdata:
 		
 	def determine_cover(self, chr, pos):
 		
-		
 		return len([x for x in self.coverages[chr] if x[1] <= pos and x[2] > pos])
 	
 	
-	def loadCIGAR(self, name, chr, rstart, rend,rstrd, qcontig, qstart, qend,qstrd, CIGAR):
-				
+	def loadCIGAR(self, name, qlocation, alignment):
+		
+		chr, rlocation, CIGAR = alignment.split(":")[-3:]
+		
+		if "" in [chr, rlocation, CIGAR] or "NA" in [chr, rlocation, CIGAR]:
+			return
+		
+		rstrd = rlocation[-1]
+		rstart, rend = rlocation[:-1].split('-')
+		rstart, rend = int(rstart), int(rend)
+		
+		self.coverages[chr].append([chr, rstart, rend,name])
+		
+		qcontig, qlocation = qlocation.split(":")
+		qstrd = qlocation[-1]
+		qstart, qend = qlocation[:-1].split('-')
+		qstart, qend = int(qstart), int(qend)
+		
+		
 		allcigars = CIGARbreak(CIGAR)
 		
 		rstart, rend, qstart, qend, allcigars = CIGAR_polish(rstart, rend,rstrd, qstart, qend,qstrd, allcigars)
-		
+				
 		variants = self.allchrom_variants[chr]
 		
 		qstrd = 1 if qstrd == '+' else -1
 		if qstrd == -1:
-			qstart_ = qend
-			qend = qstart
-			qstart = qstart_
+			qstart_ = qend 
+			qend = qstart 
+			qstart = qstart_ 
 			
 		rstrd = 1 if rstrd == '+' else -1
 		if rstrd == -1:
 			rstart_ = rend 
-			rend = rstart
-			rstart = rstart_
-			
+			rend = rstart 
+			rstart = rstart_ 
+		
 		rpos = rstart
 		qpos = qstart
 		
@@ -150,32 +146,46 @@ class vcfdata:
 			
 			thetype,length, seq = cigar
 			
-			if thetype == "I":
-				if  rstrd > 0:
-					variants[rpos].append(( thetype,length, seq, name, qcontig, qpos, qstrd, rstrd))
-				else:
-					variants[rpos-1].append(( thetype,length, seq, name, qcontig, qpos, qstrd, rstrd))
-				
-			elif thetype in ['D'] and rstrd < 0:
-				if  rstrd > 0:
-					variants[rpos].append(( thetype,length, seq, name, qcontig, qpos, qstrd, rstrd))
-				else:
-					variants[rpos - length + 1].append(( thetype,length, seq, name, qcontig, qpos, qstrd, rstrd))
-				
-			elif thetype in ['X'] and rstrd < 0:
-				if  rstrd > 0:
-					variants[rpos].append(( thetype,length, seq, name, qcontig, qpos, qstrd, rstrd))
-				else:
-					variants[rpos - length + 1].append(( thetype,length, seq, name, qcontig, qpos, qstrd, rstrd))
-				
+			if thetype != "M" and thetype != "=":
+				if thetype == "I":
+					if  rstrd > 0:
+						REF = seq[0]
+						ALT = seq[0]+seq[2:]
+						POS = rpos-1
+					else:
+						REF = makereverse(seq[1])
+						ALT = makereverse(seq[1])+makereverse(seq[2:])
+						POS = rpos
+					
+				elif thetype in ['D']:
+					if  rstrd > 0:
+						REF = seq
+						ALT = "<DEL>"
+						POS = rpos
+					else:
+						REF = makereverse(seq)
+						ALT = "<DEL>"
+						POS = rpos - (length -1 )
+						
+				elif thetype in ['X']:
+					if  rstrd > 0:
+						REF = seq[:length]
+						ALT = seq[length:]
+						POS = rpos
+					else:
+						REF = makereverse(seq[:length])
+						ALT = makereverse(seq[length:])
+						POS = rpos - (length - 1)
 			
+				variants[POS].append(( thetype,length, REF, ALT, name, qcontig, qpos, qstrd, rstrd))
+							
 			if thetype in ['M','D','X']:
 				rpos += rstrd * length
 				
 			if thetype in ['M','I','X']:
 				qpos += qstrd * length
-				
-				
+		
+		
 	def output(self, outputfile):
 		
 		self.allchrom_variants = {chr:sorted([(rpos, vars) for rpos,vars in variants.items()]) for chr, variants in self.allchrom_variants.items()}
@@ -206,9 +216,9 @@ class vcfdata:
 								samplecover = self.determine_cover(chr, variant[0])
 								
 								if max(2,samplecover)>len(names):
-									sample = "0/1"
+									sample = "0|1"
 								else:
-									sample = "1/1"
+									sample = "1|1"
 									
 									
 								text[-2] = ";".join([k+"="+x for k,x in text[-2].items()])
@@ -221,9 +231,9 @@ class vcfdata:
 					if  len(text[0]):
 						samplecover = self.determine_cover(chr, variant[0])
 						if max(2,samplecover)>len(names):
-							sample = "0/1"
+							sample = "0|1"
 						else:
-							sample = "1/1"
+							sample = "1|1"
 							
 						text[-2] = ";".join([k+"="+x for k,x in text[-2].items()])
 						f.write("\t".join(text+[sample])+"\n")
@@ -243,68 +253,39 @@ class vcfdata:
 					
 def vcf(inputfile, annofile, outputfile):
 	
-	allnames = set()
+	allnames = cl.defaultdict(int)
 	with open(inputfile, mode = 'r') as f:
 		
 		for line in f:
 			
 			line = line.strip().split("\t")
-			allnames.add(line[0])
+			allnames[line[0]] += 1
 	
-	fullcigars = cl.defaultdict(str)
-	with open(annofile, mode = 'r') as f:
-		
-		for line in f:
-			line = line.strip().split("\t")
-			if line[0] in allnames:
-				
-				if line[-1].count(":") > 1: 
-					data = line[-1].split(":")
-					if min([len(x.strip()) for x in data]) > 0:
-						fullcigars[line[0]] = (data[-3],data[-2],data[-1])
-						
+	
 	vcf_record = vcfdata()
 	
-	name_counter = cl.defaultdict(int)
-	results = set()
-	
-	with open(inputfile, mode = 'r') as f:
+	if annofile.endswith(".gz"):
+		annofile_ = gzip.open(annofile, mode = 'rt')
+	else:
+		annofile_ = open(annofile, mode = 'r')
 		
-		for line in f:
+	fullcigars = cl.defaultdict(str)		
+	for line in annofile_:
+		line = line.strip().split("\t")
+		name = line[0]
+		
+		if name not in allnames:
+			continue
 			
-			line = line.strip().split("\t")
-			name = line[0]
-			name_counter[name] += 1
-			
-			if name_counter[name] > 1:
-				name += "#" + str(name_counter[name])
-				
-			alignment = fullcigars[name]
-			
-			if len(alignment) == 0:
-				continue
-			
-			
-			qlocation = line[5]
-			chr, location, CIGAR = alignment
-			strd = location[-1]
-			rstart, rend = location[:-1].split('-')
-			rstart, rend = int(rstart), int(rend)
-			
-			
-			vcf_record.coverages[chr].append([chr, rstart, rend,name])
-			
-			qcontig, qlocation = qlocation.split(":")
-			qstrd = qlocation[-1]
-			qstart, qend = qlocation[:-1].split('-')
-			qstart, qend = int(qstart), int(qend)
-			
-			vcf_record.loadCIGAR(name, chr, rstart, rend, strd, qcontig, qstart, qend, qstrd, CIGAR)
-			
+		qlocation, alignment = line[7], line[-1]
+					
+		for i in range(allnames[name]):
+			vcf_record.loadCIGAR(name, qlocation, alignment)
+	annofile_.close()
+	
 	vcf_record.output(outputfile)
 	
-	
-	
+
 	
 def main(args):
 	
