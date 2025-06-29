@@ -92,11 +92,10 @@ def get_fasta(input_path, anno_path, ref_files, output_path):
             try:
                 chrom, rlocation, cigar = alignment.split(":")[-3:]
             except ValueError:
-                out.write(f">{name} {qlocation} {alignment}\nINVALID_ALIGNMENT\n")
+                out.write(f">{name} {qlocation} {alignment}\nUnmap\n")
                 continue
 
             if rlocation == "NA" or chrom == "NA":
-                out.write(f">{name} {qlocation} {alignment}\nNA\n")
                 continue
 
             if chrom not in ref_seqs:
