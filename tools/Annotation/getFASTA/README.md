@@ -15,4 +15,4 @@ To make sure of inputting all alternative loci, consider also input $CTYPER_PATH
 ## 🚀 Usage
 
 ```bash
-python3 ctyper_to_fasta.py -i input.txt -r reference1.fa,Allalters.fa -a annotation.tsv.gz -o output.fasta
+python getFASTA.py -i <Inputfile> -r <references> -a <Sample_Annotation> -o <Outputfile>
