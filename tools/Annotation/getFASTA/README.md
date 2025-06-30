@@ -21,4 +21,4 @@ Sample_Annotation need to be a tsv file or gzipped tsv.gz file
 References are GRCH38_References (including main chromosomes and all alternative loci) ,can be single or multiple fasta files (comma separated). 
 
 To study the unmapped sequences:
-awk '/^>/{keep = ($0 ~ /\bUnmap\b/)} keep' <Outputfile> > unmap_sequences.fa
+awk -F'\t' '/^>/{keep = ($3 == "Unmap")} keep' <Outputfile> > unmap_sequences.fa
