@@ -9,7 +9,7 @@ This script converts Ctyper genotyping annotation outputs into standard FASTA se
 - No external Python packages (uses only built-in libraries)
 
 Note:
-To make sure of inputting all alternative loci, consider also input $CTYPER_PATH/data/Allalters.fa alongside with your reference(s), separated with comma. CHM13 Reference needs to have chromosome names with NC_* instead of chr*, to distinguish from GRCH38. 
+To make sure of inputting both GRCH38 and CHM13 references because some sequences can only be mapped to CHM13 and will not be outputted without CHM13 reference. References need to be separated with comma. CHM13 reference needs to have chromosome names with NC_* instead of chr*, to distinguish from GRCH38. Also considering including all alternative loci and input $CTYPER_PATH/data/Allalters.fa alongside with your references, e.g  -r HG38_main.fa,AllAlters.fa,CHM13.fa
 ---
 
 ## 🚀 Usage
