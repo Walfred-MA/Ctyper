@@ -11,7 +11,7 @@ This script converts Ctyper genotyping annotation outputs into standard FASTA se
 Note:
 1. Recommand inputting both GRCH38 and CHM13 references because some sequences can only be mapped to CHM13. References need to be separated with comma.
 2. CHM13 reference needs to have chromosome names with NC_* instead of chr*, to distinguish from GRCH38.
-3. Also consider including all alternative loci and input $CTYPER_PATH/data/Allalters.fa alongside with your references,
+3. Also consider including all alternative loci and input Allalters.fa alongside with your references, Allalters.fa can be found in our zenodo. 
 4. e.g:  -r HG38_main.fa,Allalters.fa,CHM13.fa
 ---
 
