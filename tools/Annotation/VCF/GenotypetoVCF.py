@@ -4,6 +4,8 @@ import argparse
 import collections as cl
 import re 
 import gzip 
+from itertools import takewhile
+
 
 def makereverse(seq):
 	
@@ -80,38 +82,80 @@ def variant_totext(chr, pos, data):
 		info["SVTYPE"] = "DEL" if type == 'D' else "INS"
 		
 		
-	info["NAME"] = name  
+	info["ALLELE"] = name  
 	info["SOURCE"] = "{}:{}{}".format(qcontig, qpos,"+" if qstrd==1 else '-')
 	columns = [chr, str(pos), ".", REF, ALT, ".", ".", info, "GT"]
 	
 	return columns
 
 
+
+	
+	
+
 class vcfdata:
 	
 	def __init__(self):
 		
-		self.colnames = "#CHROM POS     ID      REF     ALT     QUAL    FILTER  INFO    FORMAT  SAMPLE"
+		self.colnames = "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tSAMPLE"
+		self.info = """##INFO=<ID=ALLELE_ANNOTATION,Number=.,Type=String,Description="Per-haplotype annotations for all samples at this site. Haplotypes are separated by semicolons (';'), and within each haplotype, fields are comma-separated key=value pairs. Required fields: ALLELE (haplotype name), SOURCE (pangenome assembly location). Optional fields: QPOS (variant position on the assembly; present only for haplotypes carrying the ALT allele). The order of haplotypes matches the phased GT field.">\n##comment=Some target gene group regions may overlap if they are close enough. In such cases, User might consider select only one group for allele annotation."""
 		
 		self.allchrom_variants = cl.defaultdict(lambda: cl.defaultdict(list))
 		
 		self.coverages =  cl.defaultdict(list)
+		self.qlocations = cl.defaultdict(str)
 		
-	def determine_cover(self, chr, pos):
+	def determine_cover(self,  chr, pos):
 		
-		return len([x for x in self.coverages[chr] if x[1] <= pos and x[2] > pos])
+		return [x[3] for x in takewhile(lambda x: x[1] <= pos, self.coverages[chr]) if x[2] > pos]
 	
+	def getline(self, names, text, chr,  pos):
+		
+		names = sorted(names, key = lambda x: x[2])
+		
+		haplotypes = self.determine_cover(chr, pos)
+		
+		altertypes = set([x[0] for x in names])
+		
+		reftypes = [x for x in haplotypes if x not in altertypes and x.split("_")[:2] == names[0][0].split("_")[:2]]
+	
+	
+		if len(reftypes) == 0 and len(altertypes) == 1:
+			sample = '1|1'
+		else:
+			sample  = ['0'] * len(reftypes)
+			lastgenotype = '0'
+			counter = 0
+			for x in names:
+				if x[2] != lastgenotype:
+					counter+=1
+				lastgenotype = x[2]
+				sample.append(str(counter))
+			sample = "|".join(sample)
+		
+		text[4] = ",".join(altertypes)
+		
+		text[-2] = ";".join(["ALLELE="+x+","+"SOURCE="+self.qlocations[x] for x in reftypes]+["ALLELE="+x[0]+","+"SOURCE="+self.qlocations[x[0]]+","+"QPOS="+x[1] for x in names])
+		
+		return "\t".join(text+[sample])+"\n"
+		
+	
+	def sort(self):
+		
+		for chr, data in self.coverages.items():
+			
+			self.coverages[chr] = sorted(data, key = lambda x: x[1])
 	
 	def loadCIGAR(self, name, qlocation, alignment):
-		
 		chr, rlocation, CIGAR = alignment.split(":")[-3:]
-		
+		self.qlocations[name] = qlocation
 		if "" in [chr, rlocation, CIGAR] or "NA" in [chr, rlocation, CIGAR]:
 			return
 		
 		rstrd = rlocation[-1]
 		rstart, rend = rlocation[:-1].split('-')
 		rstart, rend = int(rstart), int(rend)
+		
 		
 		self.coverages[chr].append([chr, rstart, rend,name])
 		
@@ -124,7 +168,7 @@ class vcfdata:
 		allcigars = CIGARbreak(CIGAR)
 		
 		rstart, rend, qstart, qend, allcigars = CIGAR_polish(rstart, rend,rstrd, qstart, qend,qstrd, allcigars)
-				
+		
 		variants = self.allchrom_variants[chr]
 		
 		qstrd = 1 if qstrd == '+' else -1
@@ -188,7 +232,7 @@ class vcfdata:
 		
 	def output(self, outputfile):
 		
-		self.allchrom_variants = {chr:sorted([(rpos, vars) for rpos,vars in variants.items()]) for chr, variants in self.allchrom_variants.items()}
+		self.allchrom_variants = {chr:sorted([(rpos, sorted(vars, key = lambda x: x[4])) for rpos,vars in variants.items()]) for chr, variants in self.allchrom_variants.items()}
 		
 		
 		with open(outputfile, mode = 'w') as f:
@@ -197,46 +241,26 @@ class vcfdata:
 			
 			for chr, variants in self.allchrom_variants.items():
 				
-				
-				for variant in variants:
-					
+				for pos,variant in variants:
 					text = ['','','','','']
-					names = set()
-					totalcounter = len(set([x[3] for x in variant[1]]))
-					for var in variant[1]:
-						newtext = variant_totext(chr, variant[0], var)
+					names = []
+					totalcounter = len(set([x[3] for x in variant]))
+					for var in variant:
+						newtext = variant_totext(chr, pos, var)
 						
-						if text[:5] == newtext[:5] :
-							text[-2]["NAME"]+= ","+newtext[-2]["NAME"]
-							text[-2]["SOURCE"]+= ","+newtext[-2]["SOURCE"]
-							names.add(var[3])
-						else:
+						if text[:2] == newtext[:2] and newtext[-2]["ALLELE"].split('_')[:2] == text[-2]["ALLELE"].split('_')[:2]:
 							
+							names.append([newtext[-2]["ALLELE"], newtext[-2]["SOURCE"],  var[3]])
+						else:
 							if  len(text[0]):
-								samplecover = self.determine_cover(chr, variant[0])
-								
-								if max(2,samplecover)>len(names):
-									sample = "0|1"
-								else:
-									sample = "1|1"
-									
-									
-								text[-2] = ";".join([k+"="+x for k,x in text[-2].items()])
-								f.write("\t".join(text+[sample])+"\n")
-								
-							text = newtext
-							names = set([var[3]])
+								f.write(self.getline(names, text,chr, pos))
 							
-							
+							names = [ [newtext[-2]["ALLELE"], newtext[-2]["SOURCE"],  var[3]] ]
+						
+						text = newtext
+						
 					if  len(text[0]):
-						samplecover = self.determine_cover(chr, variant[0])
-						if max(2,samplecover)>len(names):
-							sample = "0|1"
-						else:
-							sample = "1|1"
-							
-						text[-2] = ";".join([k+"="+x for k,x in text[-2].items()])
-						f.write("\t".join(text+[sample])+"\n")
+						f.write(self.getline(names, text, chr,pos))
 						
 						
 						
@@ -278,11 +302,11 @@ def vcf(inputfile, annofile, outputfile):
 			continue
 			
 		qlocation, alignment = line[7], line[-1]
-					
+		
 		for i in range(allnames[name]):
 			vcf_record.loadCIGAR(name, qlocation, alignment)
 	annofile_.close()
-	
+	vcf_record.sort()
 	vcf_record.output(outputfile)
 	
 
