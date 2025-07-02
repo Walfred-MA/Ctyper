@@ -18,7 +18,7 @@ python GenotypetoNomenclature.py -i <Inputfile> -a <Sample_Annotation> -o <Outpu
 Sample_Annotation need to be a tsv file or gzipped tsv.gz file
 
 ## 4. Note:
-1. **The genotyping regions of ctyper have overlaps between different targeting groups if they are close or share genes, which would cause duplicated variants on VCF, consider picking only one groups at a time**
+1. **The genotyping regions of ctyper have overlaps between different targeting groups if they are close or share genes, which would cause duplicated variants on VCF, consider picking only one group at a time**
 2. **It has to note this conversion does not fully perseve the original table information. Duplications and non-reference sequences may be removed**
 3. **The coordinates provide are based on reference liftover. However, it may not be ideal. In the events of duplications and gene conversions, the liftover is always controversy and may subject to different locations regarding different purposes of liftover.**
 4. **Genotyping itself has lower base accuracy than NGS alignment, so use by cautious**
