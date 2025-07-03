@@ -568,6 +568,7 @@ void KmerCounter<dictsize>::count_kmer(CramReader &file, uint16* samplevecs, ull
     char base; 
     while (file.nextLine_prt(StrLine, rlen))
     {
+	current_size = 0;
         for (int pos = 0; pos < rlen; ++pos)
         {
 	    base = seq_nt16_str[bam_seqi(StrLine,pos)];
