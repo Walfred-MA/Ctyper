@@ -6,7 +6,7 @@
 //  If you use this code, please cite our work.
 //   
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 #include <vector>
 #include <limits>
 #include <algorithm>

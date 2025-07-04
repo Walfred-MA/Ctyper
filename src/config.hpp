@@ -2,7 +2,7 @@
 #define config_hpp
 
 #include <stdio.h>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 #include <atomic>
 
 typedef unsigned int uint;
