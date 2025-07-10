@@ -72,7 +72,6 @@ def CIGAR_polish(rstart, rend,rstrd, qstart, qend,qstrd, allcigars):
 	return rstart, rend, qstart, qend, allcigars[leftindex:rightindex]
 
 def variant_totext(chr, pos, data):
-
 	
 	type, length, REF, ALT, name, qcontig, qpos,qstrd, rstrd = data
 			
@@ -85,47 +84,9 @@ def variant_totext(chr, pos, data):
 		
 	info["ALLELE"] = name  
 	info["SOURCE"] = "{}:{}{}".format(qcontig, qpos,"+" if qstrd==1 else '-')
-	columns = [chr, str(pos), ".", REF, ALT, ".", ".", info, "GT"]
+	columns = [chr, str(pos),".", REF, ALT, ".", ".", info, "GT"]
 	
 	return columns
-
-
-    
-    type, size, seq, name, qcontig, qpos,qstrd, rstrd = data
-    
-    if type == "X":
-        ALT = seq[:len(seq)-size]
-        REF = seq[-size:]
-    if type == "D":
-        REF = seq
-        ALT = "<DEL>"
-    if type == 'I':
-        REF = seq[0]
-        ALT = seq[-size:]
-        
-    if rstrd == -1:
-        if type in ['X'] and size > 1:
-            REF = makereverse(REF)
-            ALT = makereverse(ALT)
-        elif type in ['D']:
-            
-            REF = makereverse(REF)
-        elif type in ['I']:
-            REF = makereverse(seq[len(seq) - size - 1])
-            ALT = makereverse(ALT)
-            
-    info = {}
-    if type in ['D','I']:
-        
-        info["END"] = str(pos+size-1)
-        info["SVTYPE"] = "DEL" if type == 'D' else "INS"
-        
-        
-    info["NAME"] = name  
-    info["SOURCE"] = "{}:{}{}".format(qcontig, qpos,"+" if qstrd==1 else '-')
-    columns = [chr, str(pos), ".", REF, ALT, ".", ".", info, "GT"]
-    
-    return columns
 
 
 
@@ -172,9 +133,11 @@ class vcfdata:
 				sample.append(str(counter))
 			sample = "|".join(sample)
 		
-		text[4] = ",".join(altertypes)
 		
-		text[-2] = ";".join(["ALLELE="+x+","+"SOURCE="+self.qlocations[x] for x in reftypes]+["ALLELE="+x[0]+","+"SOURCE="+self.qlocations[x[0]]+","+"QPOS="+x[1] for x in names])
+		alleles = list(map(str,reftypes+[x[0] for x in names]))
+		sources = list(map(str,[self.qlocations[x] for x in reftypes] + [self.qlocations[x[0]] for x in names]))
+		qpos = list(map(str,["." for x in names] +  [x[1] for x in names]))
+		text[-2] = ";".join(["ALLELE="+",".join(alleles), "SOURCE="+",".join(sources),"QPOS="+",".join(qpos)])
 		
 		return "\t".join(text+[sample])+"\n"
 		
