@@ -91,7 +91,7 @@ def get_fasta(input_path, anno_path, ref_files, output_path):
             qlocation, alignment = line[7], line[-1]
             chrom, rlocation, cigar = alignment.split(":")[-3:]
             if rlocation == "NA" or chrom == "NA":
-                out.write(f">{name}\t{qlocation}\tUnmap\t{cigar}\n")
+                out.write(f">{name}\t{qlocation}\tUnmap\n{cigar}\n")
                 continue
 
 
