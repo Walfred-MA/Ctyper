@@ -99,8 +99,6 @@ def get_fasta(input_path, anno_path, ref_files, output_path):
             
             if chrom not in ref_seqs:
                 
-                if chrom == "NA":
-                    print(alignment)
                 print(f"[WARN] Missing reference contig '{chrom}' — check for alternative contigs or use -r HG38_main.fa,$Ctyper_PATH/data/Allalters.fa")
                 continue
 
@@ -128,4 +126,3 @@ def run():
 
 if __name__ == "__main__":
     run()
-    
