@@ -99,7 +99,7 @@ def get_fasta(input_path, anno_path, ref_files, output_path):
             
             if chrom not in ref_seqs:
                 
-                print(f"[WARN] Missing reference contig '{chrom}' — check for alternative contigs or use -r HG38_main.fa,$Ctyper_PATH/data/Allalters.fa")
+                print(f"[WARN] Missing reference contig '{chrom}' — check for alternative contigs or use -r HG38_main.fa,CHM13.fa,Allalters.fa")
                 continue
 
             seq = cigar_to_seq(rlocation, cigar, ref_seqs[chrom])
