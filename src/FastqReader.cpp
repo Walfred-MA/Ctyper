@@ -10,93 +10,179 @@
 
 void FastqReader::Load()
 {
-    
-    buffer.resize(MAX_LINE);
-    
     if (strlen(filepath)<2) return;
     
-    fafile = gzopen(filepath, "rb");
-    
-    if (fafile == NULL)
+    ifgz = (std::string(filepath).size() >= 3 &&
+            std::string(filepath).compare(std::string(filepath).size() - 3, 3, ".gz") == 0);
+    if (ifgz)
     {
-        std::cerr << "ERROR: Could not open " << filepath << " for reading.\n" << std::endl;
-        std::_Exit(EXIT_FAILURE);
+        fafile = gzopen(filepath, "rb");
+        if (fafile == NULL)
+        {
+            std::cerr << "ERROR: Could not open " << filepath << " for reading.\n" << std::endl;
+            std::_Exit(EXIT_FAILURE);
+        }
     }
+    else
+    {
+        file = fopen(filepath, "r");
+        if (file == NULL)
+        {
+            std::cerr << "ERROR: Could not open " << filepath << " for reading.\n" << std::endl;
+            std::_Exit(EXIT_FAILURE);
+        }
+    }
+    
     
 }
 
-bool FastqReader:: nextLine_prt(const char* &StrLine, size_t &rlen)
+bool FastqReader::LoadBuffer()
 {
-    lock_guard<mutex> IO(IO_lock);
-    
-    //if (buffer.size() < 501) {buffer.resize(501);}
-    
-    if (buffer.size() - bytes_read < 2000000)
+    size_t leftover = 0;
+
+    // Carry over unfinished data
+    if (buffer_pos < buffer_remain)
     {
-        gzseek(fafile, - bytes_read + pos_read, SEEK_CUR);
-        
-        bytes_read = gzread(fafile, &buffer[0], 1000000);
-        
-        if (bytes_read <= 0) return 0;
-        
-        pos_read = 0;
+        leftover = buffer_remain - buffer_pos;
+        std::memmove(buffer.data(), buffer.data() + buffer_pos, leftover);
     }
-    
-    
-    while (1)
+
+    buffer_pos = 0;
+    buffer_remain = leftover;
+
+    while (true)
     {
-        if (pos_read == bytes_read)
+        size_t bytes_to_read = buffer.size() - buffer_remain;
+        size_t bytes_read = 0;
+
+        if (ifgz)
         {
-            int new_bytes_read = gzread(fafile, &buffer[bytes_read], 1000000);
-            
-            if (new_bytes_read <= 0 ) return 0;
-            
-            bytes_read += new_bytes_read;
+            bytes_read = gzread(fafile, buffer.data() + buffer_remain, bytes_to_read);
+            if (bytes_read <= 0)
+            {
+                if (gzeof(fafile))
+                {
+                    // try next file
+                    fileindex++;
+                    if (fileindex < filepathes.size())
+                    {
+                        filepath = filepathes[fileindex].c_str();
+                        Close();
+                        Load();
+                        continue;  // try reading again
+                    }
+                    return (buffer_remain > 0);  // return true if leftover still to process
+                }
+                else
+                {
+                    int errnum;
+                    std::cerr << "gzread error: " << gzerror(fafile, &errnum) << std::endl;
+                    return false;
+                }
+            }
         }
-        ++pos_read;
-        if (buffer[pos_read-1] == '\n') break;
-    }
-    
-    size_t start = pos_read;
-    
-    while (1)
-    {
-        if (pos_read == bytes_read)
+        else
         {
-            int new_bytes_read = gzread(fafile, &buffer[bytes_read], 1000000);
-            
-            if (new_bytes_read <= 0 ) return 0;
-            
-            bytes_read += new_bytes_read;
+            bytes_read = fread(buffer.data() + buffer_remain, 1, bytes_to_read, file);
+            if (bytes_read == 0)
+            {
+                if (feof(file))
+                {
+                    fileindex++;
+                    if (fileindex < filepathes.size())
+                    {
+                        filepath = filepathes[fileindex].c_str();
+                        Close();
+                        Load();
+                        continue;
+                    }
+                    return (buffer_remain > 0);  // process leftover
+                }
+                else if (ferror(file))
+                {
+                    perror("fread error");
+                    return false;
+                }
+            }
         }
-        ++pos_read;
-        if (buffer[pos_read-1] == '\n') break;
+
+        buffer_remain += bytes_read;
+        return true;
     }
-    
-    rlen = pos_read - start;
-    
-    while (1)
-    {
-        if (pos_read == bytes_read)
-        {
-            int new_bytes_read = gzread(fafile, &buffer[bytes_read], 1000000);
-            
-            if (new_bytes_read <= 0 ) return 1;
-            
-            bytes_read += new_bytes_read;
-        }
-        ++pos_read;
-        if (buffer[pos_read-1] == '\n') break;
-    }
-    
-    StrLine =  &buffer[start];
-    
-    //gzseek(fafile, - bytes_read + pos_read, SEEK_CUR);
-    
-    return 1;
 }
+
+
+
+bool FastqReader::nextLine(char*& strLine, size_t& rlen, char*& header)
+{
+    std::lock_guard<std::mutex> IO(IO_lock);
+
+    while (true)
+    {
+        if (buffer_pos >= buffer_remain)
+        {
+            if (!LoadBuffer()) return false;
+        }
+
+        size_t line_start = buffer_pos;
+        int line_stage = 0;  // 0 = @header, 1 = sequence, 2 = +, 3 = quality
+        rlen = 0;
+        char* header_line = nullptr;
+
+        for (size_t i = buffer_pos; i < buffer_remain; ++i)
+        {
+            if (buffer[i] == '\n')
+            {
+                switch (line_stage)
+                {
+                    case 0:
+                        if (buffer[line_start] == '@')
+                        {
+                            header_line = buffer.data() + line_start;
+                            line_stage = 1;
+                        }
+                        break;
+
+                    case 1:
+                        strLine = buffer.data() + line_start;
+                        rlen = i - line_start;
+                        header = header_line;
+                        line_stage = 2;
+                        break;
+
+                    case 2:
+                        line_stage = 3;
+                        break;
+
+                    case 3:
+                        // End of record — return after reading full 4 lines
+                        buffer_pos = i + 1;
+                        return true;
+                }
+
+                buffer_pos = i + 1;
+                line_start = buffer_pos;
+            }
+        }
+        
+        auto ifload = LoadBuffer();
+        // Need to load more data
+        if (!ifload) return false;
+    }
+}
+
+
 
 void FastqReader::Close()
 {
-    gzclose(fafile);
+    if (fafile)
+    {
+        gzclose(fafile);
+        fafile = nullptr;
+    }
+    if (file)
+    {
+        fclose(file);
+        file = nullptr;
+    }
 }

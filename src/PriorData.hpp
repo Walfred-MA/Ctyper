@@ -27,33 +27,30 @@ using namespace std;
 template<typename T>
 void try_allocate(T*& ptr, size_t size, size_t reserve = 0)
 {
-    std::unique_ptr<T> temp_ptr; //require free memory before proceed
     int attempts = 200;
-    while (attempts-- > 0) 
-    {
-        try 
-	{
-            temp_ptr.reset(new T[reserve]);
-        } 
-	catch (const std::bad_alloc&) 
-	{
-            std::cerr << "Initial memory reservation failed. " << std::endl;
-            std::exit(EXIT_FAILURE);
-        }
-    }
-    attempts = 200;
-    T* new_ptr = nullptr;
-
+    
     while (attempts-- > 0)
     {
-        new_ptr = (T*)realloc(ptr, sizeof(T) * size);
-        if (new_ptr != nullptr) {
+        try
+        {
+            std::unique_ptr<T[]> reserve_ptr;
+            if (reserve > 0) reserve_ptr = std::make_unique<T[]>(reserve);
+            
+            // Now reallocate test_ptr to the actual size we want
+            T* new_ptr = (T*)malloc(sizeof(T) * size);
+            if (!new_ptr)
+            {
+                throw std::bad_alloc();
+            }
+            
             ptr = new_ptr;
-            return;
+            return; // Success!
         }
-
-        std::cerr << "Allocation retrying, Attempt: " << 200 - attempts << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(10));
+        catch (const std::bad_alloc&)
+        {
+            std::cerr << "Allocation retrying, Attempt: " << 200 - attempts << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(10));
+        }
     }
 
     std::cerr << "Failed to allocate memory after 200 attempts. Exiting." << std::endl;
@@ -61,22 +58,27 @@ void try_allocate(T*& ptr, size_t size, size_t reserve = 0)
 }
 
 template<typename T>
-void try_allocate_unique(std::unique_ptr<T>& uptr, size_t size, size_t reserve = 0)
+void try_allocate_unique(std::unique_ptr<T[]>& uptr, size_t size, size_t reserve = 0)
 {
-    int attemps = 200;
+    int attempts = 200;
     
-    while (attemps-- > 0)
+    while (attempts-- > 0)
     {
         try
         {
-            std::unique_ptr<T> temp_ptr(new T[reserve]); //require twice memory before proceed
-            uptr.reset(new T[size]);
+            // Test allocation
+            std::unique_ptr<T[]> reserve_ptr;
+            if (reserve > 0) reserve_ptr = std::make_unique<T[]>(reserve);
             
+            // "Resize" by creating new array and copying data if needed
+            std::unique_ptr<T[]> final_ptr = std::make_unique<T[]>(size);
+            
+            uptr = std::move(final_ptr);
             return;
         }
         catch (const std::bad_alloc&)
         {
-            std::cerr << "Allocation retrying, Attemp: " << 200 - attemps << std::endl;
+            std::cerr << "Allocation retrying, Attempt: " << 200 - attempts << std::endl;
             std::this_thread::sleep_for(std::chrono::seconds(10));
         }
     }
@@ -127,7 +129,6 @@ struct PriorChunk
 };
 
 
-
 class PriorData
 {
     
@@ -138,7 +139,8 @@ public:
     ~PriorData()
     {}
     
-    size_t LoadIndex(const unordered_set<string>& geneset);
+    size_t LoadIndex(unordered_set<string>& geneset, std::vector<char *> &regions);
+    size_t LoadIndex(unordered_set<string>& geneset);
     size_t LoadIndex();
     
     void LoadFile();
@@ -147,9 +149,12 @@ public:
     PriorChunk* getChunkData(const size_t Chunkindex);
     PriorChunk* getNextChunk(const vector<bool>& finished);
     void FinishChunk(PriorChunk* Chunk_prt);
-
+    
 	size_t totalkmers = 0 ;
-
+    vector<size_t> kmer_ranges;
+    vector<string> prefixes;
+    vector<pair<size_t,size_t>> file_pos;
+    vector<pair<size_t,size_t>> kmervec_pos;
 private:
     
     void LoadHeader(PriorChunk &Chunk);
@@ -161,10 +166,7 @@ private:
     void LoadTree(PriorChunk &Chunk);
     
     PriorChunk* getFreeBuffer(size_t Chunkindex);
-    
-    vector<string> prefixes;
-    vector<pair<size_t,size_t>> kmervec_pos;
-    vector<pair<size_t,size_t>> file_pos;
+
     vector<size_t> indexed_matrix_sizes;
     
     const size_t buffer_size; //const variable will be initialized firstly than non-const.

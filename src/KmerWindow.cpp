@@ -424,11 +424,8 @@ void KmerWindow::WindowCovers(const uint16* kmervec, const uint16* kmermatrix, c
         float count_f = (int) kmervec[i];
         
         const uint16 flag = rowdata[5];
-        if (optioncorr && (flag & 0x3F) >= errorcutoff1)
-        {
-            float corr = 0.01 * (flag & 0xFFC0)/64;
-            count_f *= corr;
-        }
+        
+        APPLY_OPTION_CORR(optioncorr, flag, count_f);
 
         get<0>(thiswindow) += (int)(count_f+0.5);
         

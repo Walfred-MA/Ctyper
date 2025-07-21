@@ -35,7 +35,7 @@ public:
   
     int index = 0;
     float dist = 0.0;
-    float size = 0.0;
+    //float size = 0.0;
     
     node* parent=NULL;
     node* children[2];

@@ -37,42 +37,220 @@ void strsplit(string& str, vector<string>& eles, char deli)
 }
 
 
-size_t PriorData::LoadIndex(const unordered_set<string>& geneset)
+size_t PriorData::LoadIndex(unordered_set<string>& geneset)
 {
     std::ifstream pathfile(datapath + ".index");
 
-    if(!pathfile)
+    if (!pathfile)
     {
-        std::cout<<"Error opening index file"<<std::endl;
+        std::cerr << "Warning: not finding index file, going to dry-run" << std::endl;
         return 0;
     }
-    std::string line;
-    
-    totalkmers = 0 ;
-    while (std::getline(pathfile, line))
-    {
-        string::size_type pos = line.find('\t');
-        
-        string genename = line.substr(0, pos);
-        
-        if (geneset.size() == 0 or geneset.find(genename) != geneset.end())
-        {
-            vector<string> eles;
-            
-            strsplit(line, eles, '\t');
-            
-            prefixes.push_back(eles[0]);
 
-            file_pos.push_back(make_pair(stol(eles[1]), stol(eles[2])));
-            
-            kmervec_pos.push_back(make_pair(totalkmers , totalkmers  + stol(eles[3])));
-            
-            indexed_matrix_sizes.push_back(stol(eles[4]));
-            
-            totalkmers += stol(eles[3]);
+    std::string line;
+    totalkmers = 1;
+    
+    vector<string> geneprefix ;
+    
+    for (const string& gene : geneset)
+    {
+        if (gene.empty()) continue;
+        
+        if (gene.back() == '*')  // wildcard prefix match
+        {
+            geneprefix.push_back(gene.substr(0, gene.size() - 1));
         }
     }
+
+    while (std::getline(pathfile, line))
+    {
+        if (line.size() ==0 || line[0] == '@') continue;
+        
+        string::size_type pos = line.find('\t');
+        string groupname = line.substr(0, pos);
+
+        bool accept = false;
+
+        if (geneset.empty() || geneset.find(groupname) != geneset.end())
+        {
+            accept = true;
+        }
+        else
+        {
+            // Get last column: genes field
+            auto last_tab = line.rfind('\t');
+            
+            
+            if (last_tab != std::string::npos)
+            {
+                string genes_field = line.substr(last_tab + 1);
+                vector<string> genes;
+                strsplit(genes_field, genes, ';');
+
+                // Extract base of groupname (before '_')
+                auto underscore_pos = groupname.find('_');
+                string base_group = underscore_pos != std::string::npos ? groupname.substr(1, underscore_pos-1) : groupname;
+                
+                for (const string& prefix : geneprefix)
+                {
+                    for (const std::string& item : genes)
+                    {
+                        if (item.find(prefix) == 0)  // item starts with prefix
+                        {
+                            accept = true;
+                            break;
+                        }
+                    }
+                    if (accept) break;
+                }
+
+                for (const string& gene : genes)
+                {
+                    if (geneset.find(gene) != geneset.end())
+                    {
+                        accept = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (accept)
+        {
+            vector<string> eles;
+            strsplit(line, eles, '\t');
+
+            prefixes.push_back(eles[0]);
+            geneset.insert(eles[0]);
+            file_pos.emplace_back(stol(eles[1]), stol(eles[3]));
+            kmervec_pos.emplace_back(totalkmers, totalkmers + stol(eles[3]));
+            indexed_matrix_sizes.push_back(stol(eles[4]));
+            totalkmers += stol(eles[3]);
+            
+            kmer_ranges.push_back(totalkmers);
+        }
+        
+    }
+
+    return file_pos.size();
+}
+
+size_t PriorData::LoadIndex(unordered_set<string>& geneset, std::vector<char *> &regions)
+{
+    std::ifstream pathfile(datapath + ".index");
+
+    if (!pathfile)
+    {
+        std::cerr << "Warning: not finding index file, going to dry-run" << std::endl;
+        return 0;
+    }
+
+    std::string line;
+    totalkmers = 1;
     
+    vector<string> geneprefix ;
+    
+    for (const string& gene : geneset)
+    {
+        if (gene.empty()) continue;
+        
+        if (gene.back() == '*')  // wildcard prefix match
+        {
+            geneprefix.push_back(gene.substr(0, gene.size() - 1));
+        }
+    }
+
+    while (std::getline(pathfile, line))
+    {
+        if (line.size() ==0 || line[0] == '@') continue;
+        
+        string::size_type pos = line.find('\t');
+        string groupname = line.substr(0, pos);
+
+        bool accept = false;
+
+        if (geneset.empty() || geneset.find(groupname) != geneset.end())
+        {
+            accept = true;
+        }
+        else
+        {
+            // Get last column: genes field
+            auto last_tab = line.rfind('\t');
+            if (last_tab != std::string::npos)
+            {
+                string genes_field = line.substr(last_tab + 1);
+                vector<string> genes;
+                strsplit(genes_field, genes, ';');
+
+                // Extract base of groupname (before '_')
+                auto underscore_pos = groupname.find('_');
+                string base_group = underscore_pos != std::string::npos ? groupname.substr(1, underscore_pos-1) : groupname;
+
+                for (const string& prefix : geneprefix)
+                {
+                    for (const std::string& item : genes)
+                    {
+                        if (item.find(prefix) == 0)  // item starts with prefix
+                        {
+                            accept = true;
+                            break;
+                        }
+                    }
+                    if (accept) break;
+                }
+
+                for (const string& gene : genes)
+                {
+                    if (geneset.find(gene) != geneset.end())
+                    {
+                        accept = true;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if (accept)
+        {
+            vector<string> eles;
+            strsplit(line, eles, '\t');
+            
+            if (eles.size() >= 2)
+            {
+                std::string& region_str = eles[eles.size() - 2];
+                // Split region_str by ';'
+                std::vector<std::string> region_parts;
+                
+                
+                
+                std::stringstream ss(region_str);
+                std::string part;
+                while (std::getline(ss, part, ';'))
+                {
+                    region_parts.push_back(part);
+                }
+
+                // Push all but the last
+                for (size_t i = 0; i + 1 < region_parts.size(); ++i)
+                {
+                    std::string trimmed = region_parts[i];
+                    if (!trimmed.empty()) trimmed.pop_back();
+                    char* copied = strdup(trimmed.c_str());  // POSIX-style allocation
+                    regions.push_back(copied);
+                }               // store in regions
+            }
+
+            prefixes.push_back(eles[0]);
+            geneset.insert(eles[0]);
+            file_pos.emplace_back(stol(eles[1]), stol(eles[3]));
+            kmervec_pos.emplace_back(totalkmers, totalkmers + stol(eles[3]));
+            indexed_matrix_sizes.push_back(stol(eles[4]));
+            totalkmers += stol(eles[3]);
+            kmer_ranges.push_back(totalkmers);
+        }
+    }
+
     return file_pos.size();
 }
 
@@ -83,14 +261,16 @@ size_t PriorData::LoadIndex()
 
     if(!pathfile)
     {
-        std::cout<<"Error opening index file"<<std::endl;
+        std::cerr<<"Warning: not finding index file, going to dry-run."<<std::endl;
         return 0;
     }
     std::string line;
     
-    totalkmers = 0 ;
+    totalkmers = 1 ;
     while ( std::getline(pathfile, line) )
     {
+        if (line.size() ==0 || line[0] == '@') continue;
+        
         string::size_type pos = line.find('\t');
         
         string genename = line.substr(0, pos);
@@ -101,13 +281,15 @@ size_t PriorData::LoadIndex()
         
         prefixes.push_back(eles[0]);
 
-        file_pos.push_back(make_pair(stol(eles[1]), stol(eles[2])));
+        file_pos.push_back(make_pair(stol(eles[1]), stol(eles[3])));
         
         kmervec_pos.push_back(make_pair(totalkmers , totalkmers  + stol(eles[3])));
         
         indexed_matrix_sizes.push_back(stol(eles[4]));
         
         totalkmers += stol(eles[3]);
+        
+        kmer_ranges.push_back(totalkmers);
         
     }
     
@@ -161,9 +343,6 @@ void PriorData::LoadHeader(PriorChunk &Chunk)
         curr_genenum *= 10;
         curr_genenum += c - '0';
     }
-    
-    
-    
 }
 
 void PriorData::LoadSizes(PriorChunk &Chunk)
@@ -262,31 +441,31 @@ void PriorData::LoadAlleles(PriorChunk &Chunk)
             std::_Exit(EXIT_FAILURE);
             return;
         }
+        
         genenames[index++] =  StrLine.substr(1,MIN( StrLine.find('\n', 0)-1  , StrLine.find(';', 0) -1) );
     }
-
 }
 
 
 void PriorData::LoadNorm(PriorChunk &Chunk)
 {
-    /*
+    
     size_t& curr_genenum = Chunk.genenum;
     string StrLine;
+    StrLine.resize(MAX_LINE);
     for ( int i = 0 ; i < curr_genenum ; ++i)
     {
         
-        if (!file.nextLine_norm(StrLine))
+        if (!file.nextLine_start(StrLine, '$'))
         {
             std::cerr << "ERROR: error in kmer matrix file "<<std::endl;
             std::_Exit(EXIT_FAILURE);
             return;
         }
     }
-    
     return;
-    */
     
+    /*
     size_t& curr_genenum = Chunk.genenum;
     
     
@@ -297,7 +476,7 @@ void PriorData::LoadNorm(PriorChunk &Chunk)
     if (curr_genenum *curr_genenum != prior_norm_allocsize)
     {
 
-	assert(curr_genenum < MAX_UINT16);
+        assert(curr_genenum < MAX_UINT16);
 	    
         try_allocate(prior_norm, curr_genenum *curr_genenum, curr_genenum *curr_genenum);
         
@@ -364,8 +543,6 @@ void PriorData::LoadNorm(PriorChunk &Chunk)
         }
     }
     
-    
-    
     node*& phylo_tree = Chunk.phylo_tree;
     
     int leaveindex = 0;
@@ -377,45 +554,47 @@ void PriorData::LoadNorm(PriorChunk &Chunk)
             phylo_tree[index].size = prior_norm[curr_genenum*leaveindex_+leaveindex_];
         }
     }
+     */
     
 }
 
-
 void PriorData::LoadGroups(PriorChunk &Chunk)
 {
-   
     size_t& curr_genenum = Chunk.genenum;
     string StrLine;
    
     Chunk.genegroups.resize(curr_genenum, 0);
     std::fill(Chunk.genegroups.begin(), Chunk.genegroups.end(), 0);
-
+    Chunk.groupkmernums.resize(curr_genenum, 0);
+    std::fill(Chunk.groupkmernums.begin(), Chunk.groupkmernums.end(), 0);
+    
     Chunk.numgroups = 0;
     StrLine.resize(MAX_LINE);
     for ( int i = 0 ; i < curr_genenum ; ++i)
     {
-        if (!file.nextLine_genegroup(StrLine) )
+        if (!file.nextLine_start(StrLine, '@') )
         {
             break;
         }
         
-        Chunk.numgroups ++ ;
-        
+        std::vector<std::string> fields;
+        strsplit(StrLine, fields, '\t');
+        auto num = std::stoi(fields[0].substr(1));
+        Chunk.groupkmernums[Chunk.numgroups] = num;
+                
         vector<uint16> eles;
         
-        strsplit(StrLine, eles, ',', 1);
+        strsplit(fields[1], eles, ',');
         
         for (uint16 ele: eles)
         {
-            Chunk.genegroups[ele] = i ;
+            Chunk.genegroups[ele] = Chunk.numgroups ;
         }
+        Chunk.numgroups++;
     }
     
-    Chunk.groupkmernums.resize(Chunk.numgroups, 0);;
-    std::fill(Chunk.groupkmernums.begin(), Chunk.groupkmernums.end(), 0);    
-
-
 }
+
 size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine, vector<uint> &pathsizes)
 {
         
@@ -425,60 +604,54 @@ size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine, vector
         std::_Exit(EXIT_FAILURE);
         return NULL;
     }
-        
+    
     const size_t len = strlen(StrLine.c_str());
     //size_t count = std::count_if( StrLine.begin(), StrLine.end(), []( char c ){return c ==',';}) + 3;
     matrix[0] = StrLine[1];
     
     uint16 rownum = FIXCOL;
-    uint16 element = 0;
-    char c;
-        
+    
     size_t startpos = 3;
     
-    uint16 tag1=0, tag2 = 0;
-    for (; startpos < len ; ++startpos)
-    {
-        if (StrLine[startpos] == '|') break;
-        tag1 <<= 6;
-        tag1 += StrLine[startpos] - '0';
-    }
+    uint16 tag1=0, tag2 = 0, tag3= 0;
+    tag1 = StrLine[startpos] - 33;
     ++startpos;
     
-    for (; startpos < len ; ++startpos)
-    {
-        if (StrLine[startpos] == '\t') break;
-        tag2 <<= 6;
-        tag2 += StrLine[startpos] - '0';
-    }
-    tag2 <<= 6;
+    tag2 = StrLine[startpos] - 33 + 10;
     ++startpos;
     
-    matrix[5] = tag1 + tag2;
-
+    tag3 = RECIPROCALS[ StrLine[startpos] - 33];
+    ++startpos;
+        
+    if (tag3 >= 200 || tag3 <= 67 || tag2 <= varcutoff)
+    {
+        tag3 = 0;
+    }
+    
+    matrix[5] =  (tag3<<8) + (tag2 <<1) + ( tag1 > errorcutoff1);
+    ++startpos;
+        
     uint16 path=0;
-    for (; startpos < len ; ++startpos)
+    size_t end = startpos+3;
+    for (; startpos < end ; ++startpos)
     {
-        if (StrLine[startpos] == '\t') break;
         path <<= 6;
         path += StrLine[startpos] - '0';
     }
     ++startpos;
     
     matrix[2] = path;
-    
     if (pathsizes.size() <= path) pathsizes.resize(path + 1, 0);
 
     
     uint loc=0;
-    for (; startpos < len ; ++startpos)
+    end = startpos+5;
+    for (; startpos < end ; ++startpos)
     {
-        if (StrLine[startpos] == '\t') break;
         loc <<= 6;
         loc += StrLine[startpos] - '0';
     }
     ++startpos;
-    
     
     pathsizes[path] = MAX(pathsizes[path], loc);
     
@@ -488,27 +661,79 @@ size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine, vector
     matrix[3] = part1;
     matrix[4] = part2;
 
-    for (; startpos < len ; ++startpos)
-    {
-        if (StrLine[startpos] == '\t') break;
-    }
+    startpos += 11;
     ++startpos;
     
+    uint16 element = 0;
+    
+    char c;
+    bool ifdup = 0;
+    bool ifrange = 0;
+    uint16 firstele = 0, secondele = 0, lastele = 1;
     for (; startpos < len; ++startpos)
     {
-        
         c = StrLine[startpos];
+        if (c <= ' ') break;
         switch (c)
         {
             case ',':
-                matrix[rownum ++] = element;
+                if (not ifdup && not ifrange)
+                {
+                    matrix[rownum ++] = element;
+                }
+                else if (not ifdup)
+                {
+                    secondele = element;
+                    
+                    for (int x = firstele; x < firstele+secondele+1; ++x)
+                    {
+                        matrix[rownum ++] = x;
+                    }
+                }
+                else if (not ifrange)
+                {
+                    lastele = element;
+                    for (int i = 0; i < lastele; ++i)
+                    {
+                        matrix[rownum ++] = secondele;
+                    }
+                }
+                else
+                {
+                    
+                    lastele = element;
+                    for (int x = firstele; x < firstele+secondele+1; ++x)
+                    {
+                        for (int i = 0; i < lastele; ++i)
+                        {
+                            matrix[rownum ++] = x;
+                        }
+                    }
+                }
+                
                 element = 0;
+                ifrange = 0;
+                ifdup = 0;
+                lastele = 1;
+                break;
+            case '~':
+                firstele = element;
+                secondele = 0;
+                ifrange = 1;
+                element = 0;
+                break;
+            case '*':
+                secondele = element;
+                element = 0;
+                ifdup = 1;
+                lastele = 0;
                 break;
             default:
                 element <<= 6;
                 element += c - '0';
         }
     }
+    
     
     matrix[1] = rownum - FIXCOL;
     
@@ -596,20 +821,20 @@ void PriorData::LoadMatrix(PriorChunk &Chunk, size_t new_kmer_matrix_allocsize)
     vector<bool> ifingroup (Chunk.numgroups,0);
     uint ifingroup_counter = 0;
         
+    size_t counter = 0;
+    file.Find(StrLine,'&','^');
     uint16* matrix = kmer_matrix;
     size_t rindex =0;
     for (rindex =0; rindex < kmernum; ++ rindex)
     {
         uint16 rsize = LoadRow(matrix , rindex, StrLine, Chunk.pathsizes);
-        
-        GetGroupKmerNum(Chunk, matrix, ifingroup_counter, ifingroup, Chunk.genenum);
-
         matrix = &matrix[rsize];
+        counter += rsize;
+        
     }
     
     matrix[0] = '+';
     matrix[1] = 0;
-    GetGroupKmerNum(Chunk, matrix,  ifingroup_counter, ifingroup, Chunk.genenum);
     
     /*
     size_t total2 = 0;
@@ -641,7 +866,7 @@ void PriorData::LoadTree(PriorChunk &Chunk)
 	static float pow10[7] = {1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001};
     
     size_t count = Chunk.nodenum;
-    count = std::count_if( StrLine.begin(), StrLine.begin()+len, []( char c ){return c ==':';}) + 1;
+    count = std::count_if( StrLine.begin(), StrLine.begin()+len, []( char c ){return c ==':';}) ;
     
     size_t& phylo_tree_allocsize = Chunk.phylo_tree_allocsize;
     node*& phylo_tree = Chunk.phylo_tree;
@@ -666,7 +891,7 @@ void PriorData::LoadTree(PriorChunk &Chunk)
     float ifdeci = 0;
     
     int notuselast = (StrLine[len-2] == ';') ;
-    
+        
 	float sign = 1;
     bool ifsci_e = 0;
     int sci_e = 0;
@@ -681,7 +906,7 @@ void PriorData::LoadTree(PriorChunk &Chunk)
             case '(':
                 current_node = current_node->add(&phylo_tree[current_index++]);
                 break;
-            case ')': case ';':
+            case ')': case ';':case '\0':
                 if (sci_e>5) current_num = 0;
                 else if (sci_e > 0) current_num *= pow10[sci_e];
                 current_node->dist = sign * current_num  ;
@@ -740,14 +965,12 @@ void PriorData::LoadTree(PriorChunk &Chunk)
  
     int leaveindex = 0;
     int nonleaveindex = -1;
-    for (size_t index =0; index < count; ++index)
+    for (size_t index = 0; index < count; ++index)
     {
         if (phylo_tree[index].numchildren == 0)
         {
-            phylo_tree[index].size = gene_kmercounts[leaveindex];
+            //phylo_tree[index].size = gene_kmercounts[leaveindex];
             phylo_tree[index].index = leaveindex ++ ;
-        
-
         }
         else
         {
@@ -770,6 +993,12 @@ PriorChunk* PriorData::getFreeBuffer(size_t Chunkindex)
     for (i = 0; i < buffer_size; ++i)
     {
         if (Buffer_working_counts[i] == 0 ) break;  //not in using block
+    }
+    
+    if (i == buffer_size)
+    {
+        std::cerr << "Buffer Error" <<std::endl;
+        std::_Exit(EXIT_FAILURE);
     }
     
     Buffer_working_counts[i]++;
@@ -801,13 +1030,12 @@ PriorChunk* PriorData::getChunkData(size_t Chunkindex)
     
     LoadAlleles(Chunk);
     
-    LoadNorm(Chunk);
+    //LoadNorm(Chunk);
     
     LoadGroups(Chunk);
     
     LoadMatrix(Chunk, indexed_matrix_sizes[Chunkindex] + 10);
    
-
     return &Chunk;
     
 }

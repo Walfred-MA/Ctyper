@@ -38,11 +38,8 @@ public:
     
 private:
         
-    unique_ptr<FLOAT_T> row_offsites = unique_ptr<FLOAT_T >( new FLOAT_T [MAX_UINT16] ) ;
-    unique_ptr<FLOAT_T> diag_offsites = unique_ptr<FLOAT_T>( new FLOAT_T [MAX_UINT16] ) ;
-    
-    
-    
+    unique_ptr<FLOAT_T[]> row_offsites = std::make_unique<FLOAT_T[]>(MAX_UINT16);
+
 };
 
 #endif /* KmerMatrix_hpp */

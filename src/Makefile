@@ -1,29 +1,46 @@
-SAN=
-#-fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize=null -fno-sanitize=alignment
+# === Compiler and base flags ===
+CXX := g++
+CXXFLAGS := -std=c++17 -O3 -march=native -flto -Wall -Wextra
+SAN :=
+# SAN := -fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all
 
-CPPFLAGS=-std=c++17 -flto -O3 -march=native 
-PGO_GENERATE_FLAGS=-fprofile-generate
-PGO_USE_FLAGS=-fprofile-use
+# === Include and library paths ===
+INCLUDES := -I$(EIGEN_ROOT)/include/eigen3 -I$(CONDA_PREFIX)/include
+LIBS := -L/usr/local/lib -L$(CONDA_PREFIX)/lib -lhts -lbz2 -lpthread -lz -lm -lstdc++fs
 
+# === Auto-detect all .cpp files ===
+SRCS := $(wildcard *.cpp)
+OBJS := $(SRCS:.cpp=.o)
 
-ctyper: main.cpp CramReader.o  FastaReader.o FastqReader.o KmerHash.o KmerCounter.o KmerMatrix.o KmerWindow.o KtableReader.o PriorData.o Regression.o TreeRound.o Processor.o 
-	$(CXX) $(SAN) $(CPPFLAGS) -o $@ $^ -I $(EIGEN_ROOT)/include/eigen3 -I$(CONDA_PREFIX)/include/ -L/usr/local/lib -L$(CONDA_PREFIX)/lib/ -lhts -lbz2 -lpthread -lz -lm -lstdc++fs  
+# === Output target ===
+TARGET := ctyper
 
+# === Phony targets ===
+.PHONY: all clean ctyper_pgo_generate ctyper_pgo_use
 
-ctyper_pgo_generate: CPPFLAGS += $(PGO_GENERATE_FLAGS)
-ctyper_pgo_generate: ctyper
+# === Default build ===
+all: $(TARGET)
 
-ctyper_pgo_use: CPPFLAGS += $(PGO_USE_FLAGS)
-ctyper_pgo_use: ctyper
+# === Linking step ===
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) $(SAN) -o $@ $^ $(INCLUDES) $(LIBS)
 
-%.o: %.cpp %.hpp FileReader.hpp
-	$(CXX) $(SAN) $(CPPFLAGS) -c $^  -I $(EIGEN_ROOT)/include/eigen3 -I$(CONDA_PREFIX)/include/ -L/usr/local/lib -L$(CONDA_PREFIX)/lib/ -lhts -lbz2 -lpthread -lz -lm -lstdc++fs 
+# === Compile each .cpp to .o ===
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(SAN) -c $< -o $@ $(INCLUDES)
 
+# === PGO generation ===
+ctyper_pgo_generate:
+	$(MAKE) clean
+	$(MAKE) CXXFLAGS="$(CXXFLAGS) -fprofile-generate" $(TARGET)
+
+# === PGO usage ===
+ctyper_pgo_use:
+	$(MAKE) clean
+	$(MAKE) CXXFLAGS="$(CXXFLAGS) -fprofile-use" $(TARGET)
+
+# === Clean all intermediate files ===
 clean:
-	rm *.o *.gch  ctyper
-
-
-
-
-
+	@echo "Cleaning..."
+	rm -f *.o *.gch $(TARGET)
 
