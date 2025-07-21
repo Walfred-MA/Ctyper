@@ -44,6 +44,11 @@
   </p>
 </div>
 
+> **Note:**  
+> This repository is provided for **review and reproducibility** of published results.  
+> The most up-to-date public usage version of ctyper, with new functions and improvements, can always be found at:  
+> [https://github.com/Walfred-MA/Ctyper](https://github.com/Walfred-MA/Ctyper)
+
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
 1. [Getting Started](#getting-started)
