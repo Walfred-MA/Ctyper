@@ -143,7 +143,7 @@ def run():
     parser = argparse.ArgumentParser(description="Program to merge ctyper profiling bed files")
     parser.add_argument("-i", "--input", help="Path to input data folder", dest="input", type=str, required=True)
     parser.add_argument("-o", "--output", help="Path to output file", dest="output", type=str, required=True)
-    parser.add_argument("-n", "--nthreads", help="Number of threads to use", dest="nthreads", type=int, default=16)
+    parser.add_argument("-n", "--nthreads", help="Number of threads to use", dest="nthreads", type=int, default=8)
     
     parser.set_defaults(func=main)
     args = parser.parse_args()
