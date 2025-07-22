@@ -23,7 +23,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Walfred-MA/Ctyper">
-    <img src="images/figure1.png" width="500" >
+    <img src="images/ctyperlogo.png" width="500" >
   </a>
 
   <h3 align="center">ctyper</h3>
