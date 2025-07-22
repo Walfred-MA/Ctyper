@@ -26,8 +26,6 @@
     <img src="images/ctyperlogo.png" width="300" >
   </a>
 
-  <h3 align="center">ctyper</h3>
-
   <p align="center">
     A pangenome allele-specific and copy number specific genotyping tool
     <br />
