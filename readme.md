@@ -63,11 +63,9 @@
 <!-- ABOUT THE PROJECT -->
 # About ctyper
 
-Ctype is a command line tool to perform copy number sensitive versatile genotyping for NGS (Next-Generation Sequencing) data using pangenome database. It is designed to work on complex CNV (copy number variation) genes, but can also work as genotyping, local phasing or SV-calling tools for other genes. 
+Ctyper is a versatile genotyping tool designed for copy number-sensitive analysis of NGS (Next-Generation Sequencing) data using a pangenome database. It excels at genotyping complex CNV (copy number variation) and highly polymorphic genes, but can also be used for standard genotyping, local phasing, and structural variant (SV) calling across other genes.
 
-The results will be represented as pangenome alleles, which is defined as genic segments with locally phased variants that are combinatorially heritable mostly range in 15-50 kb, about the size of "Haplotype blocks" or "LD-blocks". The pangenome alleles are further classified as allele-types among populations, which are highly similar subgroups, and can be used to represent complex genetic variations such as structrual variations, gene conversion, duplication, translocation and etc. 
-
-Ctyper is highly efficient, accurate and visualizable, thus allows high resolution large cohort association studies on complex CNV genes as well as complex genetic variations. 
+Ctyper enables rapid genotyping of target genes with state-of-the-art accuracy, often completing each target in seconds, and is fully scalable for biobank-level analyses.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
