@@ -44,8 +44,8 @@
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
-1. [Getting Started](#getting-started)
-2. [About ctyper](#about-ctyper)
+1. [About ctyper](#about-ctyper)
+2. [Getting Started](#getting-started)
 3. [Repository Overview](#repository-overview)
 4. [Prerequisites](#prerequisites)
 5. [Inputs](#inputs)
@@ -57,6 +57,19 @@
 11. [License](#license)
 12. [Contact](#contact)
 
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- ABOUT THE PROJECT -->
+# About ctyper
+
+Ctype is a command line tool to perform copy number sensitive versatile genotyping for NGS (Next-Generation Sequencing) data using pangenome database. It is designed to work on complex CNV (copy number variation) genes, but can also work as genotyping, local phasing or SV-calling tools for other genes. 
+
+The results will be represented as pangenome alleles, which is defined as genic segments with locally phased variants that are combinatorially heritable mostly range in 15-50 kb, about the size of "Haplotype blocks" or "LD-blocks". The pangenome alleles are further classified as allele-types among populations, which are highly similar subgroups, and can be used to represent complex genetic variations such as structrual variations, gene conversion, duplication, translocation and etc. 
+
+Ctyper is highly efficient, accurate and visualizable, thus allows high resolution large cohort association studies on complex CNV genes as well as complex genetic variations. 
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- Getting Started -->
 # Getting Started
@@ -219,18 +232,7 @@ The location of genotyped alleles are slightly bolded in color (may need to zoom
 
 
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- ABOUT THE PROJECT -->
-# About ctyper
-
-Ctype is a command line tool to perform copy number sensitive versatile genotyping for NGS (Next-Generation Sequencing) data using pangenome database. It is designed to work on complex CNV (copy number variation) genes, but can also work as genotyping, local phasing or SV-calling tools for other genes. 
-
-The results will be represented as pangenome alleles, which is defined as genic segments with locally phased variants that are combinatorially heritable mostly range in 15-50 kb, about the size of "Haplotype blocks" or "LD-blocks". The pangenome alleles are further classified as allele-types among populations, which are highly similar subgroups, and can be used to represent complex genetic variations such as structrual variations, gene conversion, duplication, translocation and etc. 
-
-Ctyper is highly efficient, accurate and visualizable, thus allows high resolution large cohort association studies on complex CNV genes as well as complex genetic variations. 
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
