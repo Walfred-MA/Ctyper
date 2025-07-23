@@ -477,10 +477,10 @@ For example, to visualize the gene **AMY1A**:
 
 There are two scripts in the `tools/Cohort` folder that work together for cohort analysis.
 
-1. **Download the allele-type annotation table:**
+1. **Download the allele-type nomenclature table:**
 
    ```
-   PangenomeAlleles_typefix.tsv
+   wget "https://zenodo.org/records/16340156/files/PangenomeAlleles_typefix.tsv"
    ```
 
 2. **Run `CountAllele.py` on each sample to get allele-type results:**
