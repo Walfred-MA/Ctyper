@@ -409,6 +409,13 @@ nomenclature.txt is also a table file with two columns: first column the name th
    python tools/Annotation/VCF/GenotypetoVCF.py -i genotype.txt -o genotype.vcf
    ```
 
+4. **(optional) Convert genotyping results into fasta file**
+
+   ```bash
+   python getFASTA.py -i genotype.txt -r HG38_main.fa,Allalters.fa,CHM13.fa -a PangenomeAlleles_annotationfix.tsv.gz -o output.fa
+   ```
+
+
 ---
 
 # Results Visualization
