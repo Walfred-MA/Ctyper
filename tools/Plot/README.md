@@ -18,12 +18,12 @@ Supported parameters:
 - **Help:**
   - `-h`: Print help information.
 - **Inputs:**
-  - `-i <string>`: Path to an individual input file.
+  - `-i <string>`: Path to genotyping results to highlight, Optional.
 - **samples highlight:**
-  - `-n <string>`: name of samples highlight.
+  - `-a <string>`: Path to annotation database.
 - **Gff annotation:**
   - `-G <string>`: Path to gff3 annotation file.
-- **Gff annotation:**
+- **Gene/GeneGroup of visualization:**
   - `-g <string>`: the gene or gene group name.
 
 ### Usages walkthrough
@@ -35,21 +35,21 @@ For example, to visualize the gene **SMN**:
 1. **Visualize the results:**
 
    ```bash
-   python typemutant.py -i PangenomeAlleles_annotationfix.tsv -g SMN -n genotype.txt -o output.png
+   python typemutant.py -a PangenomeAlleles_annotationfix.tsv -g SMN -i genotype.txt -o output.png
    ```
 
 **Optional:** To visualize the GENCODE annotation on the MSA:
 
-4. **Obtain the GENCODE annotation:**
+2. **Obtain the GENCODE annotation:**
 
    ```bash
    grep "gene_name=SMN" genecode.gff3 > SMN.gff3
    ```
 
-5. **Run the visualization with GENCODE annotation:**
+3. **Run the visualization with GENCODE annotation:**
 
    ```bash
-   python typemutant.py -i PangenomeAlleles_annotationfix.tsv -g SMN -G SMN.gff3 -n genotype.txt -o output.png
+   python typemutant.py -a PangenomeAlleles_annotationfix.tsv -g SMN -G SMN.gff3 -n genotype.txt -o output.png
    ```
 
 ### figure decription
