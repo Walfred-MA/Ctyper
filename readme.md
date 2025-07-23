@@ -112,7 +112,7 @@ Ctyper/ctyper -i NA12718.final.cram -m HprcCpcHgsvc_cmr_matrix.txt -o ctyper.out
 Alternatively, for only a few target gene, for example HLAs
 ```bash
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-Ctyper/ctyper -i NA12718.final.cram -m HprcCpcHgsvc_cmr_matrix.txt -g HLA* -B TargetRegions1KG.bed -o ctyper.out > log.txt &
+Ctyper/ctyper -i NA12718.final.cram -m HprcCpcHgsvc_cmr_matrix.txt -g "HLA*" -B TargetRegions1KG.bed -o ctyper.out > log.txt &
 ```
 
 After finishing genotyping, let us start to visualize and analyze, making sure you have python3 installed. 
