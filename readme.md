@@ -213,40 +213,27 @@ For additional Python tools, you need:
 
   
 <!-- Installation -->
-# Installation from conda
+# Installation
 
+**From conda**
    ```bash
    conda create -n ctyper_env  -c conda-forge -c bioconda ctyper
    conda activate ctyper_env
    ```
 
-
-# Installation from source
-
+**From source**
 1. **Install all prerequisites.**
-2. **Navigate to the `src/` directory:**
+2. **Navigate to the `src/` directory and compile:**
 
    ```bash
    cd src/
-   ```
-
-3. **Compile ctyper:**
-
-   ```bash
    make
    ```
-
-4. **Move ctyper to your installation folder:**
-
-   ```bash
-   mv ctyper /path/to/your/install/folder
-   ```
-
-5. **Download the pangenome allele database file** (we'll refer to it as `$Database`) **and its index ($Database.index), background ($Database.bgd) file.**
-6. **(Optional) Download the allele-type annotation file.**
-7. **(Optional) Download the full alleles annotation file.**
-8. **(Optional) Download the full HG38 alternative loci file.**
-9. **You're ready to go!**
+3. **Download the pangenome allele database file** (we'll refer to it as `$Database`) **and its index ($Database.index), background ($Database.bgd) file.**
+4. **(Optional) Download the allele-type annotation file.**
+5. **(Optional) Download the full alleles annotation file.**
+6. **(Optional) Download the full GRCH38 alternative loci file.**
+7. **You're ready to go!**
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
