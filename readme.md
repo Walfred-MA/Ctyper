@@ -52,10 +52,8 @@
 6. [Installation](#installation)
 7. [Usage](#usage)
 8. [Results Annotation](#results-annotation)
-9. [Results Visualization](#Results-visualization)
-10. [Cohort Analysis](#cohort-analysis)
-11. [License](#license)
-12. [Contact](#contact)
+9. [License](#license)
+10. [Contact](#contact)
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
