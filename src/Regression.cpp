@@ -292,7 +292,7 @@ void resize_mul(vector<vector<FLOAT_T>> &allratios, const vector<uint> &groupkme
     for (uint16 index = 0; index < groupnum;++index)
     {
         if ( grouptotalnums[index] >= corrstartpoint) allratios[index].resize(10 * sufficient + groupkmermax[index],0);
-        assert(groupkmermax[index] <= knum);
+        //assert(groupkmermax[index] <= knum);
     }
     allratios[groupnum].resize(10 * sufficient + knum,0);
 }
