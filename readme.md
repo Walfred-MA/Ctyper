@@ -424,15 +424,6 @@ For example, to visualize the gene **SMN**:
 	python typemutant.py -a PangenomeAlleles_annotationfix.tsv.gz -g SMN -G SMN.gff3 -n genotype.txt -o output.png
 	```
 
-**Optional:** Substract the visualization with certain genes:
-	
-	```bash
-	zcat PangenomeAlleles_annotationfix.tsv.gz | grep "SMN1:" > Substract_annotationfix.tsv
-	```
-	
-	```bash
-	python typemutant.py -a Substract_annotationfix.tsv -g SMN -G SMN.gff3 -n genotype.txt -o output.png
-	```
 example output of SMN mutant map: 
 
 Each row is each allele, and each vertically location is the consensus in multiple sequence alignments.  
@@ -442,6 +433,7 @@ The location of genotyped alleles are slightly bolded in color (may need to zoom
 (optional) The genecode gene and exons are highlight at the top.
 
 ![Alt Text](images/exampleSMN.png)
+
 
 ## Cohort Analysis
 
