@@ -447,7 +447,7 @@ For example, to visualize the gene **SMN**:
 **Optional:** Substract the visualization with certain genes:
 	
 	```bash
-	cat PangenomeAlleles_annotationfix.tsv | grep "SMN1:" > Substract_annotationfix.tsv
+	zcat PangenomeAlleles_annotationfix.tsv.gz | grep "SMN1:" > Substract_annotationfix.tsv
 	```
 	
 	```bash
