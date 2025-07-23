@@ -319,6 +319,9 @@ ctyper -I $AllInputs -m $Database -o $AllOutputs  -N $threads -n $threads_bysamp
 
 Supported parameters:
 
+- **Interactive:**
+  No Input.
+  
 - **Help:**
   - `-h`: Print help information.
 
