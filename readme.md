@@ -374,7 +374,7 @@ Example row:
 A4GALT_group1_GW00056_h1_227    A4GALT_group1_9 A4GALT  ENST00000401850:A4GALT:99.68;   Alt     GW00056#1#GWHBKGU00000010:748831-766661-        chr22:42689120-42706939-:2058M2I5D303M1X1463M4I3116M1X261M1X279M1X82M1X448M1X459M1X124M1X85M2D225M1X1240M1X650M9I794M1X144M18D20I929M1X399M1X793M1X83M1X709M1X182M1X296M1X136M1X650M1X96M1X59M3I291M1I95M1X276M1X245M1X263M17D16I36M1X184M1X299M
 
 
-2. **(optional) Obtain public nomenclatures for important genes,including HLA, CYP2D6, and KIR**
+2. **Obtain public nomenclatures for important genes,including HLA, CYP2D6, and KIR**
 
    ```bash
    python tools/Annotation/Nomenclature/GenotypetoNomenclature.py -i genotype.txt -a data/all_nomenclature.txt > nomenclature.txt
@@ -383,46 +383,64 @@ A4GALT_group1_GW00056_h1_227    A4GALT_group1_9 A4GALT  ENST00000401850:A4GALT:9
 nomenclature.txt is also a table file with two columns: first column the name the genotyped pangenome-allele, and the second is the public nameclature this pangenome-allele contains. 
 
 
-3. **(optional) Convert genotyping results into VCF file**
+3. **Convert genotyping results into VCF file**
 
    ```bash
    python tools/Annotation/VCF/GenotypetoVCF.py -i genotype.txt -o genotype.vcf
    ```
 
-4. **(optional) Convert genotyping results into fasta file**
+4. **Convert genotyping results into fasta file**
 
    ```bash
    python getFASTA.py -i genotype.txt -r HG38_main.fa,Allalters.fa,CHM13.fa -a PangenomeAlleles_annotationfix.tsv.gz -o output.fa
    ```
+5. **Cohort Analysis**
 
+There are two scripts in the `tools/Cohort` folder that work together for cohort analysis.
 
----
+Download the pangenome allele-type nomenclature table:
 
-# Results Visualization
+   ```
+   wget "https://zenodo.org/records/16340156/files/PangenomeAlleles_typefix.tsv"
+   ```
+
+Run `CountAllele.py` on each sample to get allele-type results:
+
+   ```bash
+   # For each result in $results
+   for result in $results; do
+       python CountAllele.py -i $result -t PangenomeAlleles_typefix.tsv -o "${result}_alleletype.out"
+   done
+   ```
+
+   or run in parallel:
+
+   ```bash
+   python CountAllele.py -f $results_folder/ -t PangenomeAlleles_typefix.tsv -n $numthreads
+   ```
+
+Summarize results into a single file and add annotations:
+
+   ```bash
+   python SummaryAlleles.py -f $results_folder/ -t PangenomeAlleles_typefix.tsv -o cohort_results.vcf
+   ```
+
+6. **Results Visualization**
 
 Visualization is performed on a **gene-by-gene** basis (not genome-wide).
 
 For example, to visualize the gene **SMN**:
-		
-1. **Visualize the results:**
 
-	```bash
-	python typemutant.py -a PangenomeAlleles_annotationfix.tsv.gz  -g SMN -i genotype.txt -o output.png
-	```
+   ```bash
+   python typemutant.py -a PangenomeAlleles_annotationfix.tsv.gz  -g SMN -i genotype.txt -o output.png
+   ```
 
-**Optional:** To visualize the GENCODE genes:
-	
-1. **Obtain the GENCODE annotation:**
+**Optional:** To visualize with the GENCODE annotation:
 
-	```bash
-	grep "gene_name=SMN" genecode.gff3 > SMN.gff3
-	```
-	
-2. **Run the visualization with GENCODE annotation:**
-
-	```bash
-	python typemutant.py -a PangenomeAlleles_annotationfix.tsv.gz -g SMN -G SMN.gff3 -n genotype.txt -o output.png
-	```
+   ```bash
+   grep "gene_name=SMN" genecode.gff3 > SMN.gff3
+   python typemutant.py -a PangenomeAlleles_annotationfix.tsv.gz -g SMN -G SMN.gff3 -n genotype.txt -o output.png
+   ```
 
 example output of SMN mutant map: 
 
@@ -435,36 +453,6 @@ The location of genotyped alleles are slightly bolded in color (may need to zoom
 ![Alt Text](images/exampleSMN.png)
 
 
-## Cohort Analysis
-
-There are two scripts in the `tools/Cohort` folder that work together for cohort analysis.
-
-1. **Download the allele-type nomenclature table:**
-
-   ```
-   wget "https://zenodo.org/records/16340156/files/PangenomeAlleles_typefix.tsv"
-   ```
-
-2. **Run `CountAllele.py` on each sample to get allele-type results:**
-
-   ```bash
-   # For each result in $results
-   for result in $results; do
-       python CountAllele.py -i $result -t PangenomeAlleles_typefix.tsv -o "${result}_alleletype.out"
-   done
-   ```
-
-   **Or**, to run in parallel:
-
-   ```bash
-   python CountAllele.py -f $results_folder/ -t PangenomeAlleles_typefix.tsv -n $numthreads
-   ```
-
-3. **Summarize results into a single file and add annotations:**
-
-   ```bash
-   python SummaryAlleles.py -f $results_folder/ -t PangenomeAlleles_typefix.tsv -o cohort_results.vcf
-   ```
 
 ---
 
