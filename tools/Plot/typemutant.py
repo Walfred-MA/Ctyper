@@ -556,9 +556,7 @@ def getsegments(cigarstr,highlight,exons,ifmask = 0):
 	return segments, variants,highlight_points,exon_points
 
 
-def plotmutant(alltypes,elements,hnames,fullsize):
-	
-	highlightnames = hnames.split(",")
+def plotmutant(alltypes,elements,highlightnames,fullsize):
 	
 	light_colors = [ "light"+color for color in ['yellow','skyblue' ,'gray','coral', 'seagreen' , 'steelblue', 'cyan', 'pink', 'green', 'grey','skyblue','salmon','slategray']]
 	
@@ -794,15 +792,28 @@ def getvariants(names,cigars,types,used_cigars,highlight,exons,ifmask):
 		
 	return alltypes, elements
 
-def makemutant(inputfile, outputfile, typefile,hnames=None, gff3file = "" ,ifintron = 1, ifmask = 0, genename = ""):
+def extract_names(inputfile, genename):
+	output = []
+	with open(inputfile) as f:
+		for line in f:
+			line = line.rstrip('\n')
+			if line.startswith("results:"):
+				elements = line[len("results:"):].strip().split(',')
+				for ele in elements:
+					if ele.startswith(genename):
+						output.append(ele)
+			elif line.startswith(genename):
+				first_elem = line.split('\t')[0]
+				output.append(first_elem)
+	return output
+
+
+def makemutant(inputfile, outputfile, annotation, hnames=None, gff3file = "" ,ifintron = 1, ifmask = 0, genename = ""):
 	
 	exons = {}
 	highlight = {}
 	
-	if len(typefile):
-		names, cigars, types = loadmsafile(inputfile, typefile, genename)
-	else:
-		names, cigars, types = loadannofile(inputfile, genename)
+	names, cigars, types = loadannofile(annotation, genename)
 		
 	used_cigars = selectcigar(names,cigars,types)
 	
@@ -812,7 +823,12 @@ def makemutant(inputfile, outputfile, typefile,hnames=None, gff3file = "" ,ifint
 	
 	alltypes, elements = getvariants(names,cigars,types,used_cigars,highlight,exons,ifmask)
 	
-	fig,ax, offsite = plotmutant(alltypes,elements,hnames,fullsize)
+	if len(hnames):
+		highlightnames = [x for x in hnames.split(",") if len(x)]
+	elif len(inputfile):
+		highlightnames = extract_names(inputfile, genename)
+	
+	fig,ax, offsite = plotmutant(alltypes,elements,highlightnames,fullsize)
 	
 	# Show the plot
 	if len(gff3file):
@@ -827,21 +843,22 @@ def makemutant(inputfile, outputfile, typefile,hnames=None, gff3file = "" ,ifint
 	
 def main(args):
 	
-	makemutant(args.input, args.output, args.type, args.name, args.gff, args.intron, args.mask, args.gene)
+	makemutant(args.input, args.output, args.anno, args.name,  args.gff, args.intron, args.mask, args.gene)
 	
 def run():
 	"""
 		Parse arguments and run
 	"""
 	parser = argparse.ArgumentParser(description="program to visualize pangenome-alleles")
-	parser.add_argument("-i", "--input", help="path to input data file",dest="input", type=str, required=True)
+	parser.add_argument("-i", "--input", help="path to input data file",dest="input", type=str, default = "")
+	parser.add_argument("-a", "--anno", help="path to annotation dababase file",dest="anno", type=str, required=True)
 	parser.add_argument("-o", "--output", help="path to output file", dest="output",type=str, required=True)
-	parser.add_argument("-t", "--type", help="path to type information file", dest="type",type=str, default = "")
-	parser.add_argument("-n", "--name", help="highlight names, separate by comma", dest="name",type=str, default = "highlight")
+	parser.add_argument("-g", "--gene", help="name of the plotting gene or gene group", dest="gene",type=str, required=True)
+	parser.add_argument("-n", "--name", help="highlight names, separate by comma, or input the ctyper genotyping results/annotation table file", dest="name",type=str, default = "")
 	parser.add_argument("-intron", "--intron", help="if plot intron duplications", dest="intron",type=int, default = 0)
 	parser.add_argument("-mask", "--mask", help="if hidden variants in masked region", dest="mask",type=int, default = 0)
-	parser.add_argument("-g", "--gff", help="path to gff3 file to plot GRCH38 genes", dest="gff",type=str, default = "")
-	parser.add_argument("-G", "--gene", help="name of the plotting gene or gene group", dest="gene",type=str, default = "")
+	parser.add_argument("-G", "--gff", help="path to gff3 file to plot GRCH38 genes", dest="gff",type=str, default = "")
+	
 	
 	parser.set_defaults(func=main)
 	args = parser.parse_args()
