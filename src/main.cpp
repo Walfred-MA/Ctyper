@@ -95,7 +95,7 @@ void printHelp()
     std::cout << "  -g, --gene <name>            Target gene name, prefix (ending with '*', remember to quote escape, e.g., 'HLA*' ), or matrix (starting with '#', e.g., #SMN_group1). Can be specified multiple times.\n";
     std::cout << "  -G, --Genes <file>           File listing target genes or matrices.\n\n";
 
-    std::cout << "  -B <file>                    BED file to restrict region analysis. Make sure its medium name field matches your reference genome md5 values (md5sum $reference). With -g/-G, only BED entries with names found in -g/-G are used.\n";
+    std::cout << "  -B <file>                    BED file to restrict region analysis. Make sure its medium name field matches your reference genome md5 values (md5sum $reference). One profiled on EBI/GRCh38_full_analysis_set_plus_decoy_hla.fa is included in https://github.com/Walfred-MA/Ctyper/tree/main/data. With -g/-G, only BED entries with names found in -g/-G are used.\n";
     std::cout << "  -r  <chr:start-end>          Add a specific region for analysis. Can be specified multiple times. Regions with be merged if multiple regions provided, can work with -B.\n";
     std::cout << "  -r  'gene'                   A special key for -r, add regions from matrix database (must be combined with -g/-G; incompatible with -BED). Less accurate than profiled regions. Not recommend if profile file avaiable or running global mode is possible. No need to add if using a frofiling bedfile \n\n";
     std::cout << "  -r  'Unmap'                  A special key for -r, to include all unmap reads. No need to add if using a frofiling bedfile.\n\n";
