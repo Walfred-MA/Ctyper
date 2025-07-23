@@ -191,7 +191,7 @@ This repository includes the following components:
 Ctyper is officially supported only in a **Linux** environment. Although it may run on UNIX-like system like MACOS as well, but we may not provide support for it.  
 
 ### System Required
-You need RAM > 20G to run all genes at once. 
+You need RAM > 8G to run all genes at once. 
 If you have a less RAM, you may split the whole database to smaller partitions. See in tools/Partition/.
 
 
