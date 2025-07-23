@@ -410,67 +410,42 @@ nomenclature.txt is also a table file with two columns: first column the name th
    ```
 
 ---
----
 
 # Results Visualization
 
 Visualization is performed on a **gene-by-gene** basis (not genome-wide).
 
-For example, to visualize the gene **AMY1A**:
+For example, to visualize the gene **SMN**:
+		
+1. **Visualize the results:**
 
-1. **Identify the gene group for AMY1A:**
+	```bash
+	python typemutant.py -a PangenomeAlleles_annotationfix.tsv.gz  -g SMN -i genotype.txt -o output.png
+	```
 
-   ```bash
-   cat data/select_files.txt | grep -w "AMY1A" | cut -f2,3
-   ```
-
-   Output:
-
-   ```
-   newGeneCopies/AMY/AMY_partitions/AMY_group1_AMY1BOOOAMY1COOOAMY1A.fa	AMY1B,AMY1C,RNPC3,AMY1A,AMYP1,ACTG1P4,RP5-1108M17.5,AMY2B,AMY2A,
-   ```
-
-   This shows that **AMY1A** is in **AMY_group1**, along with other amylase genes.
-
-2. **Extract the annotation for AMY_group1 from the full annotation table:**
-
-   ```bash
-   grep "^AMY_group1_" PangenomeAlleles_annotationfix.tsv > AMY_group1_annotationfix.tsv
-   ```
-
-3. **Extract the genotyping results for AMY_group1:**
-
-   ```bash
-   grep "^result: AMY_group1_" genotype.txt
-   ```
-
-   Output:
-
-   ```
-   result: AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891,
-   ```
-
-   The genotyping result is: `AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891`.
-
-4. **Visualize the results:**
-
-   ```bash
-   python typemutant.py -i AMY_group1_annotationfix.tsv -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891" -o output.png
-   ```
-
-**Optional:** To visualize the GENCODE annotation on the MSA:
-
+**Optional:** To visualize the GENCODE genes:
+	
 1. **Obtain the GENCODE annotation:**
 
-   ```bash
-   grep "gene_name=AMY" genecode.gff3 > AMY.gff3
-   ```
-
+	```bash
+	grep "gene_name=SMN" genecode.gff3 > SMN.gff3
+	```
+	
 2. **Run the visualization with GENCODE annotation:**
 
-   ```bash
-   python typemutant.py -i AMY_group1_annotationfix.tsv -g AMY.gff3 -n "AMY_group1_GW00031_h1_556,AMY_group1_GW00051_h2_891," -o output.png
-   ```
+	```bash
+	python typemutant.py -a PangenomeAlleles_annotationfix.tsv.gz -g SMN -G SMN.gff3 -n genotype.txt -o output.png
+	```
+
+**Optional:** Substract the visualization with certain genes:
+	
+	```bash
+	cat PangenomeAlleles_annotationfix.tsv | grep "SMN1:" > Substract_annotationfix.tsv
+	```
+	
+	```bash
+	python typemutant.py -a Substract_annotationfix.tsv -g SMN -G SMN.gff3 -n genotype.txt -o output.png
+	```
 
 
 ## Cohort Analysis
