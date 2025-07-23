@@ -12,6 +12,8 @@ import matplotlib.colors as mcolors
 import os 
 import argparse
 import colorsys
+import gzip
+
 
 def adjust_lightness(color, amount=0.5):
 	try:
@@ -700,6 +702,11 @@ def loadannofile(inputfile, genename=""):
 	cigars = []
 	types = {}
 	
+	if inputfile.endswith('.gz'):
+		open_func = lambda f: gzip.open(f, mode='rt')
+	else:
+		open_func = open
+		
 	with open(inputfile) as f:
 		for line in f:
 			
@@ -814,7 +821,7 @@ def makemutant(inputfile, outputfile, annotation, hnames=None, gff3file = "" ,if
 	highlight = {}
 	
 	names, cigars, types = loadannofile(annotation, genename)
-		
+	
 	used_cigars = selectcigar(names,cigars,types)
 	
 	segment_orders = segment_order(cigars,used_cigars)
@@ -827,7 +834,7 @@ def makemutant(inputfile, outputfile, annotation, hnames=None, gff3file = "" ,if
 		highlightnames = [x for x in hnames.split(",") if len(x)]
 	elif len(inputfile):
 		highlightnames = extract_names(inputfile, genename)
-	
+		
 	fig,ax, offsite = plotmutant(alltypes,elements,highlightnames,fullsize)
 	
 	# Show the plot
