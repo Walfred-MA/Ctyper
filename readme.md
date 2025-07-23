@@ -156,32 +156,27 @@ This repository includes the following components:
     - `tools/Annotation/SampleAnnotate.py`: Convert the raw output file to more interpretable table with annotations.
     - `tools/Annotation/Nomenclature/GenotypetoNomenclature.py`: Output the public nomenclatures from genotyping results. The nomenclatures annotation can be found at Data/all_nomenclature.txt.
     - `tools/Annotation/VCF/GenotypetoVCF.py`: Converting the genotyping results to VCF format. This requires Individual Sample Annotation Database (eg. PangenomeAlleles_annotationfix.v1.0.tsv). Note: this not recommended to be used in association studies, because of the limitation of VCF file on representing pangenome, but maybe used for locating known important variants.
-      
-4. **Visualization Tool (tools/Plot/)**  
-   A Python tool for visualizing genotyping results using multiple sequence alignments.
+    - `tools/Annotation/getFASTA/getFASTA.py`: Converting the genotyping results to fasta format. This may require including all alternative loci of GRCH38, https://zenodo.org/records/16340156/Allalter.fa.
+    - `tools/Plot/`: A Python tool for visualizing genotyping results using multiple sequence alignments.
+    - `tools/Cohort/`: A Python tool for summarizing results across all samples in a cohort study, including annotation information.
 
-5. **Cohort Analysis Tool (tools/Cohort/)**  
-   A Python tool for summarizing results across all samples in a cohort study, including annotation information.
+3. **Pangenome Allele Database**  
+   A database required by ctyper for genotyping. Files: `HprcCpcHgsvc_cmr_matrix`, `HprcCpcHgsvc_cmr_matrix.index` and `HprcCpcHgsvc_cmr_matrix.bgd`  available at [https://zenodo.org/records/16340156/](https://zenodo.org/records/16340156/).
 
-6. **Pangenome Allele Database**  
-   A database required by ctyper for genotyping. Files: `HprcCpcHgsvc_final42_matrix.v1.0.txt` and `HprcCpcHgsvc_final42_matrix.v1.0.txt.index` available at [https://zenodo.org/records/13381931](https://zenodo.org/records/13381931).
+4. **Target region from profiling run**  
+   A bed file used for target run. The 2nd field of the filename is the md5 value of the profiled reference, make sure it matches with your reference (md5sum $reference). File: [github/$Ctyper/data/](https://github.com/Walfred-MA/Ctyper/tree/main/data/*.bed). 
 
-7. **Population Analysis Annotation Database**  
-   A database containing annotation information to support population-level analysis. File: `PangenomeAlleles_typefix.v1.0.tsv` available at [https://zenodo.org/records/13381931](https://zenodo.org/records/13381931).
+5. **Population Analysis Annotation Database**  
+   A database containing annotation information to support population-level analysis. File: `PangenomeAlleles_typefix.tsv` available at [https://zenodo.org/records/16340156/](https://zenodo.org/records/16340156/).
 
-8. **Individual Sample Annotation Database**  
-   A comprehensive database with detailed annotations for individual pangenome alleles, supporting individual sample studies and visualization. File: `PangenomeAlleles_annotationfix.v1.0.tsv` available at [https://zenodo.org/records/13381931](https://zenodo.org/records/13381931).
+6. **Individual Sample Annotation Database**  
+   A comprehensive database with detailed annotations for individual pangenome alleles, supporting individual sample studies and visualization. File: `PangenomeAlleles_annotationfix.tsv` available at [https://zenodo.org/records/16340156/](https://zenodo.org/records/16340156/).
 
-9. **Additional Data Files (data/)**  
-   - `backgrounds.list`: A list of k-mers used as backgrounds to determine NGS coverage if not predetermined.
+7. **Additional Data Files [github/$Ctyper/data/](https://github.com/Walfred-MA/Ctyper/tree/main/data)**  
    - `select_files.txt`: The catalog for all included genes and matrices, which can be used to locate the gene of interest.
    - `all_nomenclature.txt`: The public nomenclatures used by GenotypetoNomenclature.py, currently including HLAs, CYP2D6, and KIRs.  
      - **HLAs include**: HLA-A, HLA-B, HLA-C, HLA-DMA, HLA-DMB, HLA-DOA, HLA-DOB, HLA-DPA1, HLA-DPA2, HLA-DPB1, HLA-DPB2, HLA-DQA1, HLA-DQA2, HLA-DQB1, HLA-DQB2, HLA-DRA, HLA-E, HLA-F, HLA-G, HLA-H, HLA-J, HLA-K, HLA-L, HLA-N, HLA-P, HLA-S, HLA-T, HLA-U, HLA-V, HLA-W, HLA-Y.
      - **KIRs include**: KIR2DL1, KIR2DL2, KIR2DL3, KIR2DL4, KIR2DL5A, KIR2DL5B, KIR2DP1, KIR2DS1, KIR2DS2, KIR2DS3, KIR2DS4, KIR2DS5, KIR3DL1, KIR3DL2, KIR3DL3.
-
-10. **Test Cases (tests/)**  
-   Simple test cases for validating the tools and pipeline.
-
 
 
 
@@ -192,7 +187,7 @@ Ctyper is officially supported only in a **Linux** environment. Although it may 
 
 ### System Required
 You need RAM > 8G to run all genes at once. 
-If you have a less RAM, you may split the whole database to smaller partitions. See in tools/Partition/.
+If you have a less RAM, you may split the whole database to smaller partitions, or using target mode with -g/G.
 
 
 ### Required Software
@@ -279,7 +274,7 @@ Ctyper requires:
 1. **Input file(s)**
 2. **Corresponding output file(s)**
 3. **The pangenome allele database file** (must be indexed)
-   - the database of pangenome allele for 3,351 CNV genes and 212 medically challenging genes. The information of those genes and their belonged matrices can be found at data/select_files.txt.
+   - the database of pangenome allele for 3,351 CNV genes and 212 other medically challenging genes. The information of those genes and their belonged matrices can be found at data/select_files.txt.
    - If you prefer only run selected genes or you want to run in smaller RAM, you can use a tool called matrixpartion.py we included at tools/Partition
    
 4. **Sequencing coverage information**, either by:
