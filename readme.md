@@ -358,7 +358,7 @@ Required:
 
 Genotyping targets Options:
 - **Gene Targets**:
-  - `-g <string>`: Target gene name, prefix (ending with '\*', e.g. 'HLA\*'), or matrix (starting with '#', e.g. '#SMN_group1'). Can be specified multiple times.
+  - `-g <string>`: Target gene name, prefix (ending with '\*', e.g. 'HLA\*'), or matrix (starting with '#', e.g. '#SMN_group1'). Can be specified multiple times. You can "cat <database>.index | rev | cut -f1,2 | rev" the see the genes/regions included
   - `-G <file>`: Path to a file listing multiple genes (one per line).
 - **Region specified**:
   - `-B <file>`: BED file to restrict region analysis. Make sure its 2nd name field matches your reference genome MD5 (use md5sum $reference). With -g/-G, only BED entries with names matching genes/matrices are used. One made from profiling run on EBI/GRCh38_full_analysis_set_plus_decoy_hla.fa is included in [github/$Ctyper/](https://github.com/Walfred-MA/Ctyper/data/). 
