@@ -141,7 +141,7 @@ python Ctyper/tools/Annotation/Nomenclature/GenotypetoVCF.py -i genotype.txt -a 
 
 If you want to have mutant plot visualizations, for example SMN genes. 
 ```bash
-python Ctyper/tools/Plot/typemutant.py -i genotype.txt (optional: -g SMN.gff3)  -o SMN.png
+python Ctyper/tools/Plot/typemutant.py -i genotype.txt (optional: -g SMN.gff3) -a PangenomeAlleles_annotationfix.tsv.gz -n SMN -o SMN.png
 ```
 
 <!-- GETTING STARTED -->
