@@ -292,49 +292,26 @@ Ctyper requires:
 
 Ctyper can process:
 
-### 1. A Single File
-
-Using background k-mers:
+### 1. a single target gene/prefix/genegroup (usually takes seconds with one CPU)
 
 ```bash
-ctyper -i $Inputfile -m $Database -o $Outputfile -b background.list -n 1
+ctyper -i $Inputfile -m $Database -o $Outputfile -N $threads -g $target_gene -B $region_bedfile
 ```
 
-Or providing sequencing coverage of 31-mers: 
-31-mers = read_coverage * (read_length - 30) / read_length, for example a NGS at read coverage = 30, its 31-mers coverage is 30 * (150-30)/150  = 24.
-
+### 2. A list of target genes/prefixes/genegroups
 ```bash
-ctyper -i $Inputfile -m $Database -o $Outputfile -d $sequencing_coverage -n 1
+ctyper -i $Inputfile -m $Database -o $Outputfile -N $threads -G $target_gene -B $region_bedfile
 ```
 
-If you only interested in genes at certain region, for example chr1:100-1000
-
+### 3. all genes in the database (takes 1.5h per sample with one CPU)
 ```bash
-samtools view -b input.bam chr1:100-1000 -f 4 -o subset.bam
-samtools sort -o sorted_input.bam input.bam
-samtools index sorted_input.bam
-
-ctyper -i sorted_input.bam -m $Database -o $Outputfile -d $sequencing_coverage -n 1
+ctyper -i $Inputfile -m $Database -o $Outputfile -N $threads
 ```
 
-
-### 2. A Cohort of Files
-
-Using background k-mers:
-
+### 4. A Cohort of Files
 ```bash
-ctyper -I $AllInputs -m $Database -o $AllOutputs -b background.list -n $threads
+ctyper -I $AllInputs -m $Database -o $AllOutputs  -N $threads -n $threads_bysample
 ```
-
-Or providing sequencing coverage:
-
-```bash
-ctyper -I $AllInputs -m $Database -o $AllOutputs -D $All_sequencing_coverages -n $threads
-```
-
-- **$AllInputs**: A text file where each line is the path to an input file.
-- **$AllOutputs**: A text file where each line is the output file corresponding to the input file (same line number).
-- **$All_sequencing_coverages**: A text file where each line is the sequencing coverage information for the corresponding input file (same line number).
 
 ---
 
@@ -357,7 +334,7 @@ Required:
   - `-o <file>`: Path to the individual output file. The output will be appended.
   - `-O <file>`: Path to a file listing multiple output files (one per input file, corresponding by line number).
 
-Genotyping targets Options:
+Genotyping targets options, without targets will run all genes in the database:
 - **Gene Targets**:
   - `-g <string>`: Target gene name, prefix (ending with '\*', e.g. 'HLA\*'), or matrix (starting with '#', e.g. '#SMN_group1'). Can be specified multiple times. You can "cat <database>.index | rev | cut -f1,2 | rev" the see the genes/regions included
   - `-G <file>`: Path to a file listing multiple genes (one per line).
