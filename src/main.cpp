@@ -91,7 +91,7 @@ void printHelp()
     std::cout << "  -w, --window <number>        Window size for k-mer coverage report (default: 30).\n";
     std::cout << "  -c, --corr <0/1>             Enable NGS k-mer bias correction (default: 1).\n";
 
-    std::cout << "\nTarget run options (for using reads aligned to specific regions or genes):\n\n";
+    std::cout << "\nTarget run options (for using reads aligned to specific regions or genes, will run all genes in database without specifying):\n\n";
     std::cout << "  -g, --gene <name>            Target gene name, prefix (ending with '*', remember to quote escape, e.g., 'HLA*' ), or matrix (starting with '#', e.g., #SMN_group1). Can be specified multiple times.\n";
     std::cout << "  -G, --Genes <file>           File listing target genes or matrices.\n\n";
 
