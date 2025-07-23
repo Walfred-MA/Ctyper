@@ -260,10 +260,11 @@ Ctyper takes five types of files as input:
    mv ctyper /path/to/your/install/folder
    ```
 
-5. **Download the pangenome allele database file** (we'll refer to it as `$Database`) **and its index file.**
+5. **Download the pangenome allele database file** (we'll refer to it as `$Database`) **and its index ($Database.index), background ($Database.bgd) file.**
 6. **(Optional) Download the allele-type annotation file.**
 7. **(Optional) Download the full alleles annotation file.**
-8. **You're ready to go!**
+8. **(Optional) Download the full HG38 alternative loci file.**
+9. **You're ready to go!**
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
