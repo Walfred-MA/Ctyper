@@ -938,18 +938,6 @@ void KmerCounter<dictsize>::count_kmer(CramReader &file, uint16* samplevecs, ull
     
     bam_destroy1(SRread);
     
-    for (size_t i = 0; i < totalkmers; ++i)
-    {
-        if (samplevecs[i] < 0xC000 && (samplevecs[i] & 0x3fff) >= 7)
-        {
-            samplevecs[i] = 0;
-        }
-        else
-        {
-            samplevecs[i] &= 0x3fff;  // Clears the two highest bits (15 and 14)
-        }
-    }
-    
     return ;
 };
 
