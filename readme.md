@@ -65,7 +65,7 @@
 
 Ctyper is a versatile genotyping tool designed for copy number-sensitive analysis of NGS (Next-Generation Sequencing) data using a pangenome database. It excels at genotyping complex CNV (copy number variation) and highly polymorphic genes, but can also be used for standard genotyping, local phasing, and structural variant (SV) calling across other genes.
 
-Ctyper enables rapid genotyping of target genes with state-of-the-art accuracy, often completing each target in seconds, and is fully scalable for biobank-level analyses.
+Ctyper enables rapid genotyping of target genes with state-of-the-art accuracy, often completing each target in seconds, and is fully scalable for biobank-level analyses. Results will be supported in converting to readable tables, FASTA files, VCF files, HLA/KIR/CYP2D6 nomenclatures, and mutation plots for visualization.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
