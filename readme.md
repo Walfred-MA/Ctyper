@@ -362,7 +362,7 @@ Genotyping targets Options:
   - `-g <string>`: Target gene name, prefix (ending with '\*', e.g. 'HLA\*'), or matrix (starting with '#', e.g. '#SMN_group1'). Can be specified multiple times. You can "cat <database>.index | rev | cut -f1,2 | rev" the see the genes/regions included
   - `-G <file>`: Path to a file listing multiple genes (one per line).
 - **Region specified**:
-  - `-B <file>`: BED file to restrict region analysis. Make sure its 2nd name field matches your reference genome MD5 (use md5sum $reference). With -g/-G, only BED entries with names matching genes/matrices are used. One made from profiling run on EBI/GRCh38_full_analysis_set_plus_decoy_hla.fa is included in [github/$Ctyper/data/](https://github.com/Walfred-MA/Ctyper/data/). 
+  - `-B <file>`: BED file to restrict region analysis. Make sure its 2nd name field matches your reference genome MD5 (use md5sum $reference). With -g/-G, only BED entries with names matching genes/matrices are used. One made from profiling run on EBI/GRCh38_full_analysis_set_plus_decoy_hla.fa is included in [github/$Ctyper/data/](https://github.com/Walfred-MA/Ctyper/tree/main/data). 
   - `-r <chr:start-end>`: Add a specific region for analysis. Can be specified multiple times. Regions will be merged if provided multiple times, can work with -B.
   - `-r gene`: Special value for -r; add regions from matrix database (must be combined with -g/-G). Not recommended if profile BED available or running global mode.
   - `-r Unmap`: Special value for -r; Force include all unmapped reads. No need to specify.
