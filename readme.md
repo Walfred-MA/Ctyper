@@ -102,7 +102,7 @@ wget "ftp://ftp.sra.ebi.ac.uk/vol1/run/ERR323/ERR3239480/NA12718.final.cram"
 wget "ftp://ftp.sra.ebi.ac.uk/vol1/run/ERR323/ERR3239480/NA12718.final.cram.crai"
 ```
 
-$LIBRARY_PATH is your path of LD_LIBRARY, if you are using conda to install HTSlib or samtools, then it should be usally at /home/$user_name/miniconda3/lib/, otherwise have a try at /usr/local/lib/
+$LIBRARY_PATH is your path of LD_LIBRARY, if you are using conda to install HTSlib or samtools, then it should be usually at /home/$user_name/miniconda3/lib/, otherwise have a try at /usr/local/lib/
 
 ```bash
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
@@ -141,7 +141,7 @@ python Ctyper/tools/Annotation/Nomenclature/GenotypetoVCF.py -i genotype.txt -a 
 
 If you want to have mutant plot visualizations, for example SMN genes. 
 ```bash
-python Ctyper/tools/Plot/typemutant.py -i genotype.txt (optional) -g SMN.gff3 -a PangenomeAlleles_annotationfix.tsv.gz -o SMN.png
+python Ctyper/tools/Plot/typemutant.py -i genotype.txt (optional: -g SMN.gff3)  -o SMN.png
 ```
 
 <!-- GETTING STARTED -->
