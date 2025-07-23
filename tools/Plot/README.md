@@ -5,8 +5,9 @@ This README provides an overview of how to use `typemutant.py` and describes its
 ### Python Dependencies
 
 1. **Python 3.7+**
-2. **NumPy**
-3. **Matplotlib**  
+2. **Pandas**
+3. **NumPy**
+4. **Matplotlib**  
    [https://matplotlib.org/stable/install/index.html](https://matplotlib.org/stable/install/index.html)
 
 
