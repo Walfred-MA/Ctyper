@@ -344,29 +344,45 @@ Supported parameters:
 - **Help:**
   - `-h`: Print help information.
 
-- **Inputs:**
-  - `-i <string>`: Path to an individual input file.
-  - `-I <string>`: Path to a file listing multiple input files (one per line).
-
+Required:
 - **Database:**
-  - `-m <string>`: Path to the database file used for genotyping.
-  - `-b <string>`: Path to the background k-mer list.
-
-- **Coverage Information** (cannot be used with `-b`):
-  - `-d <float>`: Sequencing coverage of the input file.
-  - `-D <string>`: Path to a file listing sequencing coverages (one per input file, corresponding by line number).
+  - `-m <file>`: Path to the matrix database (requires <file>.index). If not provided, runs in dry-run mode to estimate NGS read depth only.
+    
+- **Inputs:**
+  - `-i <file>`: Path to an individual input file.
+  - `-I <file>`: Path to a file listing multiple input files (one per line).
 
 - **Outputs:**
-  - `-o <string>`: Path to the individual output file.
-  - `-O <string>`: Path to a file listing multiple output files (one per input file, corresponding by line number).
+  - `-o <file>`: Path to the individual output file. The output will be appended.
+  - `-O <file>`: Path to a file listing multiple output files (one per input file, corresponding by line number).
 
+Genotyping targets Options:
+- **Gene Targets**:
+  - `-g <string>`: Target gene name, prefix (ending with '*', e.g. 'HLA*'), or matrix (starting with '#', e.g. '#SMN_group1'). Can be specified multiple times.
+  - `-G <file>`: Path to a file listing multiple genes (one per line).
+- **Region specified**:
+  - `-B <file>`: BED file to restrict region analysis. Make sure its 2nd name field matches your reference genome MD5 (use md5sum $reference). With -g/-G, only BED entries with names matching genes/matrices are used. One made from profiling run on EBI/GRCh38_full_analysis_set_plus_decoy_hla.fa is included in [github/$Ctyper/](https://github.com/Walfred-MA/Ctyper/data/). 
+  - `-r <chr:start-end>`: Add a specific region for analysis. Can be specified multiple times. Regions will be merged if provided multiple times, can work with -B.
+  - `-r gene`: Special value for -r; add regions from matrix database (must be combined with -g/-G). Not recommended if profile BED available or running global mode.
+  - `-r Unmap`: Special value for -r; Force include all unmapped reads. No need to specify.
+  - `-r HLA`: Special value for -r; Force include reads on all HLA decoys. No need to specify.
+
+- **Coverage Information**:
+  - `-d <float>`: Fixed 31-mer depth value (incompatible with -D and -b). 31-mer depth = (1 - 30/read_length) × sequencing_depth. For 150 bp reads, this = 0.8 × sequencing_depth.
+  - `-D <string>`: File of depth values (one per input, line-by-line, incompatible with -b and -d).
+  - `-b <string>`: Background k-mer file for NGS coverage estimation (incompatible with -d/-D). In target runs, randomly generated 1M regions are used. Default: <matrix>.bgd
+  - `-c <0/1>`: Enable NGS k-mer coverage bias correction (default: 1).
+    
 - **Multithreading:**
-  - `-n <int>`: Number of threads to use (default is 1).
+  - `-n <int>`: Number of threads to run samples in parallel (default: 1). Parallel per-sample is more efficient for large cohorts, especially on slow disks.
+  - `-N <int>`: Number of threads per sample. Due to file I/O bottleneck, suggest 1-4 for HDD. Parallelism within sample is memory-friendly (default: 1).
 
-- **Bias Correction:**
-  - `-c <bool>`: Perform bias correction for Illumina data.
+- **CRAM/BAM/SAM files:**
+  - `-T <file>`: Reference FASTA file for reading CRAM files (default: use REF_CACHE and REF_PATH environment variables).
 
-
+- **Profiling Run options:**
+  - `-p <file>`: Input aligned NGS file for profiling.
+  - `-P <file>`: File listing multiple aligned NGS files for profiling (one per line). Can be used with both -O and -o; individual results go to -O paths, summary saved to -o.
 ---
 
 # Results Annotation
