@@ -212,19 +212,6 @@ For additional Python tools, you need:
    [https://matplotlib.org/stable/install/index.html](https://matplotlib.org/stable/install/index.html)
 
   
-
-<!-- Inputs-->
-# Inputs  
-  
-Ctyper takes five types of files as input:  
-  
-1. **CRAM files** (`*.cram`) — must be indexed (recommended due to lower I/O intensity). 
-2. **BAM files** (`*.bam`) — must be indexed.
-3. **SAM files** (`*.sam`).
-4. **FASTQ files** (`*.fastq`).
-5. **FASTA files** (`*.fa`, `*.fasta`).
-6. **Jellyfish files** (`*.jy`, `*.txt`).
-  
 <!-- Installation -->
 # Installation from conda
 
@@ -307,6 +294,18 @@ ctyper -i $Inputfile -m $Database -o $Outputfile -N $threads
 ctyper -I $AllInputs -m $Database -o $AllOutputs  -N $threads -n $threads_bysample
 ```
 
+---
+<!-- Inputs-->
+# Support Inputs  
+  
+Ctyper takes five types of files as input:  
+  
+1. **CRAM files** (`*.cram`) — must be indexed (recommended due to lower I/O intensity). 
+2. **BAM files** (`*.bam`) — must be indexed.
+3. **SAM files** (`*.sam`).
+4. **FASTQ files** (`*.fastq`).
+5. **FASTA files** (`*.fa`, `*.fasta`).
+6. **Jellyfish files** (`*.jy`, `*.txt`).
 ---
 
 ## Parameters
