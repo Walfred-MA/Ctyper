@@ -222,6 +222,7 @@ Ctyper takes five types of files as input:
 3. **SAM files** (`*.sam`).
 4. **FASTQ files** (`*.fastq`).
 5. **FASTA files** (`*.fa`, `*.fasta`).
+6. **Jellyfish files** (`*.jy`, `*.txt`).
   
 <!-- Installation -->
 # Installation from conda
