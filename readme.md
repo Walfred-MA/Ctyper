@@ -446,7 +446,15 @@ For example, to visualize the gene **SMN**:
 	```bash
 	python typemutant.py -a Substract_annotationfix.tsv -g SMN -G SMN.gff3 -n genotype.txt -o output.png
 	```
+example output of SMN mutant map: 
 
+Each row is each allele, and each vertically location is the consensus in multiple sequence alignments.  
+The gap is the deletion/missing sequences on each allele and each black dots is each variants on HG38.  
+Each color represents each allele-type we defined.  
+The location of genotyped alleles are slightly bolded in color (may need to zoom in sometimes) and highlighted with a red dot on the left.  
+(optional) The genecode gene and exons are highlight at the top.
+
+![Alt Text](images/exampleSMN.png)
 
 ## Cohort Analysis
 
