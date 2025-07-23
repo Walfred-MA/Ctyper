@@ -367,19 +367,22 @@ Genotyping targets Options:
   - `-r Unmap`: Special value for -r; Force include all unmapped reads. No need to specify.
   - `-r HLA`: Special value for -r; Force include reads on all HLA decoys. No need to specify.
 
+Running options:
+- **Multithreading:**
+  - `-n <int>`: Number of threads to run samples in parallel (default: 1). Parallel per-sample is more efficient for large cohorts, especially on slow disks.
+  - `-N <int>`: Number of threads per sample. Due to file I/O bottleneck, suggest 1-4 for HDD. Parallelism within sample is memory-friendly (default: 1).
+
+NGS file information:
 - **Coverage Information**:
   - `-d <float>`: Fixed 31-mer depth value (incompatible with -D and -b). 31-mer depth = (1 - 30/read_length) × sequencing_depth. For 150 bp reads, this = 0.8 × sequencing_depth.
   - `-D <string>`: File of depth values (one per input, line-by-line, incompatible with -b and -d).
   - `-b <string>`: Background k-mer file for NGS coverage estimation (incompatible with -d/-D). In target runs, randomly generated 1M regions are used. Default: <matrix>.bgd
   - `-c <0/1>`: Enable NGS k-mer coverage bias correction (default: 1).
     
-- **Multithreading:**
-  - `-n <int>`: Number of threads to run samples in parallel (default: 1). Parallel per-sample is more efficient for large cohorts, especially on slow disks.
-  - `-N <int>`: Number of threads per sample. Due to file I/O bottleneck, suggest 1-4 for HDD. Parallelism within sample is memory-friendly (default: 1).
-
 - **CRAM/BAM/SAM files:**
   - `-T <file>`: Reference FASTA file for reading CRAM files (default: use REF_CACHE and REF_PATH environment variables).
 
+Supplementary profiling run to generate target regions:
 - **Profiling Run options:**
   - `-p <file>`: Input aligned NGS file for profiling.
   - `-P <file>`: File listing multiple aligned NGS files for profiling (one per line). Can be used with both -O and -o; individual results go to -O paths, summary saved to -o.
