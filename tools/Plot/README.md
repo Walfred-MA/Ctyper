@@ -18,7 +18,7 @@ Supported parameters:
 - **Help:**
   - `-h`: Print help information.
 - **Inputs:**
-  - `-i <string>`: Path to genotyping results to highlight, Optional.
+  - `-i <string>`: Path to genotyping results to highlight, optional.
 - **samples highlight:**
   - `-a <string>`: Path to annotation database.
 - **Gff annotation:**
