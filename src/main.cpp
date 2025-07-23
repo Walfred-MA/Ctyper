@@ -266,6 +266,13 @@ int main(int argc, char * argv_[])
         else if (strcmp(Argument, "-B") == 0)
         {
             bedfile = argv[i];
+            std::ifstream bedfile_(argv[i]);
+
+            if(!bedfile_)
+            {
+                std::cerr<<"Error opening bed file"<<std::endl;
+                return -1;
+            }
         }
         
         else if (strcmp(Argument, "-g")==0 or strcmp(Argument, "--gene")==0)
