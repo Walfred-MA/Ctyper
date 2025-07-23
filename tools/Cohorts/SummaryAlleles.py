@@ -8,7 +8,6 @@ import multiprocessing as mul
 
 
 
-
 def main(args):
 	
 	allfiles = [args.input+"/"+x for x in os.listdir(args.input) if x[-len("_allelecount.out"):] == "_allelecount.out"]
@@ -30,7 +29,6 @@ def main(args):
 			allele_text[lines[0]] = line.strip()
 			
 			
-			
 	for index,tablefile in enumerate(allfiles):
 		
 		header = tablefile.split("/")[-1].split("_")[0]
@@ -49,20 +47,44 @@ def main(args):
 				
 				allele_counts[line[0]][index] += sum([int(float(x)+0.5) for x in line[1].split(",") if len(x)])
 				allele_sortidx[line[0]] = index
-
-	colnames = "\t".join(["name", "tag", "refgene", "trancripts_count", "most_likely_liftover", "Exon_Intron_Decoy","min_kmernumber","Infotag","SV_infor","Members"])
-	with open(args.output, mode = 'w') as f:
+				
+	
+	with open(args.output, mode='w') as f:
+		# VCF headers
+		f.write('##source=ctyper-cohort-summary\n')
+		f.write('##INFO=<ID=ANN,Number=.,Type=String,Description="Ctyper annotation fields">\n')
+		f.write('##FORMAT=<ID=CN,Number=1,Type=Integer,Description="Copy number or count">\n')
+		f.write('#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t{}\n'.format('\t'.join(headers)))
 		
-		f.write(colnames+"\t"+"\t".join(headers)+"\n")
+		all_allele = sorted(list(allele_counts.keys()), key=lambda x: int(x.split("_")[-1]))
 		
-		all_allele = sorted(list(allele_counts.keys()), key = lambda x: int(x.split("_")[-1]))
-		
-		for allele in all_allele:
+		with open(args.output, mode='w') as f:
+			# Required VCF header
+			f.write('##fileformat=VCFv4.2\n')
+			f.write('##source=ctyper-cohort-summary\n')
+			f.write('##INFO=<ID=ANN,Number=.,Type=String,Description="Ctyper annotation fields">\n')
+			f.write('##FORMAT=<ID=CN,Number=1,Type=Integer,Description="Copy number or count">\n')
+			f.write('#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t{}\n'.format('\t'.join(headers)))
 			
-			counts = allele_text[allele]+"\t"+"\t".join(list(map(str, allele_counts[allele])))
+			all_allele = sorted(list(allele_counts.keys()), key=lambda x: int(x.split("_")[-1]))
 			
-			f.write(counts+"\n")
-			
+			for allele in all_allele:
+				ann_fields = allele_text[allele].split('\t')[1:10]
+				info = 'ANN=' + '|'.join(ann_fields)
+				
+				# Try to parse CHROM and POS from metadata if possible. Here, use allele as CHROM, position as 1
+				chrom = "_".join(allele.split("_")[:2])  # or you could parse from ann_fields[0] or similar
+				pos = '1'
+				id_ = allele
+				ref = 'N'
+				alt = '<CNV>'
+				qual = '.'
+				filt = 'PASS'
+				fmt = 'CN'
+				
+				counts = list(map(str, allele_counts[allele]))
+				row = [chrom, pos, id_, ref, alt, qual, filt, info, fmt] + counts
+				f.write('\t'.join(row) + '\n')
 			
 			
 def run():
