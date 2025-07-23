@@ -854,18 +854,6 @@ void KmerCounter<dictsize>::count_kmer(FastqReader &file, uint16* samplevecs, ul
             cerr << "processed " << nReads / 1000000 << "M reads." << endl;
         }
     }
-    
-    for (size_t i = 0; i < totalkmers; ++i)
-    {
-        if (samplevecs[i] < 0xC000 && (samplevecs[i] & 0x3fff) >= 7)
-        {
-            samplevecs[i] = 0;
-        }
-        else
-        {
-            samplevecs[i] &= 0x3fff;  // Clears the two highest bits (15 and 14)
-        }
-    }
         
     return ;
 };
@@ -1062,10 +1050,22 @@ void KmerCounter<dictsize>::Call(const char* inputfile, uint16* samplevecs, ull_
             else
             {
                 count_kmer_(readsfile, samplevecs, nBases, nReads, nBg, nthreads);
-            }
-            
+            }	
             
             readsfile.Close();
+
+	    for (size_t i = 0; i < totalkmers; ++i)
+            {
+                if (samplevecs[i] < 0xC000 && (samplevecs[i] & 0x3fff) >= 7)
+            	{
+                	samplevecs[i] = 0;
+            	}
+            	else
+            	{
+                	samplevecs[i] &= 0x3fff;  // Clears the two highest bits (15 and 14)
+            	}
+            }
+    	
         }
         
         else if ( ( pathlen >= 4 && ( strcmp(file+(pathlen-4),".txt") == 0 )) || (pathlen >= 3 && strcmp(file+(pathlen-3),".jy") == 0 )  )
