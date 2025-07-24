@@ -276,7 +276,7 @@ ctyper -i $Inputfile -m $Database -o $Outputfile -N $threads -g $target_gene -B 
 ```bash
 ctyper -i $Inputfile -m $Database -o $Outputfile -N $threads -G $target_gene -B $region_bedfile
 ```
-### 3. all 3500 genes in the database (takes about 30min per sample with one CPU)
+### 3. all genes in the database (takes about 30min per sample with one CPU)
 ```bash
 ctyper -i $Inputfile -m $Database -o $Outputfile -N $threads -B $region_bedfile
 ```
