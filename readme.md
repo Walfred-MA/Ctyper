@@ -48,13 +48,12 @@
 2. [Getting Started](#getting-started)
 3. [Repository Overview](#repository-overview)
 4. [Prerequisites](#prerequisites)
-5. [Inputs](#inputs)
-6. [Installation](#installation)
-7. [Usage](#usage)
-8. [Results](#results)
-9. [Results Annotation](#results-annotation)
-10. [License](#license)
-11. [Contact](#contact)
+5. [Installation](#installation)
+6. [Usage](#usage)
+7. [Results](#results)
+8. [Results Annotation](#results-annotation)
+9. [License](#license)
+10. [Contact](#contact)
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -254,6 +253,17 @@ If you prefer only run selected genes, you can use target mode:
    - Without providing a bedfile or target region, ctyper will process all reads (taking ~1h on one CPU for 30 coverage); Without providing target genes, ctyper will process all genes in the database (~0.5h). 
 
 
+## Support Inputs  
+  
+Ctyper takes five types of files as input:  
+  
+1. **CRAM files** (`*.cram`) — must be indexed (recommended due to lower I/O intensity). 
+2. **BAM files** (`*.bam`) — must be indexed.
+3. **SAM files** (`*.sam`).
+4. **FASTQ files** (`*.fastq`).
+5. **FASTA files** (`*.fa`, `*.fasta`).
+6. **Jellyfish files** (`*.jy`, `*.txt`).
+
 
 ## Ctyper running examples
 
@@ -279,20 +289,6 @@ ctyper -i $Inputfile -m $Database -o $Outputfile -N $threads
 ```bash
 ctyper -I $AllInputs -m $Database -o $AllOutputs  -N $threads -n $threads_bysample
 ```
-
----
-<!-- Inputs-->
-# Support Inputs  
-  
-Ctyper takes five types of files as input:  
-  
-1. **CRAM files** (`*.cram`) — must be indexed (recommended due to lower I/O intensity). 
-2. **BAM files** (`*.bam`) — must be indexed.
-3. **SAM files** (`*.sam`).
-4. **FASTQ files** (`*.fastq`).
-5. **FASTA files** (`*.fa`, `*.fasta`).
-6. **Jellyfish files** (`*.jy`, `*.txt`).
----
 
 ## Parameters
 
