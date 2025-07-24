@@ -387,8 +387,7 @@ void KmerWindow::PartialCopy(vector<vector<tuple<int, int, float, string>>>& res
             }
                                     
         }
-        
-        
+    
         distract_segments(covers, result);
         
         refine_edges(windowcover, extras, result, depth);
@@ -495,5 +494,102 @@ void KmerWindow::WindowCovers(const uint16* kmervec, const uint16* kmermatrix, c
         }
     }
     
+}
+
+
+void KmerWindow::KmerMatch(const uint16* kmervec, const uint16* kmermatrix, const FLOAT_T depth, const uint16 gnum, const uint knum, const int* results, vector<double>& likelihoods)
+{
+    const uint16* rowdata = kmermatrix;
+    
+    vector<int> total_uniqkmers(gnum, 0);
+    fill_n(likelihoods.data(), gnum, 0.0);
+    uint total = accumulate(results, results + gnum, 0);
+    if (total == 0) return;
+    
+    const uint16* data_start = kmermatrix;
+    double offsite = 0.0;
+    int offsite_i = 0;
+    double gnum_log = log(gnum);
+    
+    
+    double pro_log = 0.0;
+    int uniqcounter = 0;
+    int kmercounter = 0;
+    int kmercounter_abs = 0;
+    for (size_t i = 0; i < knum; ++i)
+    {
+        int ifkmer = (kmervec[i] > 0) ? 1 : -1;
         
+        switch (rowdata[0])
+        {
+            case '_': case '=':
+                
+                kmercounter += ifkmer;
+                kmercounter_abs ++;
+                break;
+
+            case '-': case '+':
+                if (data_start[0] == '-')
+                {
+                    uniqcounter = data_start[1];
+                    //pro_log =  gnum_log - log(gnum - uniqcounter);
+                    //pro_log = (pro_log < -gnum_log) ? -gnum_log : pro_log;
+                    pro_log = 1.0;
+                    pro_log *= kmercounter;
+                    
+                    if (gnum - uniqcounter > 1)
+                    {
+                        offsite += pro_log;
+                        offsite_i += kmercounter_abs;
+                        for (int j = FIXCOL ; j < FIXCOL + data_start[1]  ; ++j)
+                        {
+                            if (results[data_start[j]] > 0)
+                            {
+                                likelihoods[data_start[j]] -= pro_log;
+                                total_uniqkmers[data_start[j]] -= kmercounter_abs;
+                            }
+                        }
+                    }
+                }
+                else  if (data_start[1] > 1)
+                {
+                    uniqcounter = 1;
+                    for (int j = FIXCOL + 1 ; j < FIXCOL + data_start[1]  ; ++j)
+                    {
+                        if ( data_start[j] != data_start[j-1] ) ++ uniqcounter;
+                    }
+                    //pro_log =  ( gnum_log - log(uniqcounter));
+                    //pro_log = (pro_log < -gnum_log) ? -gnum_log: pro_log;
+                    pro_log = 1.0;
+                    pro_log *= kmercounter;
+                                        
+                    for (int j = FIXCOL ; j < FIXCOL + data_start[1]  ; ++j)
+                    {
+                        if ( j == FIXCOL || data_start[j] != data_start[j-1] )
+                        {
+                            if (results[data_start[j]] > 0)
+                            {
+                                likelihoods[data_start[j]] += pro_log;
+                                total_uniqkmers[data_start[j]] += kmercounter_abs;
+                            }
+                        }
+                    }
+                }
+                
+                kmercounter = ifkmer;
+                data_start = &rowdata[0];
+                kmercounter_abs = 1;
+                break;
+            default:
+                break;
+        }
+        
+        rowdata = &rowdata[rowdata[1] + FIXCOL];
+    }
+    
+    for (int j = 0 ; j < gnum  ; ++j)
+    {
+        if (results[j] > 0) likelihoods[j] = (likelihoods[j]+offsite)/(MAX( 1, total_uniqkmers[j] + offsite_i ));
+    }
+    
 }

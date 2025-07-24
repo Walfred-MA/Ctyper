@@ -19,7 +19,7 @@ bool file_exists(const std::string& filename)
 
 bool InputEither(std::vector<std::string> &args,
                  const std::string &arg1, const std::string &print1,
-                 const std::string &arg2, const std::string &print2)
+                 const std::string &arg2, const std::string &print2, bool boolifcircle)
 {
     std::string input;
 
@@ -51,7 +51,7 @@ bool InputEither(std::vector<std::string> &args,
         return true;
     }
     
-    return false;
+    return boolifcircle;
     // Both skipped
     // (If you want to force at least one, add a loop here. If skipping is OK, then just return.)
 }
@@ -88,14 +88,14 @@ void Interactive::RUN(int& argc, char**& argv)
     string argsI = "-I";
     string InputI = "Not using -i, please input a file with list of input files (-I): \n";
     
-    while (InputEither(args,argsi,Inputi,argsI,InputI) == false){};
+    while (InputEither(args,argsi,Inputi,argsI,InputI,false) == false){};
     
     string argso = "-o";
     string Inputo = "Path to appended output file (-o): , empty to switch use -O \n";
     string argsO = "-O";
     string InputO = "Not using -o, please input a file with list of output files (-O), corrspond to each of input files: \n";
     
-    while (InputEither(args,argso,Inputo,argsO,InputO) == false){};
+    while (InputEither(args,argso,Inputo,argsO,InputO,true) == false){};
 
     if (!bgd_exists)
     {

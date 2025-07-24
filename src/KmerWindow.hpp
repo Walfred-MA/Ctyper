@@ -52,6 +52,8 @@ public:
     
     void PartialCopy(vector<vector<tuple<int, int, float, string>>>& results, const FLOAT_T* results_genotype, const vector<string>& genenames, const vector<string>& pathnames, const float depth);
     
+    void KmerMatch(const uint16* kmervec, const uint16* kmermatrix, const FLOAT_T depth, const uint16 gnum, const uint knum, const int* results, vector<double>& likelihoods);
+    
     vector<vector<tuple<int,int,int>>> windowcovers;
     
 private:

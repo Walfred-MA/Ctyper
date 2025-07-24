@@ -91,21 +91,15 @@ public:
 
         //cerr << "determine window residuels: " << inputfile<<endl;
 
-    
+        vector<double> likelihoods(gnum,0.0);
         KmerWindow kmerwindow(window);
-        //kmerwindow.resize(priorData->pathsizes);
-        //kmerwindow.WindowCovers(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size, priorData->genenum, &results.get()[0], total_obs, total_exp);
-                
+        kmerwindow.KmerMatch(&kmer_counts.get()[priorData ->kmervec_start], priorData->kmer_matrix, depth, priorData->genenum, priorData->kmervec_size, &results.get()[0], likelihoods);
         
-        vector<vector<tuple<int, int, float, string>>> PatialCopies(priorData->pathnames.size()+1);
-        //kmerwindow.PartialCopy(PatialCopies, &reminders.get()[0], priorData->genenames, priorData->pathnames, depth);
-        
-        
-        write(priorData, outputfile, inputfile, priorData->prefix, priorData->genenames, PatialCopies, kmerwindow.windowcovers, depth, Threads_lock);
+        write(priorData, outputfile, inputfile, priorData->prefix, priorData->genenames, likelihoods, kmerwindow.windowcovers, depth, Threads_lock);
 
     };
     
-    void write(const PriorChunk* priorData, const std::string& outputfile, const string &sample, const string &prefix, const vector<string>&genenames_ori, const vector<vector<tuple<int, int, float, string>>>& PatialCopies, const vector<vector<tuple<int,int,int>>>& windowcovers, const float depth, std::mutex& Threads_lock)
+    void write(const PriorChunk* priorData, const std::string& outputfile, const string &sample, const string &prefix, const vector<string>&genenames_ori, const vector<double>& likelihoods, const vector<vector<tuple<int,int,int>>>& windowcovers, const float depth, std::mutex& Threads_lock)
     {
         
         std::unique_lock<std::mutex> lck(Threads_lock);
@@ -137,7 +131,8 @@ public:
         }
         
         fprintf(fwrite,">%s\t%s\n", prefix.c_str(), sample.c_str());
-
+        
+        /*
         fprintf(fwrite,"regress: ");
         const float cutoff = 0.5 / (gnum + 1);
         for (int i = 0; i < gnum; ++i)
@@ -145,22 +140,28 @@ public:
             if (coefs.get()[i] > cutoff) fprintf(fwrite,"%s:%.2lf,", genenames[i].c_str(),coefs.get()[i]);
         }
         fprintf(fwrite,"\n");
+        */
         
-        fprintf(fwrite,"treecorr: ");
+        fprintf(fwrite,"regress: ");
         for (int i = 0; i < gnum; ++i)
         {
-            int result = results.get()[i];
+            float result = ((float) results.get()[i]) + reminders.get()[i] ;
             
-            if (result > 0)
+            if (results.get()[i] > 0)
             {
-                
-                for (int j = 0 ; j < result  ; ++j)
-                {
-                    string info = "";
-                    if (priorData->gene_kmercounts[i] < 1000) info = "(aux)";
+                if (priorData->gene_kmercounts[i] >= 1000) fprintf(fwrite,"%s:%.2f,", genenames[i].c_str(), result);
+            }
+        }
+        fprintf(fwrite,"\n");
         
-                    fprintf(fwrite,"%s%s,", genenames[i].c_str(), info.c_str());
-                }
+        fprintf(fwrite,"score: ");
+        for (int i = 0; i < gnum; ++i)
+        {
+            float result = ((float) results.get()[i]) + reminders.get()[i] ;
+            
+            if (results.get()[i] > 0)
+            {
+                if (priorData->gene_kmercounts[i] >= 1000) fprintf(fwrite,"%s:%.2f,", genenames[i].c_str(), 100*likelihoods[i]);
             }
         }
         fprintf(fwrite,"\n");
@@ -180,7 +181,7 @@ public:
         }
         fprintf(fwrite,"\n");
         
-        fclose(fwrite);
+        if (outputfile != "stdout") fclose(fwrite);
         
         return ;
     };
@@ -227,7 +228,7 @@ public:
     {
         auto begin = std::chrono::high_resolution_clock::now();
         
-        //std::cout << "Running sample: " << inputfile << " for gene "<< priorData->prefix << endl ;
+        //std::cerr << "Running sample: " << inputfile << " for gene "<< priorData->prefix << endl ;
         
         auto gnum = priorData->genenum;
         
@@ -239,7 +240,7 @@ public:
 
 	    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
             
-        std::cout<<"finished sample:" << inputfile << " for gene:"<< priorData->prefix << " for :" << elapsed.count()* 1e-9 << "s"<<endl;
+        std::cerr<<"finished sample:" << inputfile << " for gene:"<< priorData->prefix << " for :" << elapsed.count()* 1e-9 << "s"<<endl;
 
     };
 
@@ -368,7 +369,7 @@ void Processor<ksize>::Run()
     
     if (regions.size())
     {
-        std::cout<<"Note: Target run has been used, making sure you are using correct gene/matrix/prefix names and your BEDfile match with your reference MD5 value.\n"<<endl;
+        std::cerr<<"Note: Target run has been used, making sure you are using correct gene/matrix/prefix names and your BEDfile match with your reference MD5 value.\n"<<endl;
         
         auto size_before = regions.size();
         regions.erase(
@@ -393,22 +394,22 @@ void Processor<ksize>::Run()
     }
     else
     {
-        std::cout<<"Note: Global run has been used, all NGS reads will be used and all genes in the database will be genotyped. \n"<<endl;
+        std::cerr<<"Note: Global run has been used, all NGS reads will be used and all genes in the database will be genotyped. \n"<<endl;
     }
     
     Counter->LoadRegion(regions, ifhla, ifunmap);
     
     if (backgroundfile.length() > 0)
     {
-        std::cout<<"Note: NGS coverage not provided, backgrouds kmers will be used to determine NGS coverage, using file: " <<backgroundfile << endl <<endl;
+        std::cerr<<"Note: NGS coverage not provided, backgrouds kmers will be used to determine NGS coverage, using file: " <<backgroundfile << endl <<endl;
         Counter->load_backgrounds(backgroundfile.c_str());
     }
     else
     {
-        std::cout<<"Note: NGS coverage provided. MAKING SURE THIS: 31-mer depth = (1 - 30/read_length) × sequencing_depth = 0.8 × sequencing_depth for 150bps NGS." << endl <<endl;
+        std::cerr<<"Note: NGS coverage provided. MAKING SURE THIS: 31-mer depth = (1 - 30/read_length) × sequencing_depth = 0.8 × sequencing_depth for 150bps NGS." << endl <<endl;
     }
     
-    std::cout<<"reading all kmer targets"<<endl;
+    std::cerr<<"reading all kmer targets"<<endl;
 
     if (genes.size())
     {
@@ -421,7 +422,7 @@ void Processor<ksize>::Run()
     }
     
     
-    std::cout<<"finishing reading targets, start genotyping"<<endl;
+    std::cerr<<"finishing reading targets, start genotyping"<<endl;
 
     std::vector<std::unique_ptr<std::thread>> threads;
     
@@ -533,7 +534,7 @@ void Processor<ksize>::Onethread()
         }
         
         auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - begin);
-        std::cout<<"Fnished sample:" << inputfile << " for :" << elapsed.count()* 1e-9 <<"s"<<endl;
+        std::cerr<<"Fnished sample:" << inputfile << " for :" << elapsed.count()* 1e-9 <<"s"<<endl;
     }
 }
 
@@ -573,7 +574,7 @@ void Processor<ksize>::Genotype(string &inputfile,string &outputfile, float dept
 template <int ksize>
 void Processor<ksize>::Count(string &inputfile,string &outputfile, float &depth,unique_ptr<uint16[]>& kmer_counts)
 {
-    std::cout << "counting kmers for sample: " << inputfile<<endl;
+    std::cerr << "counting kmers for sample: " << inputfile<<endl;
 
     auto begin = std::chrono::high_resolution_clock::now();
     
@@ -587,7 +588,7 @@ void Processor<ksize>::Count(string &inputfile,string &outputfile, float &depth,
     
     auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
         
-    std::cout<<"finished counting "<< inputfile <<" at time: "<<elapsed.count()* 1e-9 <<endl;
+    std::cerr<<"finished counting "<< inputfile <<" at time: "<<elapsed.count()* 1e-9 <<endl;
     
     size_t uniqbgs = std::count_if(totalbgs.begin(), totalbgs.end(), [](uint16 x) { return x > 2; });
     size_t sumbgs = std::accumulate(totalbgs.begin(), totalbgs.end(), 0);
@@ -618,7 +619,7 @@ void Processor<ksize>::Count(string &inputfile,string &outputfile, float &depth,
             
     fprintf(fwrite,"@totalreads: %llu, totalbackgrounds: %llu/%llu \n", (ull)totalreads, sumbgs, uniqbgs);
     
-    fclose(fwrite);
+    if (outputfile != "stdout") fclose(fwrite);
 }
 
 template <int ksize>
