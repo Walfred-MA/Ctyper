@@ -365,7 +365,7 @@ The fourth line (result:) lists the genotyping results. Alleles with copy number
 ---
 # Results Annotation
 
-Here shows the commands to make the genotyping results interpretable:
+Genotyping results can be converted into more interpretable formats:
 
 1. **Summary the genotyping results into a table with annotation information**
 
