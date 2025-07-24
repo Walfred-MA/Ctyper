@@ -364,7 +364,7 @@ The third line (score:) reports the percentage of unphased k-mer match concordan
 The fourth line (result:) lists the genotyping results. Alleles with copy number greater than one will appear multiple times.
 
 
-## Pangenome Annotationa
+## Pangenome Annotations
 
 Genotyping results can be converted into more interpretable formats:
 
