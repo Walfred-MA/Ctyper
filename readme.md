@@ -346,7 +346,9 @@ Supplementary profiling run to generate target regions:
 
 <!-- results-and-annotation -->
 
-# Results
+# Results and Annotation
+
+## Raw outputs
 Ctyper genotyping results are output as text blocks, with one block per sample for each matrix.
 Each block consists of four lines. For example:
 ```
