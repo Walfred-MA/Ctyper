@@ -348,7 +348,7 @@ Supplementary profiling run to generate target regions:
 
 # Results and Annotation
 
-## Raw outputs
+## Genotyping outputs
 Ctyper genotyping results are output as text blocks, with one block per sample for each matrix.
 Each block consists of four lines. For example:
 ```
@@ -364,7 +364,7 @@ The third line (score:) reports the percentage of unphased k-mer match concordan
 The fourth line (result:) lists the genotyping results. Alleles with copy number greater than one will appear multiple times.
 
 
-## Annotation
+## Pangenome Annotationa
 
 Genotyping results can be converted into more interpretable formats:
 
