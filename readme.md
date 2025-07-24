@@ -269,22 +269,22 @@ Ctyper takes five types of files as input:
 Ctyper can process:
 
 ### 1. a single target gene/prefix/genegroup (usually takes seconds with one CPU)
-
 ```bash
 ctyper -i $Inputfile -m $Database -o $Outputfile -N $threads -g $target_gene -B $region_bedfile
 ```
-
 ### 2. A list of target genes/prefixes/genegroups
 ```bash
 ctyper -i $Inputfile -m $Database -o $Outputfile -N $threads -G $target_gene -B $region_bedfile
 ```
-
-### 3. all genes in the database (takes 1.5h per sample with one CPU)
+### 3. all 3500 genes in the database (takes about 30min per sample with one CPU)
+```bash
+ctyper -i $Inputfile -m $Database -o $Outputfile -N $threads -B $region_bedfile
+```
+### 4. all genes in the database without profiling (takes about 1.5h per sample with one CPU)
 ```bash
 ctyper -i $Inputfile -m $Database -o $Outputfile -N $threads
 ```
-
-### 4. A Cohort of Files
+### 5. A Cohort of Files
 ```bash
 ctyper -I $AllInputs -m $Database -o $AllOutputs  -N $threads -n $threads_bysample
 ```
