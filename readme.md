@@ -331,7 +331,7 @@ NGS file information:
 - **Coverage Information**:
   - `-d <float>`: Fixed 31-mer depth value (incompatible with -D and -b). 31-mer depth = (1 - 30/read_length) × sequencing_depth. For 150 bp reads, this = 0.8 × sequencing_depth.
   - `-D <string>`: File of depth values (one per input, line-by-line, incompatible with -b and -d).
-  - `-b <string>`: Background k-mer file for NGS coverage estimation (incompatible with -d/-D). In target runs, randomly generated 1M regions are used. Default: <matrix>.bgd
+  - `-b <string>`: Background k-mer file for NGS coverage estimation (incompatible with -d/-D). In target runs, randomly generated 1M regions are used. Default: matrix.bgd
   - `-c <0/1>`: Enable NGS k-mer coverage bias correction (default: 1).
     
 - **CRAM/BAM/SAM files:**
