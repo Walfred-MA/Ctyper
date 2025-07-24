@@ -51,9 +51,10 @@
 5. [Inputs](#inputs)
 6. [Installation](#installation)
 7. [Usage](#usage)
-8. [Results Annotation](#results-annotation)
-9. [License](#license)
-10. [Contact](#contact)
+8. [Results](#results)
+9. [Results Annotation](#results-annotation)
+10. [License](#license)
+11. [Contact](#contact)
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -346,7 +347,22 @@ Supplementary profiling run to generate target regions:
   - `-p <file>`: Input aligned NGS file for profiling.
   - `-P <file>`: File listing multiple aligned NGS files for profiling (one per line). Can be used with both -O and -o; individual results go to -O paths, summary saved to -o.
 ---
+# Results
+Ctyper genotyping results are output as text blocks, with one block per sample for each matrix.
+Each block consists of four lines. For example:
+```
+>#Matrix_Name	Inputfile
+regress: Allele1:1.10,Allele2:2.01,
+score: Allele1:99.81,Allele2:100.00,
+result: Allele1,Allele2,Allele2,
+```
 
+The first line is a header, indicating the matrix name and sample name.
+The second line (regress:) shows the raw copy numbers for each allele as determined by regression.
+The third line (score:) reports the percentage of unphased k-mer match concordance for each allele (e.g., 100.00 means a perfect match).
+The fourth line (result:) lists the genotyping results. Alleles with copy number greater than one will appear multiple times.
+
+---
 # Results Annotation
 
 Here shows the commands to make the genotyping results interpretable:
