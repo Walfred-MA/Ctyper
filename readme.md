@@ -360,7 +360,7 @@ result: Allele1,Allele2,Allele2,
 
 The first line is a header, indicating the matrix name and sample name.  
 The second line (regress:) shows the raw copy numbers for each allele as determined by regression.  
-The third line (score:) reports the percentage of unphased k-mer match concordance for each allele (e.g., 100.00 means a perfect match). The difference in 31-mers is about 31 times the difference in sequence edit distance.  
+The third line (score:) reports the percentage of unphased k-mer match concordance for each allele (Note: The difference in 31-mers is about 31 times the difference in sequence edit distance).   
 The fourth line (result:) lists the genotyping results. Alleles with copy number greater than one will appear multiple times.  
 
 
