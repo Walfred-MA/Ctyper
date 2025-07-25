@@ -16,45 +16,24 @@ extern bool optioncorr;
 
 inline void getEachRowValue(const FLOAT_T depth, const int count, const char sign, const uint16 uniqcounter,const uint16 flag,const FLOAT_T mean_repeat,FLOAT_T &total_lambda, FLOAT_T &norm_value, FLOAT_T &weight_value)
 {
-    float ori_weight = 1.0;
-    if (sign==1 && uniqcounter == 1)
-    {
-        ori_weight = 0.05 ;
-    }
+    float count_f;           //float copy number value
+    float count_i;   //estimate number of copy and at least one copy
+    float new_weight = 1.0;
     
     if (count < 3 )
     {
-        if (mean_repeat != 2.0) weight_value += (4 * ori_weight/mean_repeat - ori_weight);
+        weight_value += new_weight;
         return ;
     }
-    
-    if (count == 2 )
-    {
-        weight_value += (0.2 * ori_weight/mean_repeat - ori_weight);
-        norm_value += 0.2 *  ori_weight/mean_repeat ;
-        return ;
-    }
-    
-    float count_f;           //float copy number value
-    float count_i;   //estimate number of copy and at least one copy
-    float new_weight;
     
     count_f = 1.0 * count/depth  ;
-    
-    if (optioncorr && (flag & 0x3F) > errorcutoff1 )
-    {
-        float corr = 0.01 * (flag & 0xFFC0)/64;
-        count_f *= corr;
-    }
+    APPLY_OPTION_CORR2(optioncorr, flag, count_f, new_weight);
     
     count_i = (int(count_f+ 0.5) > 1.0) ? int(count_f+ 0.5) : 1.0;   //estimate number of copy and at least one copy
+    new_weight *=  1.00/(count_i*count_i* mean_repeat);
     
-    new_weight =  1.00/(count_i*count_i * mean_repeat);
-    
-    norm_value += 4 * count_i * new_weight ;
-    weight_value += 4 *  new_weight - ori_weight;
-    //weight_value += (new_weight - ori_weight);  //weight is reversely proportion to square of estimated copy number, we calculate offsite to the original weight
-               //norm vector value of this kmer = count_i * weight = 1.00/count_i
+    norm_value += count_i * new_weight ;
+    weight_value += new_weight ;
         
     total_lambda += count_f;
 }
@@ -106,6 +85,7 @@ inline void getEachRowNorm_minor(const uint16 rowsize, const uint16 *row, const 
 
     for (int i = 0; i < rowsize; ++i)
     {
+        auto a = row[i];
         norm_matrix[row[i]*gnum+row[i]] += weight_value/2;
         
         for (int j = i+1; j < rowsize; ++j)
@@ -118,7 +98,7 @@ inline void getEachRowNorm_minor(const uint16 rowsize, const uint16 *row, const 
 
 
 //Add offsites back to norm vector and norm matrix
-inline void AddOffsites(FLOAT_T *norm_vec, FLOAT_T *norm_matrix, const FLOAT_T  vec_offsite, const FLOAT_T  matrix_offsite, const FLOAT_T  *row_offsites, const FLOAT_T *diag_offsites, uint16 gnum)
+inline void AddOffsites(FLOAT_T *norm_vec, FLOAT_T *norm_matrix, const FLOAT_T  vec_offsite, const FLOAT_T  matrix_offsite, const FLOAT_T  *row_offsites, uint16 gnum)
 {
     
     for (int i = 0; i < gnum; ++i)
@@ -126,7 +106,6 @@ inline void AddOffsites(FLOAT_T *norm_vec, FLOAT_T *norm_matrix, const FLOAT_T  
         norm_vec[i] += vec_offsite;                     //offsite for norm vector
         
         norm_matrix[i*gnum+i] *= 2;                     //this is doubling diagonal mentioned above
-        norm_matrix[i*gnum+i] -= diag_offsites[i];       //we only want to double offsites, but prior values also doubled, should be changed back
         norm_matrix[i*gnum+i] += matrix_offsite;         //offsite for every cell
         
         for (int j = i + 1; j < gnum; ++j)
@@ -147,11 +126,7 @@ void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const 
 {
     //memset(norm_matrix , 0,sizeof(FLOAT_T)*gnum*gnum);
     
-    for (size_t i = 0; i < gnum; ++i)
-    {
-        row_offsites.get()[i] = 0;
-        diag_offsites.get()[i] = norm_matrix[i * gnum + i];
-    }
+    fill_n(row_offsites.get(), gnum, 0);
     
     FLOAT_T matrix_offsite = 0, vec_offsite = 0;
     
@@ -167,25 +142,17 @@ void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const 
     
     for (size_t i = 0; i < knum ; ++i)
     {
-       
         switch (rowdata[0])
         {
             case '_':
                 
                 getEachRowValue(depth, kmervec[i], 0, 2,  rowdata[5],1.0 ,total_lambda, norm_value, weight_value);
+                
+                
                 break;
             case '=':
                 
-                if (rowdata[2] && (rowdata[3] || rowdata[4] >= 30 ))
-                {
-                    mean_repeat_this = 1.0;
-                }
-                else
-                {
-                    mean_repeat_this = mean_repeat;
-                }
-                
-                
+                mean_repeat_this = mean_repeat;
                 getEachRowValue(depth, kmervec[i], 1, uniqcounter, rowdata[5], mean_repeat_this, total_lambda, norm_value, weight_value);
                 break;
                 
@@ -233,17 +200,9 @@ void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const 
                     if ( rowdata[j] != rowdata[j-1] ) ++ uniqcounter;
                 }
                 mean_repeat = MAX(1.0, 1.0 * rowdata[1])/uniqcounter;
-                mean_repeat *= mean_repeat  ;
-                if (rowdata[2] && (rowdata[3] || rowdata[4] >= 30 ))
-                {
-                    mean_repeat_this = 1.0;
-                }
-                else
-                {
-                    mean_repeat_this = mean_repeat;
-                }
-                
-                
+                //mean_repeat *= mean_repeat  ;
+               
+                mean_repeat_this = mean_repeat;
                 getEachRowValue(depth, kmervec[i], 1, uniqcounter, rowdata[5], mean_repeat_this, total_lambda, norm_value, weight_value);
                 break;
             default:
@@ -265,9 +224,7 @@ void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const 
     }
     
     
-    AddOffsites(norm_vec, norm_matrix, vec_offsite, matrix_offsite, row_offsites.get(), diag_offsites.get(), gnum);
-    
-    
-    
+    AddOffsites(norm_vec, norm_matrix, vec_offsite, matrix_offsite, row_offsites.get(), gnum);
+        
 }
 

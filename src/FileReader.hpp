@@ -2,9 +2,9 @@
 //  Created by Walfred (Wangfei) MA at the University of Southern California,
 //  Mark Chaisson Lab on 2/13/23.
 //
-//  Licensed under the MIT License. 
+//  Licensed under the MIT License.
 //  If you use this code, please cite our work.
-//   
+//
 
 #ifndef FileReader_hpp
 #define FileReader_hpp
@@ -16,11 +16,39 @@
 #include <iostream>
 #include <utility>
 #include <cstring>
+#include <htslib/bgzf.h>
 
 #include "config.hpp"
 
 
 using namespace std;
+
+inline bool bgzf_fgets(char* line, size_t max_len, BGZF* bgzf)
+{
+    
+    size_t count = 0;
+    char c;
+    
+    while (count < max_len - 1)
+    {
+        int ret = bgzf_read(bgzf, &c, 1);
+        if (ret <= 0)
+        {
+            if (count == 0)
+            {
+                return false;
+            }
+            break;
+        }
+        
+        line[count++] = c;
+        
+        if (c == '\n') break;
+    }
+    
+    line[count] = '\0';
+    return true;
+}
 
 class FileReader
 {
@@ -34,65 +62,24 @@ public:
     
     FileReader(const char* inputfile, int index = -1):filepath(inputfile) {};
     
-    virtual bool nextLine(std::string &StrLine)=0;
+    bool nextLine(std::string &StrLine);
     
-    virtual void Load()=0;
+    void Load();
     
-    virtual void Close()=0;
+    void Close();
     
-    int GetLine(FILE* fptr, std::string &line) {
-        char buf[1024];
-        line = "";
-        
-        while (true) {
-            if (fgets(buf, sizeof(buf)-1, fptr) == nullptr) {
-                // fgets failed, check if it's an error or end-of-file
-                if (feof(fptr)) {
-                    // End-of-file reached
-                    break;
-                } else {
-                    // I/O error occurred
-                    perror("Error reading from file");
-                    return -1;
-                }
-            }
-            
-            line += buf;
-            
-            if (line.back() == '\n') {
-                // Remove the newline character from the end of the line
-                line.pop_back();
-                break;
-            }
-            
-            // If there are no more characters in the file, break the loop
-            if (feof(fptr)) {
-                break;
-            }
-        }
-        
-        // Return 1 if the file has more lines, 0 if it's the last line, -1 if an error occurred
-        return !feof(fptr);
-    }
+    void Reset();
+    
+    int GetLine(FILE* fptr, std::string &line);
+    
+    int GetLine(BGZF* fptr, std::string &line);
+    
+private:
 
-  
-    /*int GetLine(FILE* fptr, string &line) {
-    char buf[1025];
-    line="";
-    int res;
-    while ((res=fscanf(fptr, "%1024[^\n]", buf))) {
-      if (res) {
-	line+=buf;
-      }
-      else {
-	break;
-      }
-    }
-    char c = fgetc(fptr);
-    return (!feof(fptr));
-  } */
+    std::fstream fafile;
     
 };
 
 
 #endif /* FileReader_hpp */
+

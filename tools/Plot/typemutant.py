@@ -12,6 +12,8 @@ import matplotlib.colors as mcolors
 import os 
 import argparse
 import colorsys
+import gzip
+
 
 def adjust_lightness(color, amount=0.5):
 	try:
@@ -370,11 +372,11 @@ def plotexons(fig, ax, lelement, inputfile, gff3file, used_cigars):
 		
 		if len(exons_posi_) == 0:
 			continue
-				
+		
 		for gene in gene_posi_ :
 			
 			ax.plot(gene, [chromy, chromy], color=c, linewidth=l, linestyle='-')
-		
+			
 		if len(gene_posi_):
 			ax.text(gene_posi_[0][0] - 0.05, chromy, genename, fontsize=l*8, color='red', ha='center', va='center')
 			
@@ -459,7 +461,7 @@ def getsegments(cigarstr,highlight,exons,ifmask = 0):
 		thetype = cigar[size_str_len]
 		
 		ifmasked = cigar[size_str_len:].islower() and ifmask
-				
+		
 		if thetype in ['D','H']:
 			
 			if size > 50:
@@ -470,7 +472,7 @@ def getsegments(cigarstr,highlight,exons,ifmask = 0):
 					
 					if not ifmasked:
 						variants.append(variant)
-					
+						
 				laststart = coordinate + size
 				variant = []
 				
@@ -518,16 +520,16 @@ def getsegments(cigarstr,highlight,exons,ifmask = 0):
 						
 			if not ifmasked:
 				variant.extend([x for x in range(coordinate,coordinate + size,20)])
-			
-			
+				
+				
 			coordinate += size
 			
 		elif thetype in ['I']:
 			
 			if not ifmasked:
 				variant.append(coordinate)
-			
-			
+				
+				
 			size = 1
 			if name in highlight_points:
 				for i,seg in enumerate(highlight_points[name]):
@@ -556,12 +558,10 @@ def getsegments(cigarstr,highlight,exons,ifmask = 0):
 	return segments, variants,highlight_points,exon_points
 
 
-def plotmutant(alltypes,elements,hnames,fullsize):
-	
-	highlightnames = hnames.split(",")
+def plotmutant(alltypes,elements,highlightnames,fullsize):
 	
 	light_colors = [ "light"+color for color in ['yellow','skyblue' ,'gray','coral', 'seagreen' , 'steelblue', 'cyan', 'pink', 'green', 'grey','skyblue','salmon','slategray']]
-		
+	
 	color_dict = {i: light_colors[i%len(light_colors)] for i in range(max(alltypes)+1)}
 	
 	plotsize = len(elements)/10
@@ -618,7 +618,7 @@ def plotmutant(alltypes,elements,hnames,fullsize):
 			c = adjust_lightness(c, amount=0.7)
 			L = 3
 			ifhighlight = 1
-		
+			
 		breaks = [x/fullsize for y in segments for x in y[:2]]
 		
 		
@@ -650,11 +650,11 @@ def plotmutant(alltypes,elements,hnames,fullsize):
 			else:
 				l = 2
 				ax.plot([last_coordinate, coordinate], [i, i], color=c, linewidth=l, linestyle='-')
-			
+				
 			if ifhighlight:
 				ax.scatter(-0.05, i, marker='o', color='red', s=L*50, zorder=5)
-			
-			
+				
+				
 			last_coordinate = coordinate
 			
 			
@@ -664,7 +664,7 @@ def plotmutant(alltypes,elements,hnames,fullsize):
 	
 	return fig,ax,i
 
-def loadmsafile(inputfile, typefile):
+def loadmsafile(inputfile, typefile, genename = ""):
 	
 	names = []
 	cigars = []
@@ -677,11 +677,14 @@ def loadmsafile(inputfile, typefile):
 			if len(line.strip()) == 0:
 				continue
 			
+			if len(genename) and line.startswith(genename) == False:
+				continue
+			
 			if line[0] == 'L':
 				
 				names.append(line[1]) 
 				cigars.append(line[5])
-	
+				
 	types = cl.defaultdict(int)
 	with open(typefile, mode = 'r') as f:
 		for line in f:
@@ -691,29 +694,50 @@ def loadmsafile(inputfile, typefile):
 			line = line.strip().split('\t')
 			for name in line[-1].split(","):
 				types[name] = len(typeinfo)
+				
+	return names, cigars, types
+
+def loadannofile(inputfile, genename=""):
+	names = []
+	cigars = []
+	types = {}
+	
+	if inputfile.endswith('.gz'):
+		open_func = lambda f: gzip.open(f, mode='rt')
+	else:
+		open_func = open
+		
+	with open(inputfile) as f:
+		for line in f:
+			
+			if len(line.strip()) == 0 or line.startswith("#"):
+				continue
+			
+			if genename and not line.startswith(genename):
+				continue
+			fields = line.rstrip('\n').split('\t')
+			if len(fields) < 18:
+				continue  # skip malformed lines
+			name = fields[0]
+			thetype = fields[1]
+			cigar = fields[17]
+			type_int = int(thetype.split("_")[2])
+			names.append(name)
+			cigars.append(cigar)
+			types[name] = type_int
 			
 	return names, cigars, types
 
-def loadannofile(inputfile):
-	
-	table = pd.read_csv(inputfile, sep = '\t', header = None)
-	
-	names = list(table[0])	
-	types = {name: int(thetype.split("_")[2]) for name, thetype in zip(names, list(table[1]))}
-	
-	cigars = list(table[17])
-	
-	
-	return names, cigars, types
+
 
 def selectcigar(names,cigars,types):
 	
 	used_cigars = dict()
 	for i,(name,cigar) in enumerate(zip(names,cigars)):
-				
+		
 		segment_cigars = cigar.replace('<','>').split(">")[1:]
 		segment_cigars = [x for x in segment_cigars if not re.match(r"[0-9H]+$", x.split(":")[1]) ]
-	
+		
 		for segment_cigar in segment_cigars:
 			
 			thesize = sum([int(x[:-1]) for x in re.findall(r'\d+[M=XHD]', segment_cigar)]+[0])
@@ -728,7 +752,7 @@ def selectcigar(names,cigars,types):
 				pass
 		else:   
 				continue
-	
+		
 	return used_cigars
 
 def segment_order(cigars,used_cigars):
@@ -772,18 +796,31 @@ def getvariants(names,cigars,types,used_cigars,highlight,exons,ifmask):
 			exon_points =  [y for seg in list(exon_points.values()) for x in seg for y in x[2:]]
 		
 			elements.append([name, segments, variants,highlight_points, exon_points] )
-			
+		
 	return alltypes, elements
-	
-def makemutant(inputfile, outputfile, typefile,hnames=None, gff3file = "" ,ifintron = 1, ifmask = 0):
+
+def extract_names(inputfile, genename):
+	output = []
+	with open(inputfile) as f:
+		for line in f:
+			line = line.rstrip('\n')
+			if line.startswith("results:"):
+				elements = line[len("results:"):].strip().split(',')
+				for ele in elements:
+					if ele.startswith(genename):
+						output.append(ele)
+			elif line.startswith(genename):
+				first_elem = line.split('\t')[0]
+				output.append(first_elem)
+	return output
+
+
+def makemutant(inputfile, outputfile, annotation, hnames=None, gff3file = "" ,ifintron = 1, ifmask = 0, genename = ""):
 	
 	exons = {}
 	highlight = {}
 	
-	if len(typefile):
-		names, cigars, types = loadmsafile(inputfile, typefile)
-	else:
-		names, cigars, types = loadannofile(inputfile)
+	names, cigars, types = loadannofile(annotation, genename)
 	
 	used_cigars = selectcigar(names,cigars,types)
 	
@@ -792,36 +829,43 @@ def makemutant(inputfile, outputfile, typefile,hnames=None, gff3file = "" ,ifint
 	fullsize = sum(used_cigars.values())
 	
 	alltypes, elements = getvariants(names,cigars,types,used_cigars,highlight,exons,ifmask)
+	
+	if len(hnames):
+		highlightnames = [x for x in hnames.split(",") if len(x)]
+	elif len(inputfile):
+		highlightnames = extract_names(inputfile, genename)
 		
-	fig,ax, offsite = plotmutant(alltypes,elements,hnames,fullsize)
+	fig,ax, offsite = plotmutant(alltypes,elements,highlightnames,fullsize)
 	
 	# Show the plot
 	if len(gff3file):
 		
 		fullfile = inputfile
-			
+		
 		plotexons(fig, ax, offsite , fullfile , gff3file, used_cigars)
-	
+		
 	plt.axis('off')
 	plt.savefig(outputfile)
 	
 	
 def main(args):
 	
-	makemutant(args.input, args.output, args.type, args.name, args.gff, args.intron,args.mask)
+	makemutant(args.input, args.output, args.anno, args.name,  args.gff, args.intron, args.mask, args.gene)
 	
 def run():
 	"""
 		Parse arguments and run
 	"""
 	parser = argparse.ArgumentParser(description="program to visualize pangenome-alleles")
-	parser.add_argument("-i", "--input", help="path to input data file",dest="input", type=str, required=True)
+	parser.add_argument("-i", "--input", help="path to input data file",dest="input", type=str, default = "")
+	parser.add_argument("-a", "--anno", help="path to annotation dababase file",dest="anno", type=str, required=True)
 	parser.add_argument("-o", "--output", help="path to output file", dest="output",type=str, required=True)
-	parser.add_argument("-t", "--type", help="path to type information file", dest="type",type=str, default = "")
-	parser.add_argument("-n", "--name", help="highlight names, separate by comma", dest="name",type=str, default = "highlight")
+	parser.add_argument("-g", "--gene", help="name of the plotting gene or gene group", dest="gene",type=str, required=True)
+	parser.add_argument("-n", "--name", help="highlight names, separate by comma, or input the ctyper genotyping results/annotation table file", dest="name",type=str, default = "")
 	parser.add_argument("-intron", "--intron", help="if plot intron duplications", dest="intron",type=int, default = 0)
 	parser.add_argument("-mask", "--mask", help="if hidden variants in masked region", dest="mask",type=int, default = 0)
-	parser.add_argument("-g", "--gff", help="path to gff3 file to plot GRCH38 genes", dest="gff",type=str, default = "")
+	parser.add_argument("-G", "--gff", help="path to gff3 file to plot GRCH38 genes", dest="gff",type=str, default = "")
+	
 	
 	parser.set_defaults(func=main)
 	args = parser.parse_args()

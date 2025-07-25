@@ -13,7 +13,7 @@ It converts the genotype table file from SampleAnnotate.py to VCF format. Also a
 To run the script, use the following command:
 
 ```bash
-python GenotypetoNomenclature.py -i <Inputfile> -a <Sample_Annotation> -o <Outputfile>
+python GenotypetoVCF.py -i <Inputfile> -a <Sample_Annotation> -o <Outputfile>
 ```
 Sample_Annotation need to be a tsv file or gzipped tsv.gz file
 

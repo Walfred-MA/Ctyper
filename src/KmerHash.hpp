@@ -56,12 +56,14 @@ struct uint40
     uint8 second;
 };
 
+
 class Kmer32_hash
 {
 public:
     Kmer32_hash(int size): modsize(MAX(MAX_UINT24,size))
     {
-         memset(key_sizes, 0 , modsize);
+        key_sizes = new uint[modsize]();              // Initialize all to 0
+        items = new item40_t*[modsize]();             // Initialize all to nullptr
     };
     
     ~Kmer32_hash()
@@ -102,5 +104,29 @@ private:
     
 };
 
-
+/*
+class Group_hash
+{
+public:
+    Group_hash(size_t t):size(t)
+    {
+        groupindex.resize(size,0);
+        redirect.resize(size,0);
+        multiindex.resize(100000000);
+        
+    };
+    
+    ~Group_hash()
+    {}
+    
+    uint* add(const uint index, const uint groupindex);
+    uint find(const ull kmer_int);
+    
+    vector<uint16> groupindex;
+    vector<bool> redirect;
+    vector<vector<uint>> multiindex;
+    size_t size;
+    size_t multisize = 100000000;
+};
+ */
 #endif /* KmerHash_hpp */

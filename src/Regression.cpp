@@ -6,7 +6,7 @@
 //  If you use this code, please cite our work.
 //   
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <vector>
 #include <limits>
 #include <algorithm>
@@ -82,7 +82,7 @@ void trial_solution(vector<uint16>& passive_set, const uint16 passive_num, const
 
 int Regression::lawson_hanson_nnls(const FLOAT_T *kernal_vec, const FLOAT_T *weightnorm, uint16 size, FLOAT_T *coefs, FLOAT_T *residuel)
 {
-    int max_iterations = MIN(2*size, 1000);
+    int max_iterations = MIN(2*size, maxiteration);
     
     const FLOAT_T tol = size*numeric_limits<FLOAT_T>::epsilon();
     
@@ -261,21 +261,17 @@ inline void GetMedianNofil_mul(const FLOAT_T* coefs, const uint16* kmervec, cons
     FLOAT_T localnum = 0.0;
     vector<FLOAT_T> grouplocalnums (groupnum + 1, 0.0);
     
-    for (size_t i = 0; i < knum; ++i)
+    for (size_t j = 0; j < knum; ++j)
     {
         getlocalnum_mul(coefs, rowdata, totalnum, localnum, grouptotalnums, grouplocalnums, groups);
         
-        if (localnum >= 0.5 && kmervec[i] >= 2)
+        if (localnum >= 0.5 && kmervec[j] >= 2)
         {
             grouplocalnums[groupnum] = localnum;
             
-            FLOAT_T ratio = kmervec[i] / localnum;
+            FLOAT_T ratio = kmervec[j] / localnum;
             
-            if (optioncorr && (rowdata[5] & 0x3F) >= errorcutoff1 )
-            {
-                float corr = 0.01 * (rowdata[5] & 0xFFC0)/64;
-                ratio *= corr;
-            }
+            APPLY_OPTION_CORR(optioncorr, rowdata[5], ratio);
 
             for (int i = 0 ; i < groupnum + 1; ++i)
             {
@@ -296,7 +292,7 @@ void resize_mul(vector<vector<FLOAT_T>> &allratios, const vector<uint> &groupkme
     for (uint16 index = 0; index < groupnum;++index)
     {
         if ( grouptotalnums[index] >= corrstartpoint) allratios[index].resize(10 * sufficient + groupkmermax[index],0);
-        assert(groupkmermax[index] <= knum);
+        //assert(groupkmermax[index] <= knum);
     }
     allratios[groupnum].resize(10 * sufficient + knum,0);
 }
@@ -378,11 +374,7 @@ inline void GetMedianNofil(const FLOAT_T* coefs, const uint16* kmervec, const ui
         {
             FLOAT_T ratio = kmervec[i] / localnum;
             
-            if (optioncorr && (rowdata[5] & 0x3F) >= errorcutoff1 )
-            {
-                float corr = 0.01 * (rowdata[5] & 0xFFC0)/64;
-                ratio *= corr;
-            }
+            APPLY_OPTION_CORR(optioncorr, rowdata[5], ratio);
                 
             ratios[totalobs] = ratio;
             totalobs ++;
@@ -423,20 +415,8 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
     
     lawson_hanson_nnls(norm_vec, norm_matrix, gnum, coefs, residuels);
     
-    
     float regressed_kmer = 0.0;
     
-    /*
-    float regressed_kmer = 0.0;
-    
-    for (int i = 0; i < gnum; ++i)
-    {
-        regressed_kmer += kmercounts[i] * coefs[i];
-    }
-    regressed_kmer = (regressed_kmer > 0 ) ? regressed_kmer : 1;
-     
-    float correction = total_lambda/regressed_kmer;
-    */
     if (numgroup <= 1)
     {
         FLOAT_T correction = ( aggregateCorr(coefs, kmervec, kmermatrix, gnum, knum) ) / depth;
@@ -482,9 +462,6 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
                 residuels[i] *= correction;
             }
         }
-        
-        
     }
-    
 }
 

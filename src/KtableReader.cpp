@@ -8,33 +8,60 @@
 
 #include "KtableReader.hpp"
 
+
+
 void KtableReader::Load()
 {
     if (strlen(filepath)<2) return;
     
-    file = fopen(filepath, "r");
-    
-    if (!file)
+    if (ifbgzf)
     {
-        
-        std::cerr << "ERROR: Could not open " << filepath << " for reading.\n" << std::endl;
-        std::_Exit(EXIT_FAILURE);
-        
-        return;
+        file_bgzf = bgzf_open(filepath, "r");
+        if (!file_bgzf)
+        {
+            std::cerr << "ERROR: Could not open " << filepath << " with bgzf_open.\n";
+            std::_Exit(EXIT_FAILURE);
+        }
+    }
+    else
+    {
+        file = fopen(filepath, "r");
+        if (!file)
+        {
+            std::cerr << "ERROR: Could not open " << filepath << " with fopen.\n";
+            std::_Exit(EXIT_FAILURE);
+        }
     }
 }
 
 bool KtableReader::nextLine(std::string &StrLine)
 {
-    return (bool)(fgets((char*)StrLine.c_str(), MAX_LINE, file));
+    if (ifbgzf)
+    {
+        return (bool)(bgzf_fgets((char*)&StrLine[0], MAX_LINE, file_bgzf));
+    }
+    else
+    {
+        return (bool)(fgets((char*)&StrLine[0], MAX_LINE, file));
+    }
+    
 }
+
 
 bool KtableReader::nextLine_start(std::string &StrLine, const char startchar)
 {
     bool ifget = 0;
-    auto position = ftell(file);
+    size_t position;
+    if (ifbgzf)
+    {
+        position = bgzf_tell(file_bgzf);
+    }
+    else
+    {
+        position = ftell(file);
+    }
     
-    if (fgets((char*)StrLine.c_str(), MAX_LINE, file) !=NULL )
+    if ( nextLine(StrLine) )
     {
         if (StrLine[0] == startchar)
         {
@@ -42,44 +69,105 @@ bool KtableReader::nextLine_start(std::string &StrLine, const char startchar)
         }
         else
         {
-            fseek(file, position, SEEK_SET);
+            if (ifbgzf)
+            {
+                bgzf_seek(file_bgzf, position, SEEK_SET);
+            }
+            else
+            {
+                fseek(file, position, SEEK_SET);
+            }
         }
     }
     
     return ifget;
 }
 
-bool KtableReader::nextLine_genename(std::string &StrLine)
+bool KtableReader::Find(std::string &StrLine, const char startchar)
 {
     bool ifget = 0;
-    
-    while (fgets((char*)StrLine.c_str(), MAX_LINE, file) !=NULL )
+    size_t position;
+    if (ifbgzf)
     {
-        if (StrLine[0] == '>')
+        position = bgzf_tell(file_bgzf);
+    }
+    else
+    {
+        position = ftell(file);
+    }
+    
+    while ( nextLine(StrLine) )
+    {
+        if (StrLine[0] == startchar)
         {
             ifget = 1;
+            
+            if (ifbgzf)
+            {
+                bgzf_seek(file_bgzf, position, SEEK_SET);
+            }
+            else
+            {
+                fseek(file, position, SEEK_SET);
+            }
+            
             break;
         }
-    }
-    
-    return ifget;
-}
-
-bool KtableReader::nextLine_genegroup(std::string &StrLine)
-{
-    bool ifget = 0;
-    auto position = ftell(file);
-    
-    if (fgets((char*)StrLine.c_str(), MAX_LINE, file) !=NULL )
-    {
-        if (StrLine[0] == '@')
+        
+        if (ifbgzf)
         {
-            ifget = 1;            
+            position = bgzf_tell(file_bgzf);
         }
         else
         {
-            fseek(file, position, SEEK_SET);
+            position = ftell(file);
         }
+
+    }
+    
+    return ifget;
+}
+
+bool KtableReader::Find(std::string &StrLine, const char startchar1, const char startchar2)
+{
+    bool ifget = 0;
+    size_t position;
+    if (ifbgzf)
+    {
+        position = bgzf_tell(file_bgzf);
+    }
+    else
+    {
+        position = ftell(file);
+    }
+    
+    while ( nextLine(StrLine) )
+    {
+        if (StrLine[0] == startchar1 || StrLine[0] == startchar2)
+        {
+            ifget = 1;
+            
+            if (ifbgzf)
+            {
+                bgzf_seek(file_bgzf, position, SEEK_SET);
+            }
+            else
+            {
+                fseek(file, position, SEEK_SET);
+            }
+            
+            break;
+        }
+        
+        if (ifbgzf)
+        {
+            position = bgzf_tell(file_bgzf);
+        }
+        else
+        {
+            position = ftell(file);
+        }
+
     }
     
     return ifget;
@@ -89,9 +177,10 @@ bool KtableReader::nextLine_kmer(std::string &StrLine)
 {
     bool ifget = 0;
     
-    while (fgets((char*)StrLine.c_str(), MAX_LINE, file) !=NULL )
+    while ( nextLine(StrLine) )
     {
-        if (StrLine[0] == '&')
+        
+        if (StrLine[0] == '&' || StrLine[0] == '^')
         {
             ifget = 1;
             break;
@@ -100,34 +189,53 @@ bool KtableReader::nextLine_kmer(std::string &StrLine)
     
     return ifget;
 }
-
-bool KtableReader::nextLine_norm(std::string &StrLine)
-{
-    bool ifget = 0;
-    
-    while (GetLine(file, StrLine)) 
-    {
-        if (StrLine[0] == '$')
-        {
-            ifget = 1;
-            break;
-        }
-    }
-    
-    StrLine += '\n';
-    
-    return ifget;
-}
-
 void KtableReader::Close()
 {
-  if (file != NULL) {
-    fclose(file);
-  }
-  file=NULL;    
+    if (ifbgzf )
+    {
+        if (file_bgzf != NULL)
+        {
+            bgzf_close(file_bgzf);
+        }
+    }
+    else
+    {
+        if (file != NULL)
+        {
+            fclose(file);
+        }
+    }
 }
 
 void KtableReader::Seek(const size_t pos)
 {
-    fseek(file, pos, SEEK_SET);
+    if (ifbgzf)
+    {
+        bgzf_seek(file_bgzf, pos, SEEK_SET);
+    }
+    else
+    {
+        fseek(file, pos, SEEK_SET);
+    }
 }
+
+
+int KtableReader::GetLine(std::string &line)
+{
+    char buf[1024];
+    line.clear();
+    
+    if (ifbgzf)
+    {
+        return FileReader::GetLine(file_bgzf, line);
+    }
+    else
+    {
+        return FileReader::GetLine(file, line);
+    }
+    
+    return 0;
+}
+
+
+
