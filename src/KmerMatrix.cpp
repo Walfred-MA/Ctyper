@@ -200,7 +200,7 @@ void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const 
                     if ( rowdata[j] != rowdata[j-1] ) ++ uniqcounter;
                 }
                 mean_repeat = MAX(1.0, 1.0 * rowdata[1])/uniqcounter;
-                //mean_repeat *= mean_repeat  ;
+                mean_repeat *= mean_repeat  ;
                
                 mean_repeat_this = mean_repeat;
                 getEachRowValue(depth, kmervec[i], 1, uniqcounter, rowdata[5], mean_repeat_this, total_lambda, norm_value, weight_value);
