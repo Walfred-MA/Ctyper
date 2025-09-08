@@ -407,9 +407,17 @@ nomenclature.txt is also a table file with two columns: first column the name th
 4. **Convert genotyping results into fasta file**
 
    ```bash
-   python getFASTA.py -i genotype.txt -r HG38_main.fa,Allalters.fa,CHM13.fa -a PangenomeAlleles_annotationfix.tsv.gz -o output.fa
+   python tools/Annotation/getFASTA/getFASTA.py -i genotype.txt -r HG38_main.fa,Allalters.fa,CHM13.fa -a PangenomeAlleles_annotationfix.tsv.gz -o output.fa
    ```
-5. **Cohort Analysis**
+5. **Obtaining aggregate copy numbers**
+ 
+   ```bash
+   python tools/Annotation/CopyNumbers/AggregateCNs.py -i genotype.txt -g genecode.v33.gff3 -o CNV_outputs.txt
+   ```
+
+**Note:** The aggregate copy numbers are based on **MANE transcripts**, so some genes may appear on **multiple lines** if different transcripts are determined. Also, some large genes might be distributed in multiple blocks and may have partial CNVs. 
+
+6. **Cohort Analysis**
 
 There are two scripts in the `tools/Cohort` folder that work together for cohort analysis.
 
@@ -424,7 +432,7 @@ Run `CountAllele.py` on each sample to get allele-type results:
    ```bash
    # For each result in $results
    for result in $results; do
-       python CountAllele.py -i $result -t PangenomeAlleles_typefix.tsv -o "${result}_alleletype.out"
+       python CountAllele.py -i $genotyping_raw_outputs -t PangenomeAlleles_typefix.tsv -o "${result}_alleletype.out"
    done
    ```
 
@@ -440,7 +448,7 @@ Summarize results into a single file and add annotations:
    python SummaryAlleles.py -f $results_folder/ -t PangenomeAlleles_typefix.tsv -o cohort_results.vcf
    ```
 
-6. **Results Visualization**
+7. **Results Visualization**
 
 Visualization is performed on a **gene-by-gene** basis (not genome-wide).
 

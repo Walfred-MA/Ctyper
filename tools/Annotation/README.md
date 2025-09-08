@@ -10,7 +10,7 @@ This README provides an overview of how to use `SampleAnnotate.py` and describes
 To run the script, use the following command:
 
 ```bash
-python SampleAnnotate.py -i <Inputfile> -a <Sample_Annotation> > result.txt
+python SampleAnnotate.py -i <Inputfile> -a <Sample_Annotation> -o result.txt
 ```
 
 Replace `<Inputfile>` with the path to your input file and `<Sample_Annotation>` with the sample annotation file. Sample_Annotation need to be a tsv file or gzipped tsv.gz file.
