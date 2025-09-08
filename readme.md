@@ -424,7 +424,7 @@ Run `CountAllele.py` on each sample to get allele-type results:
    ```bash
    # For each result in $results
    for result in $results; do
-       python CountAllele.py -i $result -t PangenomeAlleles_typefix.tsv -o "${result}_alleletype.out"
+       python CountAllele.py -i $genotyping_raw_outputs -t PangenomeAlleles_typefix.tsv -o "${result}_alleletype.out"
    done
    ```
 
