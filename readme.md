@@ -415,7 +415,7 @@ nomenclature.txt is also a table file with two columns: first column the name th
    python tools/Annotation/CopyNumbers/AggregateCNs.py -i genotype.txt -g genecode.v33.gff3 -o CNV_outputs.txt
    ```
 
-**Note:** The aggregate copy numbers are based on **MANE transcripts**, so some genes may appear on **multiple lines** if multiple transcripts are present in the input. Also, some large genes might be distributed in multiple blocks and may have partial CNVs. 
+**Note:** The aggregate copy numbers are based on **MANE transcripts**, so some genes may appear on **multiple lines** if different transcripts are determined. Also, some large genes might be distributed in multiple blocks and may have partial CNVs. 
 
 6. **Cohort Analysis**
 
