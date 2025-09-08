@@ -39,6 +39,10 @@ We recommend use gencode.v33, and version conflicts might cause problems in some
 
 A tab-delimited file with one row per transcript, summarizing CN contribution.
 
+**Note:** The aggregate copy numbers are based on **MANE transcripts**.  
+Some genes may appear on **multiple lines** if multiple transcripts are present in the input.
+
+
 ### Columns:
 
 ```
@@ -65,6 +69,8 @@ python script.py \
 ```
 
 ---
+
+
 
 ## 📚 Dependencies
 
