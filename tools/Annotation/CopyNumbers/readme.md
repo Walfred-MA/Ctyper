@@ -39,7 +39,7 @@ We recommend use gencode.v33, and version conflicts might cause problems in some
 
 A tab-delimited file with one row per transcript, summarizing CN contribution.
 
-**Note:** The aggregate copy numbers are based on **MANE transcripts**. So some genes may appear on **multiple lines** if multiple transcripts are present in the input. Also, some large genes might be distributed in multiple blocks and may have partial CNVs.
+**Note:** The aggregate copy numbers are based on **MANE transcripts**. So some genes may appear on **multiple lines** if different transcripts are determined. Also, some large genes might be distributed in multiple blocks and may have partial CNVs.
 
 ### Columns:
 
