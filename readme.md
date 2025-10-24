@@ -1,3 +1,5 @@
+Announcement: there is a version conflict on the conda ctyper. Please use the github source while we are updating the conda. 
+
 <a id="readme-top"></a>
 <!--
 *** Thanks for checking out the Best-README-Template. If you have a suggestion
