@@ -45,22 +45,22 @@ void try_function_with_retries(Func func, int max_attempts = 100)
 }
 
 
-void trial_solution(vector<uint16>& passive_set, const uint16 passive_num, const Vector_T &y, const Matrix_T &A, const uint16 size, Vector_T &s)
+
+void trial_solution(vector<uint16>& passive_set, const uint16 passive_num, const Vector_T &y, const Matrix_T &A, const uint16 size, Vector_T &s, Matrix_T &matrixfull, Vector_T &vectorfull)
 {
     assert( passive_num <= size );
     
-    s.head(size).setZero();
-    
+    //s.head(size).setZero();
     
     if (passive_num == 1)
     {
-        s(passive_set[0]) = (FLOAT_T)y(passive_set[0]) / (FLOAT_T)A(passive_set[0], passive_set[0]);
+        //s(passive_set[0]) = (FLOAT_T)y(passive_set[0]) / (FLOAT_T)A(passive_set[0], passive_set[0]);
+        s(0) = (FLOAT_T)y(passive_set[0]) / (FLOAT_T)A(passive_set[0], passive_set[0]);
         return ;
     }
      
-    
-    Matrix_T sub_matrix = Matrix_T(passive_num, passive_num);
-    Vector_T sub_vector = Vector_T(passive_num);
+    auto sub_matrix = matrixfull.topLeftCorner(passive_num, passive_num);
+    auto sub_vector = vectorfull.head(passive_num);
     
     for (uint16 i = 0; i < passive_num; ++i)
     {
@@ -72,17 +72,22 @@ void trial_solution(vector<uint16>& passive_set, const uint16 passive_num, const
         }
     }
     
-    Vector_T s_ = sub_matrix.colPivHouseholderQr().solve(sub_vector);
-        
+    Eigen::LDLT<Matrix_T> ldlt;
+    ldlt.compute(sub_matrix);
+    s.head(passive_num) = ldlt.solve(sub_vector);
+    
+    //Vector_T s_ = sub_matrix.colPivHouseholderQr().solve(sub_vector);
+    /*
     for (size_t i = 0; i < passive_num; ++i)
     {
         s(passive_set[i]) = s_(i);
     }
+    */
 }
 
 int Regression::lawson_hanson_nnls(const FLOAT_T *kernal_vec, const FLOAT_T *weightnorm, uint16 size, FLOAT_T *coefs, FLOAT_T *residuel)
 {
-    int max_iterations = MIN(2*size, maxiteration);
+    int max_iterations = MIN(2*size, 1000);
     
     const FLOAT_T tol = size*numeric_limits<FLOAT_T>::epsilon();
     
@@ -90,7 +95,17 @@ int Regression::lawson_hanson_nnls(const FLOAT_T *kernal_vec, const FLOAT_T *wei
     
     const Matrix_T A = Eigen::Map<Matrix_T> ((FLOAT_T*) weightnorm, size, size);
         
-    Vector_T x = Vector_T::Zero(size), x_trial(size) , r (size);
+    Vector_T x = Vector_T::Zero(size), x_trial(size), x_old(size) , r (size);
+    
+    vector<bool> active_or_passive = vector<bool> (MAX_UINT16);
+        
+    vector<uint16> passive_set = vector<uint16> (MAX_UINT16);
+    
+    vector<uint16> passive_set_old = vector<uint16> (MAX_UINT16);
+    
+    Matrix_T matrixfull = Matrix_T(size, size);
+    
+    Vector_T vectorfull = Vector_T(size);
     
     uint16 no_update = 0;
     
@@ -104,7 +119,6 @@ int Regression::lawson_hanson_nnls(const FLOAT_T *kernal_vec, const FLOAT_T *wei
     while (passive_num < size && j++ < max_iterations)
     {
         // Find the max residual max_r in active set and its index;
-        
         int max_r_index = 0;
         FLOAT_T max_r = std::numeric_limits<FLOAT_T>::min();
 
@@ -130,61 +144,82 @@ int Regression::lawson_hanson_nnls(const FLOAT_T *kernal_vec, const FLOAT_T *wei
         active_or_passive[max_r_index] = 1;
         
         
-        try_function_with_retries( [&]() {trial_solution(passive_set, passive_num, y, A, size, x_trial); } );
+        try_function_with_retries( [&]() {trial_solution(passive_set, passive_num, y, A, size, x_trial, matrixfull, vectorfull); } );
         
         //trial_solution(passive_set, passive_num, y, A, size, x_trial); //solve || y - A * x || on passive vectors
         
         int k = 0;
         while (passive_num && k++ < max_iterations)
         {
-
-            // Find the index i in the passive set P that has the smallest alpha value.
-            FLOAT_T alpha = std::numeric_limits<FLOAT_T>::max();
-            int alpha_index = -1;
-            for (size_t i = 0; i < passive_num; ++i)
+            
+            bool all_nonneg = true;
+            for (uint16 p = 0; p < passive_num; ++p) 
             {
-                int idx = passive_set[i];
-                FLOAT_T alpha_i = x_trial[idx] ;
-                if (alpha_i < alpha)
+                if (x_trial(p) < 0)
                 {
-                    alpha = alpha_i;
-                    alpha_index = idx;
+                    all_nonneg = false;
+                    break;
                 }
             }
             
-                        
-            if (alpha > tol)
+            if (all_nonneg)
             {
+                for (uint16 p = 0; p < passive_num; ++p) 
+                {
+                    uint16 idx = passive_set[p];
+                    x(idx) = x_trial(p);
+                }
                 break;
             }
-                        
+            // Find the index i in the passive set P that has the smallest alpha value.
+            FLOAT_T alpha = std::numeric_limits<FLOAT_T>::max();
+            int alpha_index = -1;
+            for (uint16 i = 0; i < passive_num; ++i)
+            {
+                int idx = passive_set[i];
+                if (x[idx] > 1e-5 && x_trial[i] < -1e-5)
+                {
+                    FLOAT_T alpha_i = (double)(x[idx])/((double)x[idx] - (double)x_trial[i]) ;
+                    if (alpha_i < alpha)
+                    {
+                        alpha = alpha_i;
+                        alpha_index = i;
+                    }
+                }
+            }
+            // Update x.
+            if (alpha_index != -1)
+            {
+                for (uint16 i = 0; i < passive_num; ++i)
+                {
+                    uint16 idx = passive_set[i];
+                    x[idx] += alpha * (x_trial[i] - x[idx]);
+                }
+            }
+                
+            //x = x + alpha * (x_trial - x);
             int passive_shrink_index = 0;
             for (size_t i = 0; i < passive_num; ++i)
             {
                 int idx = passive_set[i];
-                if (x_trial[idx] > tol)
+                if (x_trial[i] > tol)
                 {
-                    passive_set[passive_shrink_index++] = passive_set[i];
+                    passive_set[passive_shrink_index++] = idx;
                 }
                 else
                 {
-                    active_or_passive[max_r_index] = 0;
+                    active_or_passive[idx] = 0; // remove it from passive set
                 }
             }
-            
             passive_num = passive_shrink_index;
             
-            // Update x.
-            x = x + alpha * (x_trial - x);
-            
-            if (passive_num) try_function_with_retries( [&]() {trial_solution(passive_set, passive_num, y, A, size, x_trial); } );
+            if (passive_num) try_function_with_retries( [&]() {trial_solution(passive_set, passive_num, y, A, size, x_trial, matrixfull, vectorfull); } );
             
         }
 
-        x = x_trial.eval();
+        //x = x_trial.eval();
         // Update the residual.
         r = y - A * x;
-        
         if(passive_num == passive_num_old  && equal(passive_set_old.begin(), passive_set_old.begin() + passive_num, passive_set.begin() ) )
         {
             no_update ++;
@@ -210,6 +245,7 @@ int Regression::lawson_hanson_nnls(const FLOAT_T *kernal_vec, const FLOAT_T *wei
     
     return 0;
 }
+
 
 
 inline void getlocalnum_mul(const FLOAT_T* coefs, const uint16* rowdata,const FLOAT_T totalnum, FLOAT_T &localnum, const vector<FLOAT_T>& grouptotalnums, vector<FLOAT_T>& grouplocalnums, const vector<uint16> &groups)
