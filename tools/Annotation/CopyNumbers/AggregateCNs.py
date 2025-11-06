@@ -150,7 +150,7 @@ def readtable(inf):
 				continue
 			
 			c1 = parts[0]
-			c4 = [x for x in parts[3].split(";") if len(x)]  # the 4th column (0-based index 3)
+			c4 = [x for x in parts[4].split(";") if len(x)]  # the 4th column (0-based index 3)
 		
 			# Split 4th column on ';' and parse each non-empty token
 			for token in c4:
