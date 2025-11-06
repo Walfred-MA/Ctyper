@@ -352,7 +352,7 @@ Supplementary profiling run to generate target regions:
 
 # Results and Annotation
 
-## Genotyping outputs
+## Genotyping raw outputs (not for direct use, debug only)
 Ctyper genotyping results are output as text blocks, with one block per sample for each matrix.
 Each block consists of four lines. For example:
 ```
@@ -383,6 +383,7 @@ To understand the output file, genotype.txt is a tsv table file. Its headers are
 | Column Name     | Description                           |
 |-----------------|---------------------------------------|
 | allele_name       | Unique identifier for the pangenone allele, format is $prefix_$groupindex_$sample_$haplotype_$index   |
+| kmer_concordance_percentage       |  Percentage of unique kmer agreement between genotyping results and NGS data, note the sequence similarity is much higher, can be estimated 100 - (100 - kmer_concordance_percentage)/31 |
 | nameclature_name        | which pangenome based nameclature this pangenone allele belongs to (alias to HLA nameclature)  |
 | transcript      | The exonic DNA it contains, format is $transcript_id:$gene_name:$similarity, if have multiple transcripts, then separated by semicolon, and if only contains a part of transcript, then it would be $transcript_id($start_exon_index-$end_exon_index):$gene_name:$similarity |
 | classfication        | Ref: the alleles very similar to reference genes, Alt: alternative version of reference genes, Dup: duplicated paralogs, Novel: paralogs with novel sequences |
@@ -390,7 +391,7 @@ To understand the output file, genotype.txt is a tsv table file. Its headers are
 | liftover_location | The liftover location of the allele, format: $chromosome:$start-$end$strand:$alignment_CIGAR  |
 
 Example row:
-A4GALT_group1_GW00056_h1_227    A4GALT_group1_9 A4GALT  ENST00000401850:A4GALT:99.68;   Alt     GW00056#1#GWHBKGU00000010:748831-766661-        chr22:42689120-42706939-:2058M2I5D303M1X1463M4I3116M1X261M1X279M1X82M1X448M1X459M1X124M1X85M2D225M1X1240M1X650M9I794M1X144M18D20I929M1X399M1X793M1X83M1X709M1X182M1X296M1X136M1X650M1X96M1X59M3I291M1I95M1X276M1X245M1X263M17D16I36M1X184M1X299M
+A4GALT_group1_GW00056_h1_227  99.91    A4GALT_group1_9 A4GALT  ENST00000401850:A4GALT:99.68;   Alt     GW00056#1#GWHBKGU00000010:748831-766661-        chr22:42689120-42706939-:2058M2I5D303M1X1463M4I3116M1X261M1X279M1X82M1X448M1X459M1X124M1X85M2D225M1X1240M1X650M9I794M1X144M18D20I929M1X399M1X793M1X83M1X709M1X182M1X296M1X136M1X650M1X96M1X59M3I291M1I95M1X276M1X245M1X263M17D16I36M1X184M1X299M
 
 
 2. **Obtain public nomenclatures for important genes,including HLA, CYP2D6, and KIR**
