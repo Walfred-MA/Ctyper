@@ -8,6 +8,7 @@ import gzip
 
 def summary(inputfile, annofile, outputfile, iffilter):
 	
+	scores = cl.defaultdict(str)
 	results = cl.defaultdict(int)
 	with open(inputfile, mode = 'r') as f:
 		
@@ -17,14 +18,18 @@ def summary(inputfile, annofile, outputfile, iffilter):
 				
 				for name in line[8:].split(",")[:-1]:   
 					results[name] += 1
-	
+			elif line.startswith("score: "):
+				for ele in line[7:].split(",")[:-1]:   
+					name, score = ele.split(":")
+					scores[name] = score
+					
 	if annofile.endswith(".gz"):
 		annofile_ = gzip.open(annofile, mode = 'rt')
 	else:
 		annofile_ = open(annofile, mode = 'r')
 		
 	with open(outputfile, mode = 'w') as w: 
-					
+		
 		for line in annofile_:
 			
 			line = line.strip().split('\t')
@@ -44,6 +49,7 @@ def summary(inputfile, annofile, outputfile, iffilter):
 			if count > 0:
 				
 				line = line[:3] + line[4:6]+ [line[7]] + [line[-1]]
+				
 				if ":" in line[2]:
 					line[2] = line[2].split(":")[0]
 					
@@ -51,10 +57,10 @@ def summary(inputfile, annofile, outputfile, iffilter):
 					line[-1] = ":".join(line[-1].split(":")[1:])
 					
 				for i in range(count):
-					w.write("\t".join(line)+"\n")
+					w.write("\t".join([line[0],scores[line[0]]] + line[1:])+"\n")
 		annofile_.close()
-						
-						
+		
+		
 def main(args):
 	
 	summary(args.input,  args.anno, args.output, args.filter)
