@@ -94,7 +94,7 @@ gunzip PangenomeAlleles_annotationfix.v1.0.tsv.gz
 Post-analysis tools are included at $CONDA_PREFIX/share/ctyper/tools/ 
 
 if you cannot find it, you may obtain it from GitHub folders here. 
-
+**WARNING**: ctyper's annotation was based on genecode version 29. 
 
 Let us get start to genotype an example sample NA12718
 
@@ -420,6 +420,7 @@ nomenclature.txt is also a table file with two columns: first column the name th
    python tools/Annotation/CopyNumbers/AggregateCNs.py -i genotype.txt -g genecode.v33.gff3 -o CNV_outputs.txt
    ```
 
+**WARNING:** ctyper's annotation was based on genecode version 29. 
 **Note:** The aggregate copy numbers are based on **MANE transcripts**, so some genes may appear on **multiple lines** if different transcripts are determined. Also, some large genes might be distributed in multiple blocks and may have partial CNVs. 
 
 6. **Cohort Analysis**
@@ -464,7 +465,7 @@ For example, to visualize the gene **SMN**:
    ```
 
 **Optional:** To visualize with the GENCODE annotation:
-
+**WARNING:** ctyper's annotation was based on genecode version 29. 
    ```bash
    grep "gene_name=SMN" genecode.gff3 > SMN.gff3
    python typemutant.py -a PangenomeAlleles_annotationfix.tsv.gz -g SMN -G SMN.gff3 -n genotype.txt -o output.png
