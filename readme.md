@@ -80,7 +80,7 @@ conda create -n ctyper_env  -c conda-forge -c bioconda ctyper
 conda activate ctyper_env
 ```
 
-Download relying databases
+Download relying databases, **WARNING**: ctyper's annotation was based on genecode version 37. 
 
 ```bash
 wget "https://zenodo.org/records/16340156/files/HprcCpcHgsvc_cmr_matrix.txt.gz"
@@ -94,7 +94,7 @@ gunzip PangenomeAlleles_annotationfix.v1.0.tsv.gz
 Post-analysis tools are included at $CONDA_PREFIX/share/ctyper/tools/ 
 
 if you cannot find it, you may obtain it from GitHub folders here. 
-**WARNING**: ctyper's annotation was based on genecode version 37. 
+
 
 Let us get start to genotype an example sample NA12718
 
