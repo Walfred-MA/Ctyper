@@ -13,6 +13,7 @@
 #include <unordered_set>
 
 extern bool optioncorr;
+extern int lowcover;
 
 inline void getEachRowValue(const FLOAT_T depth, const int count, const char sign, const uint16 uniqcounter,const uint16 flag,const FLOAT_T mean_repeat,FLOAT_T &total_lambda, FLOAT_T &norm_value, FLOAT_T &weight_value)
 {
@@ -20,7 +21,7 @@ inline void getEachRowValue(const FLOAT_T depth, const int count, const char sig
     float count_i;   //estimate number of copy and at least one copy
     float new_weight = 1.0;
     
-    if (count < 3 )
+    if (count < lowcover )
     {
         weight_value += new_weight;
         return ;
@@ -227,4 +228,3 @@ void KmerMatrix::getNorm(const uint16* kmervec, const uint16* kmermatrix, const 
     AddOffsites(norm_vec, norm_matrix, vec_offsite, matrix_offsite, row_offsites.get(), gnum);
         
 }
-

@@ -42,6 +42,7 @@ constexpr ull REVNUM = ~0ULL ^ (3ULL << 62); //2^62-1
 #define genomesize_female 6320012150.0
 
 extern bool optioncorr;
+extern int lowcover;
 
 #define errorcutoff1 15
 #define errorcutoff2 30

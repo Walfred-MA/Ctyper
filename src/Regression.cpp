@@ -301,7 +301,7 @@ inline void GetMedianNofil_mul(const FLOAT_T* coefs, const uint16* kmervec, cons
     {
         getlocalnum_mul(coefs, rowdata, totalnum, localnum, grouptotalnums, grouplocalnums, groups);
         
-        if (localnum >= 0.5 && kmervec[j] >= 2)
+        if (localnum >= 0.5 && kmervec[j] >= lowcover)
         {
             grouplocalnums[groupnum] = localnum;
             
@@ -406,7 +406,7 @@ inline void GetMedianNofil(const FLOAT_T* coefs, const uint16* kmervec, const ui
         
         getlocalnum(coefs, rowdata, totalnum, localnum);
         
-        if ( localnum >= 0.5 && kmervec[i] >= 2)
+        if ( localnum >= 0.5 && kmervec[i] >= lowcover)
         {
             FLOAT_T ratio = kmervec[i] / localnum;
             
@@ -500,4 +500,3 @@ void Regression::Call(const uint16* kmervec, const uint16* kmermatrix, const FLO
         }
     }
 }
-

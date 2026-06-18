@@ -21,6 +21,9 @@
 extern bool optioncorr;
 bool optioncorr = 1;
 
+extern int lowcover;
+int lowcover = 3;
+
 extern int forceunmap;
 int forceunmap = 0;
 
@@ -90,6 +93,7 @@ void printHelp()
     std::cerr << "  -T <ref fasta path>          Reference FASTA for reading CRAM files (default: use REF_CACHE and REF_PATH environment variables).\n";
     std::cerr << "  -w, --window <number>        Window size for k-mer coverage report (default: 30).\n";
     std::cerr << "  -c, --corr <0/1>             Enable NGS k-mer bias correction (default: 1).\n";
+    std::cerr << "      --lowcover <number>      Minimum k-mer count to use in genotyping (default: 3). Use 2 to filter only singletons, or 1 to keep all observed k-mers.\n";
 
     std::cerr << "\nTarget run options (for using reads aligned to specific regions or genes, will run all genes in database without specifying):\n\n";
     std::cerr << "  -g, --gene <name>            Target gene name, prefix (ending with '*', remember to quote escape, e.g., 'HLA*' ), or matrix (starting with '#', e.g., #SMN_group1). Can be specified multiple times.\n";
@@ -351,6 +355,15 @@ int main(int argc, char * argv_[])
         else if (strcmp(Argument, "-c")==0 or strcmp(Argument, "--corr")==0)
         {
             optioncorr = (int)atoi(argv[i]);
+        }
+        else if (strcmp(Argument, "--lowcover")==0)
+        {
+            lowcover = (int)atoi(argv[i]);
+            if (lowcover < 1)
+            {
+                std::cerr << "Error: --lowcover must be >= 1" << std::endl;
+                return 1;
+            }
         }
     }
     

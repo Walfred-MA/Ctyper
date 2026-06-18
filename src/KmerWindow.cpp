@@ -518,7 +518,7 @@ void KmerWindow::KmerMatch(const uint16* kmervec, const uint16* kmermatrix, cons
     int kmercounter_abs = 0;
     for (size_t i = 0; i < knum; ++i)
     {
-        int ifkmer = (kmervec[i] > 0) ? 1 : -1;
+        int ifkmer = (kmervec[i] >= lowcover) ? 1 : -1;
         
         switch (rowdata[0])
         {
