@@ -406,8 +406,6 @@ static void kmer_deconpress(const char * kmer_compress, T &larger_kmer)
     
 }
 
-
-
 template <typename T>
 static void kmer_read_31(char base,  std::size_t &current_size, T &current_kmer, T &reverse_kmer)
 {
@@ -557,7 +555,16 @@ ull KmerCounter<dictsize>::read_target(KtableReader &ktablefile)
     
     while (ktablefile.nextLine_kmer(StrLine))
     {
-        kmer_deconpress(&StrLine.c_str()[THREECOLLENGTH], current_kmer);
+        const size_t kmer_offset = matrix_kmer_offset(StrLine);
+        if (kmer_offset == std::string::npos ||
+            kmer_offset + MATRIX_ENCODING_V1.kmer_width > strlen(StrLine.c_str()))
+        {
+            std::cerr << "ERROR: malformed k-mer matrix row: cannot locate the "
+                      << MATRIX_ENCODING_V1.kmer_width << "-character k-mer field."
+                      << std::endl;
+            std::_Exit(EXIT_FAILURE);
+        }
+        kmer_deconpress(&StrLine.c_str()[kmer_offset], current_kmer);
         initiate_counter_mul(kmer_hash, kmer_multi_hash, current_kmer, totalkmers);
         
     }
@@ -592,7 +599,16 @@ ull KmerCounter<dictsize>::read_target(KtableReader &ktablefile, vector<pair<siz
         {
             if (kindex++ >= knum) break;
 
-            kmer_deconpress(&StrLine.c_str()[THREECOLLENGTH], current_kmer);
+            const size_t kmer_offset = matrix_kmer_offset(StrLine);
+            if (kmer_offset == std::string::npos ||
+                kmer_offset + MATRIX_ENCODING_V1.kmer_width > strlen(StrLine.c_str()))
+            {
+                std::cerr << "ERROR: malformed k-mer matrix row: cannot locate the "
+                          << MATRIX_ENCODING_V1.kmer_width << "-character k-mer field."
+                          << std::endl;
+                std::_Exit(EXIT_FAILURE);
+            }
+            kmer_deconpress(&StrLine.c_str()[kmer_offset], current_kmer);
             
             initiate_counter_mul(kmer_hash, kmer_multi_hash, current_kmer, totalkmers);
         }
@@ -1070,3 +1086,4 @@ void KmerCounter<dictsize>::Call(const char* inputfile, uint16* samplevecs, ull_
 
 
 #endif /* KmerCounter_hpp */
+
