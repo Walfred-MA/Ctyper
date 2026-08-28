@@ -13,6 +13,8 @@
 #include <filesystem>
 #include <sstream>
 #include <vector>
+#include <algorithm>
+#include <cstring>
 
 #include "Processor.hpp"
 #include "config.hpp"
@@ -20,9 +22,6 @@
 
 extern bool optioncorr;
 bool optioncorr = 1;
-
-extern int lowcover;
-int lowcover = 3;
 
 extern int forceunmap;
 int forceunmap = 0;
@@ -36,6 +35,9 @@ int ifprofile = 0;
 extern string vdatabase;
 string vdatabase = "unknown";
 
+std::string matrix_version = "";
+MatrixLayout matrix_layout = MatrixLayout::UNKNOWN;
+
 extern string refpath;
 string refpath = "";
 
@@ -44,6 +46,80 @@ string profilesummaryfile = "";
 
 extern int inputdep;
 int inputdep = 0;
+
+static vector<string> split_matrix_row(const string& row)
+{
+    vector<string> fields;
+    const size_t length = strlen(row.c_str());
+    size_t start = 0;
+    while (start < length)
+    {
+        size_t end = row.find('\t', start);
+        if (end == string::npos || end > length) end = length;
+        fields.push_back(row.substr(start, end - start));
+        start = end + 1;
+    }
+    return fields;
+}
+
+static MatrixLayout detect_matrix_layout(const string& matrix_path)
+{
+    KtableReader reader(matrix_path.c_str());
+    string row(MAX_LINE, '\0');
+    bool all_v1_fixed = true;
+    bool all_v2_fixed = true;
+    bool saw_extended_delimiters = false;
+    size_t rows_checked = 0;
+
+    while (rows_checked < 32 && reader.nextLine_kmer(row))
+    {
+        const vector<string> fields = split_matrix_row(row);
+        if (fields.size() < 5)
+        {
+            reader.Close();
+            return MatrixLayout::UNKNOWN;
+        }
+
+        all_v2_fixed = all_v2_fixed &&
+            fields[1].size() == MATRIX_ENCODING_V2.tag_width &&
+            fields[2].size() ==
+                MATRIX_ENCODING_V2.path_width + MATRIX_ENCODING_V2.query_index_width &&
+            fields[3].size() == MATRIX_ENCODING_V2.size_width +
+                MATRIX_ENCODING_V2.query_position_width +
+                MATRIX_ENCODING_V2.reference_position_width &&
+            fields[4].size() == MATRIX_ENCODING_V2.kmer_width;
+
+        all_v1_fixed = all_v1_fixed &&
+            fields[1].size() == MATRIX_ENCODING_V1.tag_width &&
+            fields[2].size() == MATRIX_ENCODING_V1.path_width &&
+            fields[3].size() == MATRIX_ENCODING_V1.reference_position_width &&
+            fields[4].size() == MATRIX_ENCODING_V1.kmer_width;
+
+        saw_extended_delimiters = saw_extended_delimiters ||
+            fields[2].find_first_of("+-") != string::npos ||
+            std::count(fields[3].begin(), fields[3].end(), '|') == 2;
+        ++rows_checked;
+    }
+    reader.Close();
+
+    if (rows_checked == 0) return MatrixLayout::UNKNOWN;
+    if (all_v2_fixed) return MatrixLayout::V2_FIXED;
+    if (all_v1_fixed) return MatrixLayout::V1_FIXED;
+    if (saw_extended_delimiters) return MatrixLayout::V2_DELIMITED;
+    return MatrixLayout::V1_DELIMITED;
+}
+
+static const char* matrix_layout_name(MatrixLayout layout)
+{
+    switch (layout)
+    {
+        case MatrixLayout::V1_FIXED: return "v1.0.0 fixed-width";
+        case MatrixLayout::V1_DELIMITED: return "v1.0.0 legacy delimited";
+        case MatrixLayout::V2_FIXED: return "v2.0.1 fixed-width";
+        case MatrixLayout::V2_DELIMITED: return "legacy extended delimited";
+        default: return "unknown";
+    }
+}
 
 
                                 
@@ -93,7 +169,6 @@ void printHelp()
     std::cerr << "  -T <ref fasta path>          Reference FASTA for reading CRAM files (default: use REF_CACHE and REF_PATH environment variables).\n";
     std::cerr << "  -w, --window <number>        Window size for k-mer coverage report (default: 30).\n";
     std::cerr << "  -c, --corr <0/1>             Enable NGS k-mer bias correction (default: 1).\n";
-    std::cerr << "      --lowcover <number>      Minimum k-mer count to use in genotyping (default: 3). Use 2 to filter only singletons, or 1 to keep all observed k-mers.\n";
 
     std::cerr << "\nTarget run options (for using reads aligned to specific regions or genes, will run all genes in database without specifying):\n\n";
     std::cerr << "  -g, --gene <name>            Target gene name, prefix (ending with '*', remember to quote escape, e.g., 'HLA*' ), or matrix (starting with '#', e.g., #SMN_group1). Can be specified multiple times.\n";
@@ -356,22 +431,14 @@ int main(int argc, char * argv_[])
         {
             optioncorr = (int)atoi(argv[i]);
         }
-        else if (strcmp(Argument, "--lowcover")==0)
-        {
-            lowcover = (int)atoi(argv[i]);
-            if (lowcover < 1)
-            {
-                std::cerr << "Error: --lowcover must be >= 1" << std::endl;
-                return 1;
-            }
-        }
     }
     
     std::ifstream versionfile(kmatrixfile + ".index");
     if (versionfile)
     {
         std::string versionline;
-        if (std::getline(versionfile, versionline) && versionline[0] == '@')
+        if (std::getline(versionfile, versionline) &&
+            !versionline.empty() && versionline[0] == '@')
         {
             vdatabase = versionline.substr(1);
 
@@ -381,10 +448,72 @@ int main(int argc, char * argv_[])
                 std::cerr << "Error: Database version mismatch (expected "+string(vctyper)+" or support:"+string(vctyper)+")." << std::endl;
                 return 1;
             }
+
+            const size_t version_end = vdatabase.find_first_of(",\t ");
+            const string advertised_version = vdatabase.substr(0, version_end);
+            if (advertised_version == MATRIX_VERSION_V1)
+            {
+                matrix_version = MATRIX_VERSION_V1;
+                matrix_layout = MatrixLayout::V1_FIXED;
+            }
+            else if (advertised_version == MATRIX_VERSION_V2)
+            {
+                matrix_version = MATRIX_VERSION_V2;
+                matrix_layout = MatrixLayout::V2_FIXED;
+            }
+
+            if (!kmatrixfile.empty() && std::filesystem::exists(kmatrixfile))
+            {
+                const MatrixLayout detected_layout = detect_matrix_layout(kmatrixfile);
+                if (matrix_layout != MatrixLayout::UNKNOWN &&
+                    detected_layout != MatrixLayout::UNKNOWN &&
+                    detected_layout != matrix_layout)
+                {
+                    std::cerr << "Error: Matrix index advertises " << advertised_version
+                              << ", but the top k-mer rows have "
+                              << matrix_layout_name(detected_layout) << " encoding."
+                              << std::endl;
+                    return 1;
+                }
+                if (matrix_layout == MatrixLayout::UNKNOWN)
+                {
+                    matrix_layout = detected_layout;
+                    if (detected_layout == MatrixLayout::V2_FIXED)
+                        matrix_version = MATRIX_VERSION_V2;
+                    else if (detected_layout == MatrixLayout::V1_FIXED ||
+                             detected_layout == MatrixLayout::V1_DELIMITED)
+                        matrix_version = MATRIX_VERSION_V1;
+                    std::cerr << "Warning: Unrecognized advertised matrix version '"
+                              << advertised_version << "'; using the auto-detected "
+                              << matrix_layout_name(matrix_layout) << " layout."
+                              << std::endl;
+                }
+            }
         }
         else
         {
-            std::cerr << "Warning: Missing database version number in index file. Error might happen if database mismatches." << std::endl;
+            if (!kmatrixfile.empty() && std::filesystem::exists(kmatrixfile))
+                matrix_layout = detect_matrix_layout(kmatrixfile);
+
+            if (matrix_layout == MatrixLayout::V2_FIXED)
+                matrix_version = MATRIX_VERSION_V2;
+            else if (matrix_layout == MatrixLayout::V1_FIXED ||
+                     matrix_layout == MatrixLayout::V1_DELIMITED)
+                matrix_version = MATRIX_VERSION_V1;
+
+            if (matrix_layout == MatrixLayout::UNKNOWN)
+            {
+                std::cerr << "Warning: Missing matrix version in index and unable "
+                          << "to recognize the k-mer row layout." << std::endl;
+            }
+            else
+            {
+                vdatabase = matrix_version.empty()
+                    ? "legacy-extended,auto-detected"
+                    : matrix_version + ",auto-detected";
+                std::cerr << "Warning: Missing matrix version in index; auto-detected "
+                          << matrix_layout_name(matrix_layout) << "." << std::endl;
+            }
         }
     }
     else
