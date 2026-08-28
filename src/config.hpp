@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <Eigen/Dense>
 #include <atomic>
+#include <array>
+#include <string>
 typedef unsigned int uint;
 typedef unsigned __int128 u128;
 typedef unsigned long long ull;
@@ -13,6 +15,8 @@ typedef std::atomic<unsigned long long> ull_atom;
 
 constexpr int background_prime = 1000003;
 constexpr const char* vctyper = "v1.2.0";
+constexpr const char* MATRIX_VERSION_V1 = "v1.0.0";
+constexpr const char* MATRIX_VERSION_V2 = "v2.0.1";
 #define klen 31
 
 #define large_prime 2147483647
@@ -35,14 +39,77 @@ constexpr ull REVNUM = ~0ULL ^ (3ULL << 62); //2^62-1
 
 #define FLOAT_T float
 #define FIXCOL 6
-#define THREECOLLENGTH 17
+
+enum class MatrixLayout
+{
+    UNKNOWN,
+    V1_FIXED,
+    V1_DELIMITED,
+    V2_FIXED,
+    V2_DELIMITED
+};
+
+struct MatrixEncoding
+{
+    size_t tag_offset;
+    size_t tag_width;
+    size_t path_offset;
+    size_t path_width;
+    size_t query_index_offset;
+    size_t query_index_width;
+    size_t size_offset;
+    size_t size_width;
+    size_t query_position_offset;
+    size_t query_position_width;
+    size_t reference_position_offset;
+    size_t reference_position_width;
+    size_t kmer_offset;
+    size_t kmer_width;
+    size_t allele_offset;
+};
+
+// v1.0.0: tag(3), path(3), location(5), k-mer(11), allele indexes.
+inline constexpr MatrixEncoding MATRIX_ENCODING_V1 = {
+    3, 3, 7, 3, 0, 0, 0, 0, 0, 0, 11, 5, 17, 11, 29
+};
+
+// v2.0.1: tag(3), path+strand(3), qindex(3), size(4), qpos(4),
+// rpos(4), k-mer(11), allele indexes. Tabs occupy bytes 2, 6, 13, 26, 38.
+inline constexpr MatrixEncoding MATRIX_ENCODING_V2 = {
+    3, 3, 7, 3, 10, 3, 14, 4, 18, 4, 22, 4, 27, 11, 39
+};
+
+// Empty means that the index did not provide a recognized matrix version.
+extern std::string matrix_version;
+extern MatrixLayout matrix_layout;
+
+inline size_t matrix_tsv_field_offset(const std::string& line, size_t field)
+{
+    if (field == 0) return 0;
+    size_t offset = 0;
+    for (size_t i = 0; i < field; ++i)
+    {
+        offset = line.find('\t', offset);
+        if (offset == std::string::npos) return offset;
+        ++offset;
+    }
+    return offset;
+}
+
+inline size_t matrix_kmer_offset(const std::string& line)
+{
+    if (matrix_layout == MatrixLayout::V2_FIXED)
+        return MATRIX_ENCODING_V2.kmer_offset;
+    if (matrix_layout == MatrixLayout::V1_FIXED)
+        return MATRIX_ENCODING_V1.kmer_offset;
+    return matrix_tsv_field_offset(line, 4);
+}
 
 #define genomesize_mean 6320012150.0
 #define genomesize_male 6270605410.0
 #define genomesize_female 6320012150.0
 
 extern bool optioncorr;
-extern int lowcover;
 
 #define errorcutoff1 15
 #define errorcutoff2 30
@@ -100,3 +167,4 @@ using hotspot = std::pair<int,int>;
 
 
 #endif /* config_hpp */
+
