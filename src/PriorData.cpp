@@ -36,6 +36,68 @@ void strsplit(string& str, vector<string>& eles, char deli)
     }
 }
 
+static void matrix_row_error(const std::string& message)
+{
+    std::cerr << "ERROR: malformed k-mer matrix row: " << message << std::endl;
+    std::_Exit(EXIT_FAILURE);
+}
+
+static uint decode_matrix_base64(const std::string& row, size_t offset,
+                                 size_t width, const char* field_name)
+{
+    if (offset == std::string::npos || offset + width > strlen(row.c_str()))
+        matrix_row_error(std::string("missing ") + field_name + " field");
+
+    uint value = 0;
+    for (size_t i = 0; i < width; ++i)
+    {
+        const unsigned char c = row[offset + i];
+        if (c < '0' || c > ('0' + 63))
+            matrix_row_error(std::string("invalid base-64 character in ") + field_name);
+        value = (value << 6) + (c - '0');
+    }
+    return value;
+}
+
+static uint decode_matrix_base64(const std::string& field, const char* field_name)
+{
+    if (field.empty()) matrix_row_error(std::string("empty ") + field_name + " field");
+    return decode_matrix_base64(field, 0, field.size(), field_name);
+}
+
+static std::array<char, 3> matrix_tag_characters(const std::string& row,
+                                                 const vector<string>& fields)
+{
+    if (matrix_layout == MatrixLayout::V1_FIXED ||
+        matrix_layout == MatrixLayout::V2_FIXED)
+    {
+        if (MATRIX_ENCODING_V1.tag_offset + MATRIX_ENCODING_V1.tag_width >
+            strlen(row.c_str()))
+            matrix_row_error("missing tag field");
+        return {row[MATRIX_ENCODING_V1.tag_offset],
+                row[MATRIX_ENCODING_V1.tag_offset + 1],
+                row[MATRIX_ENCODING_V1.tag_offset + 2]};
+    }
+
+    if (fields.size() < 2) matrix_row_error("missing tab-delimited tag field");
+    const string& tag = fields[1];
+    const size_t separator = tag.find('|');
+    if (separator != string::npos)
+    {
+        const string flag = tag.substr(0, separator);
+        string ratio = tag.substr(separator + 1);
+        if (flag.size() != 1 || ratio.empty() || ratio.size() > 2)
+            matrix_row_error("invalid legacy flag|ratio tag field");
+        if (ratio.size() == 1) ratio.insert(ratio.begin(), '0');
+        return {flag[0], ratio[0], ratio[1]};
+    }
+
+    if (tag.size() == 3) return {tag[0], tag[1], tag[2]};
+    if (tag.size() == 2) return {tag[0], '0', tag[1]};
+    if (tag.size() == 1) return {tag[0], '0', '0'};
+    matrix_row_error("tag field cannot be normalized to three characters");
+    return {'0', '0', '0'};
+}
 
 size_t PriorData::LoadIndex(unordered_set<string>& geneset)
 {
@@ -606,22 +668,31 @@ size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine, vector
     }
     
     const size_t len = strlen(StrLine.c_str());
-    //size_t count = std::count_if( StrLine.begin(), StrLine.end(), []( char c ){return c ==',';}) + 3;
+    if (len < 2) matrix_row_error("row is too short");
+
+    vector<string> fields;
+    if (matrix_layout == MatrixLayout::V1_DELIMITED ||
+        matrix_layout == MatrixLayout::V2_DELIMITED ||
+        matrix_layout == MatrixLayout::UNKNOWN)
+    {
+        strsplit(StrLine, fields, '\t');
+        if (fields.size() < 5)
+            matrix_row_error("expected at least five tab-delimited fields");
+    }
+
     matrix[0] = StrLine[1];
     
     uint16 rownum = FIXCOL;
-    
-    size_t startpos = 3;
-    
-    uint16 tag1=0, tag2 = 0, tag3= 0;
-    tag1 = StrLine[startpos] - 33;
-    ++startpos;
-    
-    tag2 = StrLine[startpos] - 33 + 10;
-    ++startpos;
-    
-    tag3 = RECIPROCALS[ StrLine[startpos] - 33];
-    ++startpos;
+
+    const auto tag = matrix_tag_characters(StrLine, fields);
+    const int reciprocal_index = tag[2] - 33;
+    if (reciprocal_index < 0 ||
+        reciprocal_index >= static_cast<int>(sizeof(RECIPROCALS)))
+        matrix_row_error("invalid ratio character in tag field");
+
+    uint16 tag1 = tag[0] - 33;
+    uint16 tag2 = tag[1] - 33 + 10;
+    uint16 tag3 = RECIPROCALS[reciprocal_index];
         
     if (tag3 >= 200 || tag3 <= 67 || tag2 <= varcutoff)
     {
@@ -629,40 +700,66 @@ size_t PriorData::LoadRow(uint16* matrix, size_t rindex, string &StrLine, vector
     }
     
     matrix[5] =  (tag3<<8) + (tag2 <<1) + ( tag1 > errorcutoff1);
-    ++startpos;
-        
-    uint16 path=0;
-    size_t end = startpos+3;
-    for (; startpos < end ; ++startpos)
-    {
-        path <<= 6;
-        path += StrLine[startpos] - '0';
-    }
-    ++startpos;
-    
-    matrix[2] = path;
-    if (pathsizes.size() <= path) pathsizes.resize(path + 1, 0);
 
-    
-    uint loc=0;
-    end = startpos+5;
-    for (; startpos < end ; ++startpos)
+    uint path = 0;
+    uint loc = 0;
+    size_t startpos = std::string::npos;
+
+    if (matrix_layout == MatrixLayout::V2_FIXED)
     {
-        loc <<= 6;
-        loc += StrLine[startpos] - '0';
+        const uint packed_path = decode_matrix_base64(
+            StrLine, MATRIX_ENCODING_V2.path_offset,
+            MATRIX_ENCODING_V2.path_width, "path+strand");
+        path = packed_path >> 1;
+        loc = decode_matrix_base64(
+            StrLine, MATRIX_ENCODING_V2.reference_position_offset,
+            MATRIX_ENCODING_V2.reference_position_width, "reference position");
+        startpos = MATRIX_ENCODING_V2.allele_offset;
     }
-    ++startpos;
+    else if (matrix_layout == MatrixLayout::V1_FIXED)
+    {
+        path = decode_matrix_base64(
+            StrLine, MATRIX_ENCODING_V1.path_offset,
+            MATRIX_ENCODING_V1.path_width, "path");
+        loc = decode_matrix_base64(
+            StrLine, MATRIX_ENCODING_V1.reference_position_offset,
+            MATRIX_ENCODING_V1.reference_position_width, "location");
+        startpos = MATRIX_ENCODING_V1.allele_offset;
+    }
+    else
+    {
+        string path_field = fields[2];
+        const size_t strand = path_field.find_first_of("+-");
+        if (strand != string::npos) path_field.resize(strand);
+        path = decode_matrix_base64(path_field, "path");
+
+        string location_field = fields[3];
+        const size_t first_separator = location_field.find('|');
+        if (first_separator != string::npos)
+        {
+            const size_t second_separator = location_field.find('|', first_separator + 1);
+            if (second_separator == string::npos)
+                matrix_row_error("extended location field requires two separators");
+            location_field = location_field.substr(
+                first_separator + 1, second_separator - first_separator - 1);
+        }
+        loc = decode_matrix_base64(location_field, "location");
+        startpos = matrix_tsv_field_offset(StrLine, 5);
+        if (startpos == string::npos) startpos = len;
+    }
+
+    if (path > 65535) matrix_row_error("path index exceeds Ctyper's uint16 range");
+    const uint16 path16 = static_cast<uint16>(path);
     
-    pathsizes[path] = MAX(pathsizes[path], loc);
+    matrix[2] = path16;
+    if (pathsizes.size() <= path16) pathsizes.resize(path16 + 1, 0);
+    pathsizes[path16] = MAX(pathsizes[path16], loc);
     
     uint16 part2 = loc & 0xFFFF;
     uint16 part1 = (loc >> 16) & 0xFFFF;
     
     matrix[3] = part1;
     matrix[4] = part2;
-
-    startpos += 11;
-    ++startpos;
     
     uint16 element = 0;
     
@@ -1084,3 +1181,4 @@ PriorChunk* PriorData::getNextChunk(const vector<bool>& finished)
     
     return getChunkData(i);
 }
+
